@@ -1,7 +1,7 @@
 # Site
-title:              JY
-bio:                'jyjyjyjy'
-description:        "jyjyjyjy"
+title:              JY's blog
+bio:                'Yonsei Univ. Electrical and electronic engineering graduate school'
+description:        "AI research"
 reading_time:       true
 words_per_minute:   200
 logo:               'assets/img/logo.png'
@@ -37,20 +37,20 @@ disqus_shortname:   taylantatli
   #ad-client:
   #ad-slot:
 #bing-verify:
-#email:
-twitter:            username
-facebook:           username
-github-url:         username
+email: jun_yonsei@yonsei.ac.kr
+#twitter:            username
+#facebook:           username
+github-url:         https://github.com/junia3
 #stackoverflow:     123456/username   from a "http://stackoverflow.com/users/123456/username" link
 #linkedin:          username
 #xing:              username
-instagram:          username
+instagram:          https://www.instagram.com/___xoo00
 #lastfm:            username
 #tumblr:            username
 #medium:            '@username'
 #pinterest:         username
 #foursquare:        username
-steam:              username
+#steam:              username
 #dribbble:          username
 #youtube:           username
 #youtube-channel:   channel
