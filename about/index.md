@@ -7,6 +7,7 @@ comments: false
 ---
     
 <center><a href="http://junia3.github.io"><b>My blog</b></a></center>
+
 ---
 ## Objective
 * Artificial intelligence
