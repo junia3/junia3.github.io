@@ -1,3 +1,17 @@
+---
+layout: post
+title:  "Zero-shot learning through cross-modal transfer 리뷰"
+date:   2016-04-06
+excerpt: "Minimal, one column Jekyll theme for your blog."
+project: true
+tag:
+- jekyll 
+- moon
+- blog
+- about
+- theme
+comments: true
+---
 # Zero-Shot Learning Through Cross-Modal Transfer
 
 Socher, Richard, et al. "Zero-shot learning through cross-modal transfer." *Advances in neural information processing systems* 26 (2013).
