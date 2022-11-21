@@ -4,12 +4,9 @@ title:  "Variational AutoEncoder"
 date:   2022-11-21
 project: false
 tag:
-- jekyll 
-- moon
-- blog
-- about
-- theme
+- AI
 comments: true
+published: true
 ---
 # Variational AutoEncoder(VAE)
 
