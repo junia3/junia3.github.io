@@ -1,3 +1,16 @@
+---
+layout: post
+title:  "Variational AutoEncoder"
+date:   2022-11-21
+project: false
+tag:
+- jekyll 
+- moon
+- blog
+- about
+- theme
+comments: true
+---
 # Variational AutoEncoder(VAE)
 
 Deep generative learning
