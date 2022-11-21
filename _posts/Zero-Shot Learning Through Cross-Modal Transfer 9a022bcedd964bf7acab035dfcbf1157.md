@@ -1,9 +1,8 @@
 ---
 layout: post
 title:  "Zero-shot learning through cross-modal transfer 리뷰"
-date:   2016-04-06
-excerpt: "Minimal, one column Jekyll theme for your blog."
-project: true
+date:   2022-11-21
+project: false
 tag:
 - jekyll 
 - moon
