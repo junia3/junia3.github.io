@@ -6,7 +6,7 @@ date: 2022-11-17
 comments: false
 ---
     
-<center><a href="http://junia3.github.io"><b>My blog</b></a> is a minimal, one column jekyll theme.</center>
+<center><a href="http://junia3.github.io"><b>My blog</b></a></center>
 ---
 ## Objective
 * Artificial intelligence
