@@ -35,7 +35,7 @@ dribbble_username: /
 spotify_username: /
 
 # Google Analytics
-google-analytics: UA-163806439-1
+google-analytics:
 
 # Disqus
 disqus-shortname: JY
@@ -43,7 +43,7 @@ disqus-shortname: JY
 # Name of the Author
 author-name: JunYoung
 # URL for the Image of the Author
-author-image: https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png
+author-image: https://avatars.githubusercontent.com/u/79881119?v=4
 # 60 Words About the Author
 author-about: Yonsei University, Electrical electronic engineering, YAI, Artificial intelligence, Deep learning, Machine learning, Seoul, South Korea
 # URL to the Author's Profile (i.e., Github, Twitter, Stackoverflow, etc)
