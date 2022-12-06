@@ -7,7 +7,7 @@ layout: compress
   <head>
     {% include head.html %}
     {% if page.use_math %}
-      {% include mathjax_support.html %}
+        {% include mathjax_support.html %}
     {% endif %}
   </head>>
 <body>
@@ -15,8 +15,10 @@ layout: compress
   {% include showcase.html %}
   {% include about.html %}
   {% include contact.html %}
-  <!--Footer begins here-->
   {% include footer.html %}
+  {% if page.use_math %}
+      {% include mathjax_support.html %}
+  {% endif %}
 </body>
 <script>
   var navItems = document.getElementsByClassName('navbar-item');
