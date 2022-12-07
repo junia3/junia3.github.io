@@ -6,9 +6,6 @@ layout: compress
 <html>
   <head>
     {% include head.html %}
-    {% if page.use_math %}
-        {% include mathjax_support.html %}
-    {% endif %}
   </head>>
 <body>
   {% include navbar.html %}
@@ -16,9 +13,6 @@ layout: compress
   {% include about.html %}
   {% include contact.html %}
   {% include footer.html %}
-  {% if page.use_math %}
-      {% include mathjax_support.html %}
-  {% endif %}
 </body>
 <script>
   var navItems = document.getElementsByClassName('navbar-item');
