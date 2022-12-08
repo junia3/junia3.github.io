@@ -4,6 +4,7 @@ layout: post
 description: paper review
 use_math: true
 post-image: https://media3.giphy.com/media/2yrTxb7cNoJW3rcjh7/giphy.gif?cid=790b76115238eb5f5430e3f3b739cbf25e9856c0e642dd97&rid=giphy.gif&ct=g
+category: paper review
 tags:
 - SSL
 - AI

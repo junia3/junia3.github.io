@@ -4,6 +4,7 @@ layout: post
 description: paper review
 use_math: true
 post-image: http://24.media.tumblr.com/2b36cdef695ebf16157f2b260d7bc238/tumblr_mx7dwc19Ng1qdfja2o1_500.gif
+category: paper review
 tags:
 - Contrastive learning
 - AI
