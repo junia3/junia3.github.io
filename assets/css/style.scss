@@ -19,16 +19,16 @@
 
 a.navbar-item:hover,
 .navbar-link:hover {
-    background-color: rgba($color: #FFF, $alpha: 0.25) !important;
+    background-color: rgba($color: #fff, $alpha: 0.25) !important;
     color: white !important;
 }
 
 a.navbar-item.is-active {
-    background-color: rgba($color: #FFF, $alpha: 0.25) !important;
+    background-color: rgba($color: #fff, $alpha: 0.25) !important;
     color: white !important;
 
     &:hover {
-        background-color: rgba($color: #FFF, $alpha: 0.25) !important;
+        background-color: rgba($color: #fff, $alpha: 0.25) !important;
         color: grey;
     }
 }
