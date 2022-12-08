@@ -50,7 +50,7 @@ tags:
 
 ---
 
-# Width scailing($w$)
+# Width scaling($w$)
 그 다음으로 생각해볼 수 있는 것은 network의 깊이를 유지한 채로 wide하게 만드는 것이다. Wider network는 spatial dimension으로 커지는게 아니라, channel 수를 증가시키는 개념으로 보면 된다.   
 
 채널 수가 많은 네트워크일수록 fine-grained(디테일하다고 보면 됨)한 특징들을 더 잘 잡아낼 수 있고, 네트워크 깊이가 얕기 때문에 excessive depth에 의한 학습 저하 효과가 덜하다. 
@@ -61,7 +61,7 @@ tags:
 
 ---
 
-# Resolution scailing($r$)
+# Resolution scaling($r$)
 Spatial dimension을 더 크게 가져가는 resolution factor에 대한 부분에서, 앞선 내용과 유사하게 high resolution image는 fine grained feature를 얻는 데에 유리하다. 그러나 resolution이 증가할수록 FLOPS도 증가할 뿐더러 대략 $r = 2.5$ 정도가 되면 성능이 수렴한다고 한다.
 <p align="center">
     <img src="efficientnet/005.png" width="400"/>
