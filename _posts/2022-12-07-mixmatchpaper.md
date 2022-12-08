@@ -90,13 +90,13 @@ Mixmatch를 언급하기 전에 관련된 준지도학습 관련 내용을 간�
 따라서 stochastic한 함수 Augment(x)가 존재하고, 만약 같은 input image X에 대해 랜덤한 augmentation을 적용하면, 이에 대한 parameterized 모델의 예측은
 
 \[
-    p_{model}(y \vert \text{Augment}(x); \theta), p_{model}(y \vert text{Augment}; \theta)    
+    p_{model}(y \vert \text{Augment}(x); \theta), p_{model}(y \vert \text{Augment}; \theta)    
 \]
 
 와 같이 두 개로 나온다. 여기서 주의할 점은 Augment() 함수 자체가 stochastic하다고 했으므로, 두 개의 term은 서로 다른 예측값을 가진다(같은 value가 아님). 따라서 모델은 다음과 같은 loss term을 최소화하는 방향으로 학습된다.
 
 \[
-    \parallel p_{model}(y \vert \text{Augment}(x); \theta) - p_{model}(y \vert text{Augment}; \theta) \parallel_2^2
+    \parallel p_{model}(y \vert \text{Augment}(x); \theta) - p_{model}(y \vert \text{Augment}; \theta) \parallel_2^2
 \]
 
 Mean Teacher 방식에서는 두 개의 term을 서로 다른 모델링을 통해 해결하는데, 바로 아래와 같은 그림을 보면 student model의 경우에는 똑같은 방식으로 최적화가 진행되지만, teacher model은 student model의 parameter를 exponential moving average 방식으로 가져와 사용한다. Exponential moving average를 잘 모른다면 그냥 단순히,
