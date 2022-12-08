@@ -206,7 +206,7 @@ $X, U$는 augmentation이 진행되기 전 각 dataset을 의미하고 $T$는 en
         \lambda =& Beta(\alpha,~\alpha) \newline
         \lambda' =& \max (\lambda,~1-\lambda) \newline
         x' =& \lambda'x_1 + (1-\lambda')x_2 \newline
-        p' =& \lambda'p_1 + (1-lambda')p_2
+        p' =& \lambda'p_1 + (1-\lambda')p_2
     \end{aligned}
 \]
 
