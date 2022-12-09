@@ -1,9 +1,9 @@
 ---
-title: About efficient deep neural networks
+title: Efficient deep neural networks에 대하여
 layout: post
 description: EfficientNet
 post-image: https://media.tenor.com/o_Q995A1KpIAAAAd/fast-and-efficient-freecodecamp.gif
-category: deep learning
+category: paper review
 use_math: true
 tags:
 - AI
