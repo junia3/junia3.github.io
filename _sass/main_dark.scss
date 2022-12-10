@@ -10,6 +10,8 @@ body {
     font-family: 'Poppins', sans-serif;
     scroll-behavior: smooth !important;
     transition: all 0.25s ease;
+    background: #242424 !important;
+    
 }
 
 /* width */
@@ -19,7 +21,7 @@ body {
 
 /* Track */
 ::-webkit-scrollbar-track {
-    background: white !important;
+    background: rgb(112, 112, 112) !important;
 }
 
 /* Handle */

@@ -30,8 +30,8 @@
                 <a class="navbar-item {% if page.layout == 'blog' %}is-active{% endif %}"
                     href="{{site.url}}{{site.baseurl}}/blog">BLOG</a>
                 {% include dropdown.html %}
+                {% include toggle.html %}
             </div>
-
         </div>
     </div>
 </nav>
@@ -55,4 +55,28 @@
             });
         }
     });
+</script>
+
+<script>
+    /* 스타일 파일들 */
+    const defaultTheme = [...document.styleSheets].find(style => /(style.css)$/.test(style.href));
+    const darkTheme = [...document.styleSheets].find(style => /(style_dark.css)$/.test(style.href));
+
+    /* 스위치, 현재 테마 상태 불러오기 */
+    let mode = document.getElementById("darkmode_switch");
+    const current = localStorage.theme;
+
+    /* 기존 상태에 따라 스위치 체크해주기 */
+    mode.checked = current === 'dark';
+
+    /* 체크된 거에 따라서 스타일 지정해주기 */
+    darkTheme.disabled = mode.checked !== true;
+    defaultTheme.disabled = mode.checked === true;
+
+    mode.addEventListener('click', function(){
+        localStorage.theme = mode.checked ? 'dark' : 'light';
+        darkTheme.disabled = mode.checked !== true;
+        defaultTheme.disabled = mode.checked === true;
+    });
+
 </script>
