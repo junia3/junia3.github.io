@@ -312,9 +312,15 @@ a.navbar-item.is-active {
     @media (min-width: 768px) {
         margin: auto 2.5vmax;
     }
-    a {
+    u{
+        color: salmon !important;
+    }
+    a, b{
         text-decoration: none;
         color: salmon !important;
+    }
+    span.tag{
+        background-color: salmon !important;
     }
     #title {
         text-decoration: none;
