@@ -138,6 +138,9 @@ a.navbar-item.is-active {
         margin: 1.5rem auto;
     }
 
+    .image{
+        background-color: lightgray;
+    }
     #blog-card {
         transition: all 0.25s ease;
         margin-bottom: 0.5vmax;
@@ -344,6 +347,7 @@ a.navbar-item.is-active {
     }
     #post-image {
         border-radius: 0.25rem;
+        background-color: lightgray;
     }
     .subtitle {
         color: lightgray !important;
@@ -368,6 +372,7 @@ a.navbar-item.is-active {
             background-color: #242424;
         }
         img, iframe {
+            background-color: white;
             max-width: calc(100% - 25vw);
             margin: 0.25rem auto;
             @media (max-width: 768px) {
