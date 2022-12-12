@@ -293,12 +293,13 @@ a.navbar-item.is-active {
     @media (min-width: 768px) {
         margin: auto 2.5vmax;
     }
-    a {
+    a, b{
         text-decoration: none;
         color:rgb(9, 158, 250);
     }
     u{
         text-decoration: none;
+        color:rgb(9, 158, 250);
     }
     #title {
         text-decoration: none;
