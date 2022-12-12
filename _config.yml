@@ -22,8 +22,6 @@ site-keywords: AI, Developer, Research engineer
 favicon-url: 
 
 darkmode_switch: true
-after_footer_scripts:
-  - /assets/js/darkmode.js
 
 # URL of the Image of Custom Hero Image (i.e., the image in the background of the very first section of the Homepage)
 heroimage: https://github.com/junia3/junia3.github.io/blob/main/assets/images/light.jpg?raw=true
