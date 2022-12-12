@@ -294,7 +294,8 @@ a.navbar-item.is-active {
         margin: auto 2.5vmax;
     }
     a {
-        text-decoration: underline;
+        text-decoration: none;
+        color:rgb(9, 158, 250) !important;
     }
     #title {
         text-decoration: none;

@@ -313,7 +313,8 @@ a.navbar-item.is-active {
         margin: auto 2.5vmax;
     }
     a {
-        text-decoration: underline;
+        text-decoration: none;
+        color: salmon !important;
     }
     #title {
         text-decoration: none;
