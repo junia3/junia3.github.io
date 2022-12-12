@@ -221,14 +221,16 @@ a.navbar-item.is-active {
 
 
 #footer {
-    background-color: rgb(54, 54, 54) !important;
+    background-color: #242424 !important;
     #backtotop {
-        background-color: rgb(54, 54, 54) !important;
+        background-color: rgb(129, 129, 129) !important;
         transition: all 0.25s ease;
         width: 10rem;
         padding: 0.25rem;
         margin: auto auto 1rem auto;
-
+        a{
+            color: black !important;
+        }
         &:hover {
             transform: scale(1.05);
         }
