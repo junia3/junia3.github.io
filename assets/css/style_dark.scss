@@ -2,6 +2,13 @@
 ---
 
 @import "main_dark.scss";
+#comment_light{
+    display: none !important;
+}
+
+#comment_dark{
+    display: block !important;
+}
 
 #navbar {
     opacity: 0.95;

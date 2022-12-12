@@ -3,6 +3,15 @@
 
 @import "main.scss";
 
+#comment_light{
+    display: block;
+}
+
+#comment_dark{
+    display: none;
+}
+
+
 #navbar {
     opacity: 0.95;
 }
