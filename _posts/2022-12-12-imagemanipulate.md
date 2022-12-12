@@ -104,6 +104,77 @@ Generator에 input $x$가 latent vector $z$와 함께 주어지는 구조인 걸
 </p>
 
 각 loss term에 의한 효과를 보여주는 그림이다. L1 loss를 쓰지 않았을 때는 GT의 전체적인 틀을 잃어버리는 문제가 발생하고, cGAN loss를 쓰지 않았을 때는 blurry한 결과가 나오는 것을 확인할 수 있다. Discriminator 구조는 appendix에 따로 나와있는데, 간단하게만 설명하면 모든 ReLU는 LeakyReLU(기울기 0.2)를 사용하였고 [DCGAN](https://arxiv.org/abs/1511.06434)에서와 같이 첫번째 layer에서는 BatchNorm을 사용하지 않았다. 이러한 pix2pix는 두 개의 paired dataset만 있다면 한쪽을 source, 다른 쪽을 target으로 삼아서 다양한 image to image translation task에 적용될 수 있다는 장점이 있다.   
-그러나 여기서 생길 수 있는 문제는, 과연 input-output 간에 paired dataset이 없다면 어떻게 될까이다. 이를테면 sketch dataset에 그에 상응하는 사물 이미지가 있어야 sketch to image generation 학습이 가능하고, scene에 대한 depth map이 존재해야 depth estimation 생성이 가능하기 때문이다. 즉 한계점은 pair를 모으기 힘들고, 몇몇 task에 대해서는 아예 불가능할 수도 있다는 것이다. 바로 이러한 관점에서 제시된 것이 cycleGAN이다.
+그러나 여기서 생길 수 있는 문제는, 과연 input-output 간에 paired dataset이 없다면 어떻게 될까이다. 이를테면 sketch dataset에 그에 상응하는 사물 이미지가 있어야 sketch to image generation 학습이 가능하고, scene에 대한 depth map이 존재해야 depth estimation 생성이 가능하기 때문이다. 즉 한계점은 pair를 모으기 힘들고, 몇몇 task에 대해서는 아예 불가능할 수도 있다는 것이다. 바로 이러한 관점에서 제시된 것이 [cycleGAN](https://arxiv.org/abs/1703.10593)이다.   
+이를테면 사진이 있는데, 그걸 모네 화풍으로 바꾸고 싶다고 하자. 모네의 화풍에 대한 image를 구하기 위해 우리가 직접 사진을 찍을 수도 없고, 정말 그림을 그린 그 풍경이 현재도 존재한다고 가정할 수도 없다. 심지어 조경이나 날씨 등 환경도 달라지고, 동일 시간대 내에서 사진을 찍은게 아니라면 paired dataset을 구축할 수 없다. ~~그렇다고 모네를 환생시켜서 그림 그려달라고 할 수도 없는 노릇~~
 
-... 계속 작성중
+<p align="center">
+    <img src="imagetoimage/009.png" width="600"/>
+</p>
+이 그림을 보게 되면, pix2pix는 paired dataset에 대해서만 적용될 수 있고, 우측과 같은 unpaired dataset에서는 구현이 불가능한 것을 알 수 있다. 그렇다면 cycleGAN의 intuition을 알아보도록 하자.
+
+---
+
+# CycleGAN: Unpaired Image-to-Image Translation using Cycle-Consistent Adversarial Networks
+생성 과정을 간단하게 번역 과정으로 생각해보자. 영어를 한국어로 번역하고, 번역된 한국어를 다시 영어로 번역하면 원래의 문장이 나와야한다. 바로 이것이 cycleGAN의 주된 메커니즘이며, 여기서 번역기 기능을 하는 것이 generator라고 생각하면 된다.
+<p align="center">
+    <img src="imagetoimage/010.png" width="600"/>
+</p>
+예를 들어 말 이미지에서 얼룩말 이미지로 바꾸는 task에 대해서 설명하면, 말을 얼룩말로 바꾼 이미지를 다시 말 이미지로 되돌렸을 때 원래의 말 이미지가 나와야 한다는 것이다. 이러한 방법을 통해 unpaired dataset을 가지고 있더라도 원래의 컨텐츠를 유지하면서 이미지를 생성할 수 있게 된다는 것이다.
+<p align="center">
+    <img src="imagetoimage/011.png" width="1000"/>
+</p>
+이 위에 나타난 그림이 되게 중요한데, cycleGAN의 프레임워크를 이 그림만 보면 모두 이해할 수 있기 때문이다. $X$를 한쪽 도메인이라고 생각하고 $Y$를 다른쪽 도메인이라고 생각하자. 여기서 도메인이 의미하는 것은 데이터셋이 포함되는 하나의 집합이다.   
+$X$ 도메인에 포함된 데이터셋 $x$와 $Y$ 도메인에 포함된 데이터셋 $y$에 대해서, 각 방향에 대한 generator를 함수로 표현할 수 있다. $X$ 도메인의 데이터셋을 받아 $Y$ 도메인의 데이터를 생성하는 네트워크를 $G$라고 하고, 이렇게 생성된 $G(x)$를 $\hat{y}$라 표현한다. 마찬가지로 $Y$ 도메인의 데이터셋을 받아 $X$ 도메인의 데이터를 생성하는 네트워크를 $F$라고 하고, 이렇게 생성된 $F(y)$를 $\hat{x}$라 표현한다. 두 네트워크에 대해 $X$ 도메인 이미지에 대해 F, G를 최적화하는 과정은 다음과 같다. 우선 $X \rightarrow Y$로 생성된 이미지에 대한 adversarial loss는 다음과 같이 표현된다. 
+
+\[
+    \mathcal{L}_{GAN}(G, D_Y, X, Y)    
+\]
+
+Adversarial loss에서 각 notation이 의미하는 바는 다음과 같다.
+- $X$ 에서 $Y$ 이미지를 생성하는 forward process에 대해서,
+- $Y$ 도메인의 실제 데이터와 가짜로 생성된 데이터를 비교하는 discriminator $D_Y$가 있고,
+- 가짜로 데이터를 생성하는 generator $G$에 대해서 adversarially 최적화를 하겠다.
+
+요약하자면, $D_Y$와 $G$가 서로 경쟁하면서 학습하는 구조가 된다. 이렇게 되면 문제는 $D_Y$에 대해서나 $G$에 대해서는 학습이 가능한데, 역과정에 대해서는 학습이 안된다. 그렇기 때문에 우리는 추가로 경쟁 구조를 하나 더 만들 것이다.
+
+\[
+    \mathcal{L}_{GAN}(F, D_X, Y, X)    
+\]
+
+위의 식에서 각 notation이 의미하는 바는 다음과 같다.
+- $Y$ 에서 $X$ 이미지를 생성하는 reverse process에 대해서,
+- $X$ 도메인의 실제 데이터와 가짜로 생성된 데이터를 비교하는 discriminator $D_X$가 있고,
+- 가짜로 데이터를 생성하는 generator $F$에 대해서 adversarially 최적화를 하겠다.
+
+요약하자면 $D_X$와 $F$가 서로 경쟁하면서 학습하는 구조가 된다. 이제 모든 domain에 대한 generator, discriminator 학습이 가능해진다.
+그리고 추가적으로 여기에 앞서 언급한 cycleGAN에서의 주요 intuition인 <U>"다시 돌아왔을 때 원래와 같아야 함"</U>을 적용한 cyclic loss는 다음과 같다. 정말 간단하게도 다시 역방향 generator를 사용해서 생성된 이미지를 기준으로 원래 이미지와의 L1 loss를 계산한다.
+<p align="center">
+    <img src="imagetoimage/012.png" width="600"/>
+</p>
+
+구현은 pix2pix에서와 동일한 generator과 discriminator를 사용했으나, cycleGAN original paper에서는 Instance Normalization을 사용했으며 modified ResNet based generator를 사용한 점이 살짝 다르다.
+ <p align="center">
+    <img src="imagetoimage/013.png" width="800"/>
+</p>
+위의 그림이 cycleGAN에서 사용된 generator 구조라고 보면 된다.
+학습 알고리즘을 글로 풀어쓰면 다음과 같다.
+
+1. $x$, $y$ 두 개의 이미지를 서로 다른 도메인 $X$, $Y$로부터 하나씩 가져온다.
+2. 각각 방향에 맞는 generator를 통과시켜 fake image를 얻는다. $(x,~y) \rightarrow (G(x),~F(y)) = (\hat{y},~\hat{x})$
+3. 각각 도메인에 맞는 discriminaor를 통해 discriminator loss를 계산한다. $D_X$는 $(x, x')$을, $D_Y$는 $(y, y')$을 토대로 계산한다.
+4. 다시 각자의 방향으로 가는 generator를 통과시켜 fake image에 대한 reconstructed image를 얻는다. $(\hat{y},~\hat{x}) \rightarrow (F(\hat{y}),~G(\hat{x})) = (\tilde{x},~\tilde{y})$
+5. 다시 reconstructed된 이미지에 대해서 cyclic L1 loss를 계산해준다. 계산은 $(x,~\tilde{x})$ 그리고 $(y,~\tilde{y})$에 대해서 진행한다.
+6. Generator loss를 최종적으로 계산한다.
+
+ <p align="center">
+    <img src="imagetoimage/015.png" width="700"/>
+    <img src="imagetoimage/014.png" width="450"/>
+</p>
+
+위의 좌측 이미지를 보면 알 수 있듯이, 해당 task는 굉장히 다양한 형태로 구현할 수 있고, 서로 연관짓고 싶은 domain에 대한 데이터만 있으면 어떠한 학습도 가능하다는 장점이 있다. 그러나 limitation으로 등장한 것은 GAN 자체가 사물에 대한 인식을 할 수 없기 때문에 얼룩말로 바꾸는 task와 같은 경우 배경에 무늬가 들어가거나, 심지어 사람이 타고 있다면 사람에도 얼룩말 무늬가 들어가는 일이 발생한다. 보통 모든 데이터셋에 말을 타고 있는 사람이 있다면 이런 일은 일어나지 않겠지만, 학습할 때 사람이 추가로 들어있는 경우가 거의 없을 경우에 inference하면 이와 같은 artifact가 발생하게 된다.
+
+---
+
+# GAN inversion
+
+... 작성 중...
