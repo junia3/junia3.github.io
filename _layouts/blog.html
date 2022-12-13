@@ -44,6 +44,16 @@ layout: compress
 
 <script>
     let cards = document.getElementsByName("blogcards");
+    cards.forEach((card) => {
+            let cardmiddle = (card.getBoundingClientRect().top + card.getBoundingClientRect().bottom)/2.0;
+            
+            if(cardmiddle <= 120 || cardmiddle >= window.innerHeight-120){
+                card.style.opacity = 0.1;
+            }
+            else{
+                card.style.opacity = 1.0;
+        }
+    });
     window.addEventListener("scroll", (event)=> {
         cards.forEach((card) => {
             let cardmiddle = (card.getBoundingClientRect().top + card.getBoundingClientRect().bottom)/2.0;
