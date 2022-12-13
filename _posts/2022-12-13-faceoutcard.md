@@ -91,3 +91,25 @@ name = "blogcards"를 따로 해준 이유는 바로 뒤에서 설명할 것인�
 ```
 잘 될지는 모르겠는데, 그냥 위는 예시로 보여준 것이고 원하는 방향성대로 작성해주면 될 듯하다.   
 이런 식으로 스크롤 작업마다 모든 카드뉴스의 상태를 확인하고 스크립트를 적용하게 되면 적용이 끝나게 된다.
+
+---
+
+# 아래쪽에도 fadeout 적용하기
+글을 쓰다보니 아래쪽 포스트에도 비슷하게 적용하는게 좋을 것 같아서 좀 수정했다.
+```javascript
+<script>
+    let cards = document.getElementsByName("blogcards");
+    window.addEventListener("scroll", (event)=> {
+        cards.forEach((card) => {
+            let cardmiddle = (card.getBoundingClientRect().top + card.getBoundingClientRect().bottom)/2.0;
+            
+            if(cardmiddle <= 120 || cardmiddle >= window.innerHeight-120){
+                card.style.opacity = 0.15;
+            }
+            else{
+                card.style.opacity = 1.0;
+        }
+        });
+    });
+</script>
+```
