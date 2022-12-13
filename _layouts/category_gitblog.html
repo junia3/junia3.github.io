@@ -48,7 +48,7 @@ layout: compress
         cards.forEach((card) => {
             let cardmiddle = (card.getBoundingClientRect().top + card.getBoundingClientRect().bottom)/2.0;
             
-            if(cardmiddle <= 120){
+            if(cardmiddle <= 120 || cardmiddle >= window.innerHeight-120){
                 card.style.opacity = 0.15;
             }
             else{
