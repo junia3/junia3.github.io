@@ -4,6 +4,7 @@ layout: post
 description: Blog theme, 서버 관리
 post-image: https://media.tenor.com/yP78QaLGMGcAAAAi/cool-animation.gif
 category: github blog
+use_math: true
 tags:
 - web designer
 - blog
