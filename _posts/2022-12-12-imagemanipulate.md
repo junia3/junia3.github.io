@@ -1,5 +1,5 @@
 ---
-title: GAN을 활용한 이미지 조작(Image manipulation)
+title: GAN을 활용한 이미지 조작(image to image 그리고 GAN inversion까지)
 layout: post
 description: Image translation/manipulation
 post-image: https://res.cloudinary.com/devpost/image/fetch/s--C6uTFOry--/c_limit,f_auto,fl_lossy,q_auto:eco,w_900/https://github.com/mnicnc404/CartoonGan-tensorflow/raw/master/images/cover.gif
@@ -166,7 +166,7 @@ Adversarial loss에서 각 notation이 의미하는 바는 다음과 같다.
 5. 다시 reconstructed된 이미지에 대해서 cyclic L1 loss를 계산해준다. 계산은 $(x,~\tilde{x})$ 그리고 $(y,~\tilde{y})$에 대해서 진행한다.
 6. Generator loss를 최종적으로 계산한다.
 
- <p align="center">
+<p align="center">
     <img src="imagetoimage/015.png" width="700"/>
     <img src="imagetoimage/014.png" width="450"/>
 </p>
@@ -176,5 +176,103 @@ Adversarial loss에서 각 notation이 의미하는 바는 다음과 같다.
 ---
 
 # GAN inversion
+다음으로 볼 내용은 [GAN inversion](https://arxiv.org/pdf/2101.05278.pdf)이다. GAN을 뒤집는다라는 간단한 제목으로 소개되는데, 해당 task는 image manipultation에 있어 다음과 같이 접근한다.
+ <p align="center">
+    <img src="imagetoimage/016.png" width="700"/>
+</p>
+학습된 decoder(혹은 generator $G$)에 대해 $z$라는 latent space 상의 한 점은 fake image인 $x = G(z)$를 만들어낸다. 흔히 latent vector를 뽑는 과정은 Normal distribution으로부터 추출한다($z \sim \mathcal{N}(0, I)$).   
+그렇다면 이러한 접근은 어떨까? Real image가 있는데, 이 real image와 비슷한 이미지를 만들어낼 수 있는 $z$를 찾는 것이다. 이를 수식으로 표현한 것이 바로
+\[
+    z^\* = \arg \min_z (G(z),~x)    
+\]
+따라서 우리는 **이상적인 $z^\*$를 찾고 싶고**, real image $x$와 거의 똑같은 이미지를 만들어낼 수 있는 $z$를 찾을 수 있으면, 이 <U>$z$를 조금씩 바꿔가면서 image editing이 가능</U>하다는 것이다. Concept은 GAN을 이해할 수 있다면 받아들일 수 있을 정도로 simple하다.   
+이러한 image manipulation에서 활용되기 쉽게 여러 도메인에 대한 style을 학습시킨 pre-trained styleGAN이 있다. 다음 깃허브 링크를 참고하면 좋을 것 같다. [사전 학습된 StyleGAN 링크](https://github.com/justinpinkney/awesome-pretrained-stylegan)   
 
-... 작성 중...
+---
+
+# Image to styleGAN
+위에서 언급했던 것과 같이 사전 학습된 StyleGAN이 있다고 하자, image to style이란 GAN이 주어진 이미지를 styleGAN의 latent space로 보내는 task다. StyleGAN에 대해서는 이미 다뤄서 대충 알고 있겠지만, $\mathcal{Z}$ space에서 $\mathcal{W}$로 보내는 MLP 구조가 있다. 그런데 [Image to style](https://arxiv.org/pdf/1904.03189.pdf)에서는 이를 좀 다르게 $\mathcal{W^+}$ space로 보낸다. 기존의 $\mathcal{W}$ space에서의 벡터는 <U>똑같은 벡터를 18개 복사</U>하여 각 styleGAN layer에 넣어주는데, 이와는 다르게 $\mathcal{W^+}$ space에서는 $18 \times 512$ 크기의 벡터를 업데이트하는 것이기 때문에, 보다 세부 조정된 inversion이 가능하다. 즉, <U>18개의 서로 다른 row vector들이</U> style layer에 들어간다고 생각하면 된다.
+<p align="center">
+    <img src="imagetoimage/017.png" width="700"/>
+</p>
+대충 그림으로 나타낸 것이 바로 위쪽 그림이다. StyleGAN에 의해 임의로 생성되는 이미지를 사용하는게 아니라, latent를 최적화하여 그럴싸한 원본 이미지를 만드는 latent를 찾은 뒤에, 그 latent를 활용하여 image를 editing하겠다는 전략이다.   
+그렇다면 $\mathcal{W^+}$를 어떤 식으로 최적화할까?
+
+1. Initial latent code $w^\*$로부터 시작한다.
+2. Image $I^\* = G(w^\*)$를 생성한다. 여기서 $G$는 사전 학습된 styleGAN generator이다.
+3. $I^\*$를 원래 생성하고 싶었던 reference 이미지 $I$와 비교하고, loss function $\mathcal{L}$을 계산한다.
+4. 위에서 정의한 Loss function을 토대로 처음에 guess한 latent code $w^\*$를 gradient descent 방법을 사용하여 업데이트한다.
+5. 위의 과정을 몇번의 iteration을 통해 반복한다.
+
+위의 과정을 보면 성능에 중요한 영향을 미치는 것은 딱 두 가지로 정할 수 있다. 애초에 decoder는 미리 학습된 styleGAN과 같은 generator를 사용하기 때문에 딱히 건드릴 순 없고, image 특성을 잘 반영해서 생성해줄 latent space를 잘 찾는 것과 그 latent space에 속해있는 latent vector를 찾아낼 수 있는 loss function이다.   
+초기화의 경우 무작위의 latent를 샘플링하는 방법도 있으나, 이전 글에서 styleGAN에서 소개했던 바와 같이 **sampling이 분포가 희박한 곳에서 발생할 경우에 문제가 발생한다**. 이게 무슨 의미냐면, initial point에서 gradient descent가 일어나는 feasible direction이 최적화가 힘든 길이면 원하는 이미지가 잘 생성되지 않을 수도 있다. 그렇기 때문에 단순히 랜덤으로 초기화하는 것보다는 평균치를 의미하는 mean latent code(mean face)로부터 시작하는 것이 낫다는 것이다. 또 loss function에 대해서 언급하자면, 단순히 MSE를 계산하는 것은 pixel-wise error를 계산하기 때문에 high quality embedding을 찾기 힘들다. 왜냐하면 MSE loss가 가지는 값이 실제로 그 이미지를 대변할 수 없기 때문이다. 그렇기 때문에 perceptual loss를 사용하여 latent space를 잘 찾을 수 있게 보조해주는 loss를 생각해볼 수 있다.
+\[
+    w^\* = \min_w L_\text{percept} (G(w), I)+\frac{\lambda_{mse}}{N} \parallel G(w) - I \parallel_2^2   
+\]
+[Perceptual loss](https://arxiv.org/abs/1603.08155)는 pre-trained VGG-16(ImageNet에 대해 사전 학습된 네트워크)의 feature extraction 부분을 활용하며, 두 이미지 간의 hidden feature 사이의 유사도를 측정한다.
+<p align="center">
+    <img src="imagetoimage/018.png" width="700"/>
+</p>
+위의 그림이 perceptual loss가 제시된 논문에서 발췌한 그림이다. Style에 대한 정보를 VGG-16을 활용한 loss를 토대로 최적화하였고, 이를 컨셉으로 생각하게 되면 우리가 하고자 하는 이미지의 content나 style을 이해하고 최적화하는 상황에서 사용될 수 있음을 시사한다.
+
+\[
+    L_\text{percept}(I_1, I_2) = \sum_{j=1}^4 \frac{\lambda_j}{N_j} \parallel F_j (I_1) - F_j (I_2) \parallel_2^2
+\]
+
+---
+
+# Various applications
+다음부터는 여러 적용 방법들에 대해서 소개소개..
+
+## Morphing
+Morphing은 image processing technique으로, 흔히 한쪽 이미지에서 다른쪽 이미지로 점진적 변화를 할 때 사용한다. 두 개의 이미지 $I_1$ 그리고 $I_2$에 대해 각각 latent space로 embedding된 코드 $w_1$와 $w_2$를 사용, morphing은 다음과 같이 두 latent code의 convex set의 임의의 점을 가리킨다.
+
+\[
+    w = \lambda w_1 + (1-\lambda)w_2,~\lambda \in (0, 1)
+\]
+
+이렇게 구한 $w$로 morphed image $G(w)$를 구하면 된다.
+
+<p align="center">
+    <img src="imagetoimage/019.png" width="700"/>
+</p>
+좌측 이미지와 우측 이미지의 morphed image가 $\lambda$에 따라 나타난 그림은 위와 같다.
+
+## Expression transfer
+이 개념은 사실상 latent arithmetic와 같다. 예를 들어 이런 개념이다.   
+- 무표정의 고양이 사진($I_1$)이 있고, 이를 latent에 embedding한 vector $w_1$이 있다고 하자.
+- 무표정의 강아지 사진($I_2$)가 있고, 이를 latent에 embedding한 vector $w_2$가 있다고 하자.
+- 웃는 강아지 사진($I_3$)가 있고, 이를 latent에 embedding한 vector $w_3$가 있다고 하자.
+- 그렇다면, $w = w_1 + \lambda(w_3 - w_2)$를 통해 만든 이미지는 어떤 모습일까?
+
+사실 이쯤만 되어도 어느 정도 감이 좋은 사람이라면 **"웃는 고양이 사진"** 이 의도한 정답이라는 것을 알아채주셨을 것이다. 결국 expression transfer에서 하고자 하는 것은 latent에서의 연산이 해당 feature를 반영하는 latent space에서의 방향이라는 것.
+
+<p align="center">
+    <img src="imagetoimage/020.png" width="700"/>
+</p>
+
+## Style transfer
+StyleGAN에서 했던 style transfer 방식과 완전 동일한데, 다만 이걸 $\mathcal{W}$ space가 아니라 $\mathcal{W^+}$ space에서 하고자 하는 것이다.
+
+- Image $I_1$에 대해 최적화 및 임베딩된 $18 \times 512$ 크기의 latent vector $w_1$를 생각할 수 있다.
+- Image $I_2$에 대해 최적화 및 임베딩된 $18 \times 512$ 크기의 latent vector $w_2$를 생각할 수 있다.
+- 중간 부분까지 $w_1$를 가져다 쓰고, 그 다음부터는 $w_2$를 가져다 쓴다. 즉 새로운 latent code $w$는 $w_1$과 $w_2$의 몇개의 row를 concatenate한 구조가 된다(아래 그림 참고).
+
+<p align="center">
+    <img src="imagetoimage/021.png" width="700"/>
+</p>
+
+그렇게 되면 다음과 같이 정말 의미 없는 두 도메인에 대해서도 style transfer가 일어날 수 있다. 단순히 얼굴 이미지에 대한 style synthesis를 제시했던 styleGAN에서 더 확장성 있는 연구 가능성을 제시해준 것과 같다.
+
+<p align="center">
+    <img src="imagetoimage/022.png" width="700"/>
+</p>
+
+이후 [Image2StyleGAN++](https://arxiv.org/abs/1911.11544)를 통해 더 확장성 있는 application을 보여준다. mask based style transfer, image impainting 그리고 local edit 등등 여러 application이 제시가 되었다.
+
+<p align="center">
+    <img src="imagetoimage/app1.png" width="400"/>
+    <img src="imagetoimage/app2.png" width="400"/>
+    <img src="imagetoimage/app3.png" width="400"/>
+    <img src="imagetoimage/app4.png" width="400"/>
+</p>
