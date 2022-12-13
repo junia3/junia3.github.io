@@ -46,8 +46,9 @@ layout: compress
     let cards = document.getElementsByName("blogcards");
     window.addEventListener("scroll", (event)=> {
         cards.forEach((card) => {
-            let cardtop = card.getBoundingClientRect().top;
-            if(cardtop <= 70){
+            let cardmiddle = (card.getBoundingClientRect().top + card.getBoundingClientRect().bottom)/2.0;
+            
+            if(cardmiddle <= 120){
                 card.style.opacity = 0.15;
             }
             else{

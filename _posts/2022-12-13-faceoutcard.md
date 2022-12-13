@@ -58,8 +58,9 @@ name = "blogcards"를 따로 해준 이유는 바로 뒤에서 설명할 것인�
     let cards = document.getElementsByName("blogcards");
     window.addEventListener("scroll", (event)=> {
         cards.forEach((card) => {
-            let cardtop = card.getBoundingClientRect().top;
-            if(cardtop <= 70){
+            let cardmiddle = (card.getBoundingClientRect().top + card.getBoundingClientRect().bottom)/2.0;
+            
+            if(cardmiddle <= 120){
                 card.style.opacity = 0.15;
             }
             else{
@@ -70,16 +71,16 @@ name = "blogcards"를 따로 해준 이유는 바로 뒤에서 설명할 것인�
 </script>
 ```
 코드의 내용을 간단히 풀어쓰자면 cards는 위에서 언급했던 바와 같이 name이 우리가 부여해준 <U>"blogcards"</U>와 같은 요소들을 모두 리스트 형태로 반환하게 되고, window.addEventListener 함수를 통해 스크롤이 될 때마다 다음과 같은 함수를 호출한다.   
-함수 내부에서는 cards 리스트 내에 있는 모든 card 요소의 상대 위치 중 top(위쪽)을 반환한다. 여기서 절대 위치가 아니라 상대 위치를 쓰는 이유는 <U>스크롤이 내려간 상태의 화면을 기준</U>으로 페이드 아웃을 적용하기 위해서다.   
+함수 내부에서는 cards 리스트 내에 있는 모든 card 요소의 상대 위치 중 중간을 반환한다. 여기서 절대 위치가 아니라 상대 위치를 쓰는 이유는 <U>스크롤이 내려간 상태의 화면을 기준</U>으로 페이드 아웃을 적용하기 위해서다.   
 페이드 아웃의 opacity는 숫자를 linear하게도 감소시킬수도 있고, 내가 했던 것처럼 상수값으로도 표현할 수 있다. Linear하게 감소시키고 싶다면 다음과 같이 작성해도 될 것 같다.
 ```javascript
 <script>
     let cards = document.getElementsByName("blogcards");
     window.addEventListener("scroll", (event)=> {
         cards.forEach((card) => {
-            let cardtop = card.getBoundingClientRect().top;
-            if(cardtop <= 100){
-                card.style.opacity = 0.5-0.35*(cardtop/100.0);
+            let cardmiddle = (card.getBoundingClientRect().top + card.getBoundingClientRect().bottom)/2.0;
+            if(cardmiddle <= 120){
+                card.style.opacity = 0.5-0.35*(cardmiddle/120.0);
             }
             else{
                 card.style.opacity = 1.0;
