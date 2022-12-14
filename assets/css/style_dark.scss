@@ -102,7 +102,7 @@ a.navbar-item.is-active {
         .waviy {
             position: relative;
             -webkit-box-reflect: below -40px linear-gradient(transparent, rgba(0,0,0,.2));
-            font-size: 60px;
+            font-size: 5vw;
         }
         .waviy span {
             font-family: 'Alfa Slab One', cursive;
@@ -130,7 +130,7 @@ a.navbar-item.is-active {
         .word {
             margin: auto;
             color: lightgray!important;
-            font: 500 normal 2.5em 'tahoma';
+            font: 500 normal 2.5vw 'tahoma';
         }
     }
 }
