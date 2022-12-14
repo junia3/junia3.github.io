@@ -1,8 +1,8 @@
 ---
 ---
-
 @import "main.scss";
 @import url('https://fonts.googleapis.com/css2?family=Alfa+Slab+One&display=swap');
+
 #comment_light{
     display: block;
 }
@@ -106,7 +106,9 @@ a.navbar-item.is-active {
             font-family: 'Alfa Slab One', cursive;
             position: relative;
             display: inline-block;
-            color: rgb(0, 0, 0);
+            background: linear-gradient(rgb(3, 158, 200), rgb(0, 99, 228), darkblue);
+            color: transparent;
+            -webkit-background-clip: text;
             text-transform: uppercase;
             animation: waviy 1s infinite;
             animation-delay: calc(.1s * var(--i));

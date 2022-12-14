@@ -108,7 +108,9 @@ a.navbar-item.is-active {
             font-family: 'Alfa Slab One', cursive;
             position: relative;
             display: inline-block;
-            color: #fff !important;
+            background: linear-gradient(rgb(255, 196, 190), rgb(255, 103, 86)), rgb(255, 60, 0) !important;
+            color: transparent;
+            -webkit-background-clip: text !important;
             text-transform: uppercase;
             animation: waviy 1s infinite;
             animation-delay: calc(.1s * var(--i));
