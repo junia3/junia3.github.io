@@ -96,6 +96,43 @@ a.navbar-item.is-active {
         min-width: 25vmax;
         margin: 0.5rem;
     }
+
+    .sayhello{
+        margin-top: 120px;
+        margin-bottom: 120px;
+        .waviy {
+            position: relative;
+            -webkit-box-reflect: below -20px linear-gradient(transparent, rgba(0,0,0,.2));
+            font-size: 60px;
+        }
+        .waviy span {
+            font-family: 'Alfa Slab One', cursive;
+            position: relative;
+            display: inline-block;
+            color: #fff !important;
+            text-transform: uppercase;
+            animation: waviy 1s infinite;
+            animation-delay: calc(.1s * var(--i));
+        
+        }
+        @keyframes waviy {
+            0%,40%,100% {
+                transform: translateY(0)
+            }
+            20% {
+                transform: translateY(-20px)
+            }
+        }
+    }
+
+    .introduce{        
+        margin-top: 50px;
+        .word {
+            margin: auto;
+            color: lightgray!important;
+            font: 500 normal 2.5em 'tahoma';
+        }
+    }
 }
 
 #contact {
