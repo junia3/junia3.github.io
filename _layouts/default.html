@@ -37,4 +37,28 @@ layout: compress
     }
   });
 </script>
+<style>
+  .fade-in {
+    animation: fade-in 1.4s;
+  }
+
+  @keyframes fade-in {
+      from {opacity: 0; transform: scale(.3,.3) rotate3d(0, -1, 0, 0.4turn)}
+      to {opacity: 1;}
+  }
+</style>
+<script>
+  let welcome = document.getElementById("welcome_block");
+
+  window.addEventListener("scroll", (event)=> {
+    let wtop = welcome.getBoundingClientRect().top;
+
+    if(wtop <= window.innerHeight-200){
+      welcome.classList.add("fade-in");
+    }
+    else{
+      welcome.classList.remove("fade-in");
+    }
+  });
+</script>
 </html>
