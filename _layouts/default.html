@@ -49,11 +49,12 @@ layout: compress
 </style>
 <script>
   let welcome = document.getElementById("welcome_block");
+  let height = welcome.offsetHeight;
 
   window.addEventListener("scroll", (event)=> {
     let wtop = welcome.getBoundingClientRect().top;
 
-    if(wtop <= window.innerHeight-200){
+    if(wtop <= window.innerHeight-height/10){
       welcome.classList.add("fade-in");
     }
     else{
