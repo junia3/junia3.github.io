@@ -422,16 +422,15 @@ a.navbar-item.is-active {
 .adjacent{
     vertical-align: center;
     height: 120px;
-    margin-bottom: 100px;
-    #prev1, #prev2{
+    font-size: 3.5vmin;
+    #prev1{
         background: white;
         transition: all 0.60s ease;
         color: #242424;
         z-index: 1;
         font: 'tahoma';
-        font-size: 1.2vmax;
-        margin-top: 5px;
-        margin-bottom: 5px;
+        margin-top: 15px;
+        margin-bottom: 15px;
         max-width: 70vw;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -461,15 +460,14 @@ a.navbar-item.is-active {
         }
     }
 
-    #next1, #next2{
+    #next1{
         background: white;
         transition: all 0.60s ease;
         color: #242424;
         z-index: 1;
         font: 'tahoma';
-        font-size: 1.2vmax;
-        margin-top: 5px;
-        margin-bottom: 10px;
+        margin-top: 15px;
+        margin-bottom: 15px;
         max-width: 70vw;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -501,7 +499,6 @@ a.navbar-item.is-active {
 }
 
 .anothercat{
-    margin-bottom: 50px;
     body {
         display: flex;
         justify-content: center;
@@ -509,12 +506,14 @@ a.navbar-item.is-active {
         min-height: 100vh;
     }
     .waviy {
+        margin-top: 10px;
+        margin-bottom: 50px;
         position: relative;
     }
     .waviy span {
         position: relative;
         display: inline-block;
-        font-size: 3vw;
+        font-size: 4.2vmin;
         color: #242424;
         text-transform: uppercase;
         animation: flip 2s infinite;
@@ -525,4 +524,17 @@ a.navbar-item.is-active {
             transform: rotateY(360deg) 
         }
     }
+}
+
+.contain_cats{
+    padding-top: 20px;
+    padding-bottom: 100px;
+    hr{
+        height: 12px;
+        background-image: linear-gradient(to bottom, rgba(24, 24, 24, 0), rgba(24, 24, 24, 0.75), rgba(24, 24, 24, 0));
+    }
+}
+.contain_category{
+    padding-top: 40px;
+    padding-bottom: 40px;
 }

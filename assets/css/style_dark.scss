@@ -453,21 +453,20 @@ a.navbar-item.is-active {
 .adjacent{
     vertical-align: center;
     height: 120px;
-    margin-bottom: 100px;
-    #prev1, #prev2{
+    font-size: 3.5vmin;
+    #prev1{
         background: #242424 !important;
         transition: all 0.60s ease;
         color: white !important;
         z-index: 1;
         font: 'tahoma';
-        font-size: 1.2vmax;
         margin-top: 5px;
-        margin-bottom: 5px;
+        margin-bottom: 30px;
         max-width: 70vw;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        
+
         &:after {
             position: absolute;
             content: "";
@@ -492,15 +491,14 @@ a.navbar-item.is-active {
         }
     }
 
-    #next1, #next2{
+    #next1{
         background: #242424 !important;
         transition: all 0.60s ease;
         color: white !important;
         z-index: 1;
         font: 'tahoma';
-        font-size: 1.2vmax;
         margin-top: 5px;
-        margin-bottom: 5px;
+        margin-bottom: 30px;
         max-width: 70vw;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -532,7 +530,6 @@ a.navbar-item.is-active {
 }
 
 .anothercat{
-    margin-bottom: 50px;
     body {
         display: flex;
         justify-content: center;
@@ -540,12 +537,14 @@ a.navbar-item.is-active {
         min-height: 100vh;
     }
     .waviy {
+        margin-top: 10px;
+        margin-bottom: 50px;
         position: relative;
     }
     .waviy span {
         position: relative;
         display: inline-block;
-        font-size: 3vw;
+        font-size: 4.2vmin;
         color: white !important;
         text-transform: uppercase;
         animation: flip 2s infinite;
@@ -556,4 +555,17 @@ a.navbar-item.is-active {
             transform: rotateY(360deg) 
         }
     }
+}
+
+.contain_cats{
+    padding-top: 20px;
+    padding-bottom: 100px;
+    hr{
+        height: 12px;
+        background-image: linear-gradient(to bottom, rgba(252, 252, 252, 0), rgba(252, 252, 252, 0.75), rgba(252, 252, 252, 0));
+    }
+}
+.contain_category{
+    padding-top: 40px;
+    padding-bottom: 40px;
 }
