@@ -460,7 +460,7 @@ a.navbar-item.is-active {
         color: white !important;
         z-index: 1;
         font: 'tahoma';
-        font-size: 1.1em;
+        font-size: 1.2vmax;
         margin-top: 5px;
         margin-bottom: 5px;
         
@@ -494,7 +494,7 @@ a.navbar-item.is-active {
         color: white !important;
         z-index: 1;
         font: 'tahoma';
-        font-size: 1.1em;
+        font-size: 1.2vmax;
         margin-top: 5px;
         margin-bottom: 10px;
 
@@ -537,7 +537,7 @@ a.navbar-item.is-active {
     .waviy span {
         position: relative;
         display: inline-block;
-        font-size: 1.5vmax;
+        font-size: 3vw;
         color: white !important;
         text-transform: uppercase;
         animation: flip 2s infinite;
