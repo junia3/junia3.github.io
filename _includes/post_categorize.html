@@ -1,0 +1,130 @@
+{% assign cat = page.categories[0] %}
+{% assign cat_list = site.categories[cat] %}
+{% for post in cat_list %}
+  {% if post.url == page.url %}
+  	{% assign prevIndex = forloop.index0 | minus: 1 %}
+  	{% assign nextIndex = forloop.index0 | plus: 1 %}
+  	{% if forloop.first == false %}
+  	  {% assign next_post = cat_list[prevIndex] %}
+  	{% endif %}
+  	{% if forloop.last == false %}
+  	  {% assign prev_post = cat_list[nextIndex] %}
+  	{% endif %}
+  	{% break %}
+  {% endif %}
+{% endfor %}
+
+{% for post in site.posts %}
+  {% if post.url == page.url %}
+  	{% assign prevIndex = forloop.index0 | minus: 1 %}
+  	{% assign nextIndex = forloop.index0 | plus: 1 %}
+  	{% if forloop.first == false %}
+  	  {% assign next_post_blog = site.posts[prevIndex] %}
+  	{% endif %}
+  	{% if forloop.last == false %}
+  	  {% assign prev_post_blog = site.posts[nextIndex] %}
+  	{% endif %}
+  	{% break %}
+  {% endif %}
+{% endfor %}
+
+<div class="anothercat" align="center">
+    <body>
+        <div class="waviy">
+        <span style="--i:1">A</span>
+        <span style="--i:1">n</span>
+        <span style="--i:1">o</span>
+        <span style="--i:1">t</span>
+        <span style="--i:1">h</span>
+        <span style="--i:1">e</span>
+        <span style="--i:1">r</span>
+        <span style="--i:2"> </span>
+        <span style="--i:2"> </span>
+        <span style="--i:2"> </span>
+        <span style="--i:3">p</span>
+        <span style="--i:3">o</span>
+        <span style="--i:3">s</span>
+        <span style="--i:3">t</span>
+        <span style="--i:4"> </span>
+        <span style="--i:4"> </span>
+        <span style="--i:4"> </span>
+        <span style="--i:5">i</span>
+        <span style="--i:5">n</span>
+        <span style="--i:6"> </span>
+        <span style="--i:6"> </span>
+        <span style="--i:6"> </span>
+        <span style="--i:7">c</span>
+        <span style="--i:7">a</span>
+        <span style="--i:7">t</span>
+        <span style="--i:7">e</span>
+        <span style="--i:7">g</span>
+        <span style="--i:7">o</span>
+        <span style="--i:7">r</span>
+        <span style="--i:7">y</span>
+        </div>
+    </body>
+</div>
+
+<div class="adjacent" vertical-align="middle" align="center">
+    <div class="prev_btn">
+        {% if prev_post %}
+            <a id="prev1" class="button" href="{{ prev_post.url }}">⇦ {{ prev_post.title }}</a>
+        {% endif %}
+    </div>
+    <div class="next_btn">
+        {% if next_post %}
+            <a id="next1" class="button" href="{{ next_post.url }}">{{ next_post.title }} ⇨</a>
+        {% endif %}
+    </div>
+</div>
+
+{% if prev_post_blog.url != prev_post.url || next_post_blog.url != prev_next.url%}
+    <div class="anothercat" align="center">
+        <body>
+            <div class="waviy">
+            <span style="--i:1">A</span>
+            <span style="--i:1">n</span>
+            <span style="--i:1">o</span>
+            <span style="--i:1">t</span>
+            <span style="--i:1">h</span>
+            <span style="--i:1">e</span>
+            <span style="--i:1">r</span>
+            <span style="--i:2"> </span>
+            <span style="--i:2"> </span>
+            <span style="--i:2"> </span>
+            <span style="--i:3">p</span>
+            <span style="--i:3">o</span>
+            <span style="--i:3">s</span>
+            <span style="--i:3">t</span>
+            <span style="--i:4"> </span>
+            <span style="--i:4"> </span>
+            <span style="--i:4"> </span>
+            <span style="--i:5">i</span>
+            <span style="--i:5">n</span>
+            <span style="--i:6"> </span>
+            <span style="--i:6"> </span>
+            <span style="--i:6"> </span>
+            <span style="--i:7">b</span>
+            <span style="--i:7">l</span>
+            <span style="--i:7">o</span>
+            <span style="--i:7">g</span>
+            </div>
+        </body>
+    </div>
+    <div class="adjacent" vertical-align="middle" align="center">
+        <div class="prev_blog">
+            {% if prev_post_blog.url %}
+                {% if prev_post_blog.url != prev_post.url %}
+                    <a id="prev2" class="button" href="{{ prev_post_blog.url }}">⇦ {{ prev_post_blog.title }}</a>
+                {% endif %}
+            {% endif %}
+        </div>
+        <div class="next_blog">
+            {% if page.next.url %}
+                {% if next_post_blog.url != next_post.url %}
+                    <a id="next2" class="button" href="{{ next_post_blog.url }}">{{ next_post_blog.title }} ⇨</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+{% endif %}

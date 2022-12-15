@@ -449,3 +449,103 @@ a.navbar-item.is-active {
         }
     }
 }
+
+.adjacent{
+    vertical-align: center;
+    height: 120px;
+    margin-bottom: 100px;
+    #prev1, #prev2{
+        background: #242424 !important;
+        transition: all 0.60s ease;
+        color: white !important;
+        z-index: 1;
+        font: 'tahoma';
+        font-size: 1.1em;
+        margin-top: 5px;
+        margin-bottom: 5px;
+        
+        &:after {
+            position: absolute;
+            content: "";
+            width: 0;
+            height: 100%;
+            top: 0;
+            right: 0;
+            z-index: -1;
+            background: white !important;
+            transition: all 0.3s ease;
+        }
+        &:hover {
+            transform: scale(1.03);
+            color: #242424 !important;
+        }
+        &:hover:after {
+            left: 0;
+            width: 100%;
+        }
+        &:active {
+            top: 2px;
+        }
+    }
+
+    #next1, #next2{
+        background: #242424 !important;
+        transition: all 0.60s ease;
+        color: white !important;
+        z-index: 1;
+        font: 'tahoma';
+        font-size: 1.1em;
+        margin-top: 5px;
+        margin-bottom: 10px;
+
+        &:after {
+            position: absolute;
+            content: "";
+            width: 0;
+            height: 100%;
+            top: 0;
+            right: 0;
+            z-index: -1;
+            background: white !important;
+            transition: all 0.3s ease;
+        }
+        &:hover {
+            transform: scale(1.03);
+            color: #242424 !important;
+        }
+        &:hover:after {
+            left: 0;
+            width: 100%;
+        }
+        &:active {
+            top: 2px;
+        }
+    }
+}
+
+.anothercat{
+    margin-bottom: 50px;
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+    .waviy {
+        position: relative;
+    }
+    .waviy span {
+        position: relative;
+        display: inline-block;
+        font-size: 1.5vmax;
+        color: white !important;
+        text-transform: uppercase;
+        animation: flip 2s infinite;
+        animation-delay: calc(.2s * var(--i))
+    }
+    @keyframes flip {
+        0%,80% {
+            transform: rotateY(360deg) 
+        }
+    }
+}
