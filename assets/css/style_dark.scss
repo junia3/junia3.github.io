@@ -108,7 +108,7 @@ a.navbar-item.is-active {
             font-family: 'Alfa Slab One', cursive;
             position: relative;
             display: inline-block;
-            background: linear-gradient(rgb(255, 196, 190), rgb(255, 103, 86)), rgb(255, 60, 0) !important;
+            background: linear-gradient(to bottom, #444444, #848484, white)!important;
             color: transparent;
             -webkit-background-clip: text !important;
             text-transform: uppercase;
@@ -560,10 +560,6 @@ a.navbar-item.is-active {
 .contain_cats{
     padding-top: 20px;
     padding-bottom: 100px;
-    hr{
-        height: 12px;
-        background-image: linear-gradient(to bottom, rgba(24, 24, 24, 1), lightgray, rgba(24, 24, 24, 1)) !important;
-    }
 }
 .contain_category{
     padding-top: 40px;

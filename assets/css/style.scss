@@ -108,7 +108,7 @@ a.navbar-item.is-active {
             font-family: 'Alfa Slab One', cursive;
             position: relative;
             display: inline-block;
-            background: linear-gradient(rgb(3, 158, 200), rgb(0, 99, 228), darkblue);
+            background: linear-gradient(to bottom, lightgray, #242424, black);
             color: transparent;
             -webkit-background-clip: text;
             text-transform: uppercase;
@@ -529,10 +529,6 @@ a.navbar-item.is-active {
 .contain_cats{
     padding-top: 20px;
     padding-bottom: 100px;
-    hr{
-        height: 12px;
-        background-image: linear-gradient(to bottom, rgba(255, 255, 255, 1), #242424, rgba(255, 255, 255, 1));
-    }
 }
 .contain_category{
     padding-top: 40px;
