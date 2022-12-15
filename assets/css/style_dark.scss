@@ -463,6 +463,10 @@ a.navbar-item.is-active {
         font-size: 1.2vmax;
         margin-top: 5px;
         margin-bottom: 5px;
+        max-width: 70vw;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
         
         &:after {
             position: absolute;
@@ -496,7 +500,11 @@ a.navbar-item.is-active {
         font: 'tahoma';
         font-size: 1.2vmax;
         margin-top: 5px;
-        margin-bottom: 10px;
+        margin-bottom: 5px;
+        max-width: 70vw;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
 
         &:after {
             position: absolute;
