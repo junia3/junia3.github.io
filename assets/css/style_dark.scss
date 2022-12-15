@@ -562,7 +562,7 @@ a.navbar-item.is-active {
     padding-bottom: 100px;
     hr{
         height: 12px;
-        background-image: linear-gradient(to bottom, rgba(252, 252, 252, 0), rgba(252, 252, 252, 0.75), rgba(252, 252, 252, 0));
+        background-image: linear-gradient(to bottom, rgba(24, 24, 24, 1), lightgray, rgba(24, 24, 24, 1)) !important;
     }
 }
 .contain_category{
