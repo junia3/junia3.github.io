@@ -52,15 +52,23 @@
                 </div>
             </body>
         </div>
-        <div class="adjacent" vertical-align="middle" align="center">
+        <div class="adjacent">
             <div class="prev_btn">
                 {% if prev_post %}
-                    <a id="prev1" class="button" href="{{ prev_post.url }}">⇦ {{ prev_post.title }}</a>
+                    <a id="prev" class="button" href="{{ prev_post.url }}">
+                        <p>
+                            ❮❮ {{ prev_post.title }}
+                        </p>
+                    </a>
                 {% endif %}
             </div>
             <div class="next_btn">
                 {% if next_post %}
-                    <a id="next1" class="button" href="{{ next_post.url }}">{{ next_post.title }} ⇨</a>
+                    <a id="next" class="button" href="{{ next_post.url }}">
+                        <p>
+                            ❯❯ {{ next_post.title }}
+                        </p>
+                    </a>
                 {% endif %}
             </div>
         </div>
