@@ -56,7 +56,7 @@
             <div class="prev_btn">
                 {% if prev_post %}
                     <a id="prev" class="button" href="{{ prev_post.url }}">
-                        <p>
+                        <p id="prev_title">
                             ❮❮ {{ prev_post.title }}
                         </p>
                     </a>
@@ -65,7 +65,7 @@
             <div class="next_btn">
                 {% if next_post %}
                     <a id="next" class="button" href="{{ next_post.url }}">
-                        <p>
+                        <p id="next_title">
                             ❯❯ {{ next_post.title }}
                         </p>
                     </a>
@@ -74,3 +74,49 @@
         </div>
     </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script>
+    const title1 = $("#prev_title").text();
+    const title2 = $('#next_title').text();
+    var speed = 100;
+    var dots = '⋯⋯';
+
+    var titlelength = function () {
+        setInterval(function () {
+            var ww = $(window).width();
+            if(ww < 400){
+                offset = 10;
+                if(title1.length > offset){
+                    part = title1.substr(0, offset);
+                    $("#prev_title").text(part + dots);
+                }
+
+                if(title2.length > offset){
+                    part = title2.substr(0, offset);
+                    $("#next_title").text(part + dots)
+                }
+            }
+            else if(ww < 600){
+                offset = 20;
+                if(title1.length > offset){
+                    part = title1.substr(0, offset);
+                    $("#prev_title").text(part + dots);
+                }
+
+                if(title2.length > offset){
+                    part = title2.substr(0, offset);
+                    $("#next_title").text(part + dots)
+                }
+            }
+            else{
+                $("#prev_title").text(title1);
+                $("#next_title").text(title2);
+            }
+        }, speed);
+    };
+
+    $(document).ready(function () {
+        titlelength();
+    });
+</script>
