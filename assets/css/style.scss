@@ -30,10 +30,12 @@
     right: 0;
     left: auto;
     background-color: black !important;
+    z-index: 2;
 }
 
 #navbar-menu{
     background-color: black !important;
+    z-index: 2;
 }
 
 a.navbar-item:hover,
@@ -467,6 +469,7 @@ a.navbar-item.is-active {
 }
 
 .anothercat{
+    z-index: 1;
     body {
         display: flex;
         justify-content: center;
@@ -495,10 +498,12 @@ a.navbar-item.is-active {
 }
 
 .contain_cats{
+    z-index: 1;
     padding-top: 20px;
     padding-bottom: 100px;
 }
 .contain_category{
+    z-index: 1;
     padding-top: 40px;
     padding-bottom: 40px;
 }
@@ -517,6 +522,7 @@ a.navbar-item.is-active {
 }
 
 #load > img {
+    z-index: 2;
     position: absolute;
     top: 50%;
     left: 50%;
