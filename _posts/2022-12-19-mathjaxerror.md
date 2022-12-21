@@ -17,17 +17,17 @@ tags:
 
 ```
 $\bar x = \underset{x}\arg \min \sum_{i=1}^{n} \left( x - x_i \right)$
-\\[
+\[
     \bar x = \underset{x}\arg \min \sum_{i=1}^{n} \left( x - x_i \right)
 
-\\]
+\]
 ```
 ---
 
 $\bar x = \underset{x}\arg \min \sum_{i=1}^{n} \left( x - x_i \right)$
-\\[
+\[
     \bar x = \underset{x}\arg \min \sum_{i=1}^{n} \left( x - x_i \right)
-\\]
+\]
 
 ---
 
@@ -35,32 +35,32 @@ $\bar x = \underset{x}\arg \min \sum_{i=1}^{n} \left( x - x_i \right)$
 
 ```
 $\mathcal{L}_{MSE} = \frac{1}{N} \sum_{i=1}^N (y_i - \hat{y_i})^2$
-\\[
+\[
     \mathcal{L}_{MSE} = \frac{1}{N} \sum_{i=1}^N (y_i - \hat{y_i})^2
-\\]
+\]
 ```
 ---
 
 $\mathcal{L}_{MSE} = \frac{1}{N} \sum_{i=1}^N (y_i - \hat{y_i})^2$
-\\[
+\[
     \mathcal{L}_{MSE} = \frac{1}{N} \sum_{i=1}^N (y_i - \hat{y_i})^2
-\\]
+\]
 
 ---
 이는 보통 mathcal과 같이 폰트 변경이나 시그마 다음에 나오는 <U>아래첨자 '_'가 이테릭체가 아니라 아래 첨자임을</U> 확실하게 알지 못하기 때문에 렌더링에 실패하는 것으로 확인되었다. 따라서 모든 아래 첨자에 ```\_``` 를 사용하게 되면 아무 문제 없이 출력되는 것을 알 수 있다.
 
 ```
 $\mathcal{L}\_{MSE} = \frac{1}{N} \sum \_{i=1}^N (y\_i - \hat{y\_ i})^2$
-\\[
+\[
     \mathcal{L}\_{MSE} = \frac{1}{N} \sum \_{i=1}^N (y\_i - \hat{y\_ i})^2
-\\]
+\]
 ```
 
 ---
 
 $\mathcal{L}\_{MSE} = \frac{1}{N} \sum \_{i=1}^N (y\_i - \hat{y\_ i})^2$
-\\[
+\[
     \mathcal{L}\_{MSE} = \frac{1}{N} \sum \_{i=1}^N (y\_i - \hat{y\_ i})^2
-\\]
+\]
 
 ---

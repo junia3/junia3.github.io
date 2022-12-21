@@ -45,27 +45,27 @@ InfoNCE는 contrastive learning의 기본에 있는 연구가 되며, 흔히 mul
 이러한 방식을 통해, sentence 내에서 특정 단어들의 추출 빈도나 통계를 학습하게 된다. 또한 lookup table의 경우 학습이 가능하므로, 최종적으로 학습이 마무리된 경우 embedding space 상에서 엇비슷한 단어들은 비슷한 위치에 있게 되고, 서로 다른 단어들은 동떨어져서 존재하게 될 것이다.   
 그러나 위에서 4번째 process를 잘 보다보면, 네트워크는 dense layer 구조를 weight matrix of (임베딩의 차원 수, 단어 수)로 가지게 된다. 즉, 우리가 각 vocabulary 단어에 대한 예측을 위해서는, 먼저 각 단어에 대한 layer output을 구하고,
 
-​\\[
+​\[
     \text{for } i : \text{ index of word, }z_i = Wx_i    
-\\]
+\]
 
 이에 softmax transformation을 통해 확률 값으로 매핑한다.
 
-\\[
+\[
     p(z_i) = \frac{e^{z_i}}{\sum_{j=1}^{\vert V \vert} e^{z_j}}​
-\\]
+\]
 
 ​​​물론 이와 같이 계산하기 위해서는 기존의 vocabulary size가 지정되어 있어야 한다. 그리고 이를 기반으로 cross entropy loss를 계산하는 것이다.
 
-\\[
+\[
     L = -\sum_j^{\vert V \vert} y_j \log (p_j) = -\log (p_{\text{target}})    
-\\]
+\]
 
 여기서 중요한 점은 loss function이 모든 prediction에 대해서 더해지는 것처럼 보이지만 사실은 0이 아닌 term은 결국 실제 라벨에 해당되는 $y_i$​​ 가 1인 지점만 생각하게 되는  것이다. 즉, actual target word에 대한 확률값만 고려하게 된다는 의미. 그런데 $p(z_i)$를 보면 모든 위치의 단어에 대한 probability는 항상 같은 분모를 가지게 된다. 이 분모의 term을 보다보면,
 
-\\[
+\[
     \sum_{j=1}^{\vert V \vert} e^{z_j}
-\\]
+\]
 
 인데, 바로 이 denominator 덕분에 굳이 매번 parameter가 모든 training example에 대해 non-zero gradient term을 가지게 되는 것이다. Noisy한 학습이 진행된다고 생각해주면 될 것 같다.
 
@@ -94,9 +94,9 @@ InfoNCE는 contrastive learning의 기본에 있는 연구가 되며, 흔히 mul
 
 물론 이렇게 일부 샘플들을 추출할 경우 매번 denominator가 달라지게 되므로 normalize가 제대로 진행되지 않을 수도 있다는 문제가 있지만, 이는 수많은 학습을 통해 approximation이 가능하다고 보고, 이러한 학습법에서의 가장 주요한 점은 gradient update의 수를 줄일 수 있다는 것이다. 즉,
 
-\\[
+\[
     \vert Embedding \vert \times \vert V \vert \rightarrow \vert Embedding \vert \times \vert N+1 \vert    
-\\]
+\]
 
 negative samples N에 대해서 위와 같이 전체 space(vocabulary samles)이 아닌 일부 영역에 대해서만 최적화가 진행된다.
 이는 상당히 많은 vocabulary가 존재하는 NLP task에서 그럴듯하게 들리는게, 애초에 문맥상 **"얼룩말"**이 전혀 쓰이지 않는 상황에서까지 해당 embedding을 최적화하는 것은 학습에도 악영향을 미치기도 하며, 추가적인 메모리 손실을 불러온다.
@@ -107,13 +107,13 @@ negative samples N에 대해서 위와 같이 전체 space(vocabulary samles)이
 
 Negative Sampling에서는, true target을 1, 그리고 random samples의 target을 0s로 지표화한다. 이러한 지표화는 네트워크로 하여금 자연스럽게 어떤 샘플이 real이고 어떤 샘플이 noise인지 구분하게끔 한다. NCE는 바로 logistic regression 모델링을 토대로 이러한 문제에 답을 하게끔 해준다. Logistic regression modeling은 input이 다른 클래스가 아니라 해당 클래스에서 왔을 log-odds 비율과 같다.
 
-\\[
+\[
     logit = \log (\frac{p_1}{p_2}) = \log (\frac{p_1}{1-p_1})   
-\\]
+\]
 여기서 우리는 log-odds가 true word distribution P에서 왔을 확률과 noise distribution Q에서 왔을 확률의 비를 정할 수 있다.
-\\[
+\[
     logit = \log (\frac{P}{Q}) = \log (P)- \log (Q)   
-\\]
+\]
 즉, negative sampling인 noise에 대해 real distribution을 상대적으로 logit 학습을 통해 접근하기 때문에 noise contrastive estimation이라는 용어로 표현 가능한 것이다.   
 우리는 실제 distribution인 P는 intractable하지만, noise distribution Q는 어떤 식으로든 정의할 수 있다. 예컨데 만약 all vocabulary를 동일 확률로 샘플링하거나, training data에서 word의 출현 빈도를 고려하는 방식으로 샘플링할 수도 있다. 이런 저런 방법을 떠나 여기서 중요하게 적용할 점은 우리에게 있어서 $\log (Q)$ 계산에 대한 명확한 방향을 제시해준 셈이다.   
 다시 한 번 앞서 소개한 word2vec network를 살펴보고 Q가 어떤 방식으로 사용될 수 있는지 살펴보도록 하자.
@@ -149,21 +149,21 @@ AI, 딥러닝이라 불리는 분야가 성공하는데 있어서는 gradient ba
 또다른 문제점으로는 powerful conditional generative model이 필요하다는 점이고, 이는 모델의 학습에 있어서 학습하고자 하는 encoder($E$)와 함께 GPU 상에서 학습이 되어야하기 때문에(비록 parameter update는 되지 않더라도) 그만큼의 하드웨어를 차지한다는 것이 문제가 되며, 또한 generation time에 따라 학습 bottleneck이 생긴다는 단점이 있다. Conditional generative model의 또다른 문제로는 context $c$에 대한 ignorance인데, 이는 고차원 데이터셋인 이미지를 생성함에 있어 class label과 같은 high-level latent 변수는 적은 수의 정보를 담고 있기 때문이다. 즉, decoder를 설계함에 있어 conditional한 확률 분포 $p(x \vert c)$를 직접적으로 모델링하는 것은 사실은 $x$와 $c$의 공유된 정보를 통해 데이터를 생성하는 것이 아니라 단순히 $c$를 무시한 채 생성을 하도록 학습이 진행되었을 가능성이 있다는 것이다.   
 
 따라서 해당 논문에서는 future information을 예측할 때 target x(미래의 값)와 context c(현재의 값)을 compact한 distribution으로 학습하여, 서로 정보 공유가 되게끔 non linear mapping을 고안하였다. 이는 Mutual information식을 통해,
-\\[
+\[
     I(x; c) = \sum_{x,~c} p(x, c) \log \frac{p(x \vert c)}{p(x)}    
-\\]
+\]
 
 위와 같이 표현할 수 있다. Mutual information(MI)는 인자가 되는 두 분포$(x, c)$의 joint distribution인 $p(x, c)$가 단순곱 $p(x)p(c)$와 얼마나 비슷한지 측정하는 척도로 쓰이며, 아래와 같이 유도된다.
 
-\\[
+\[
     I(x, c) = \sum_c \sum_{x \in X} p(x,c) \log \frac{p(x, c)}{p(x)p(c)}    
-\\]
+\]
 
 위의 식은 KL divergence 식과 똑같이 유도되고, 이를 bayes rule을 통해 간단히 표현하면,
 
-\\[
+\[
     I(x, c) = \sum_c \sum_{x \in X} p(x,c) \log \frac{p(x, c)}{p(x)p(c)} = \sum_{x, c} p(x, c) \log \frac{p(x \vert c) p(c)}{p(x) p(c)} = \sum_{x, c} p(x, c) \log \frac{p(x \vert c)}{p(x)}  
-\\]
+\]
 
 위와 같이 표현 가능하다. $x$와 $c$의 dependent한 척도를 나타내는데, 만약 $x$가 $c$에 대해 independent하다면 위의 값은 작아지고, 반대로 dependent할수록 그 값이 커지게 된다. KL divergence와는 다르게 위의 식은 commutable하기 때문에 대칭성이 성립한다.
 
@@ -173,29 +173,29 @@ AI, 딥러닝이라 불리는 분야가 성공하는데 있어서는 gradient ba
 </p> 
 위의 그림은 CPC(Contrastive Predictive Coding) model의 구조를 보여준다. 먼저, non-linear encoder로 표현된 g_enc가 input sequence인 x_t를 latent representation의 sequence로 바꾼다.
 
-\\[
+\[
     g_{enc}(x_0, x_1, \cdots, x_t) = (z_0, z_1, \cdots, z_t)    
-\\]
+\]
 
 여기서 autoregressive model $g_{ar}$은 causal한(현재 시점으로 과거의) input들을 활용하여 context latent representation을 생성한다.
 
-\\[
+\[
     g_{ar}(z_{\leq t}) = c_t    
-\\]
+\]
 
 여기까지는 흔한 AR 구조의 흐름과 사실상 동일하다. 그러나 위에서 언급했던 것과 같이 future observation을 직접적으로 예측하는 것이 아니라, future prediction과 context vector 사이의 mutual information에 비례하는 density ratio를 모델링한다.
 
-\\[
+\[
     f_k(x_{t+k,~c_t}) \propto \frac{p(x_{t+k} \vert c_t)}{p(x_{t+k})}    
-\\]
+\]
 
 위에서 설명한 식에서 $\log$ 내부에 들어가는 값이 결국 $x$, $c$의 joint distribution에 대한 $x$, $c$각각의 분포의 곱과의 차이를 보여주는 비율이 되겠다. 그렇기 때문에 위의 값에 비례하는 형태로 모델을 구성하게 되면 자동적으로 future prediction이 유의미하게 context를 보도록 강조할 수 있다는 것!(density ratio를 최적화함으로써, 모델한테 "이걸 보고 배우면 돼" 식으로 과외 선생님처럼 가르쳐줄 수 있다는 것이다)   
 
 density ratio $f$는 정규화되지 않은 값으로, 다음과 같이 $\log$ bilinear model이 될 수도 있고 non linear network 및 RNN 구조로 대체될 수 있다.
 
-\\[
+\[
     f_k(x_{t+k}, c_t) = exp(z_{t_k}^T, W_kc_t)    
-\\]
+\]
 
 이러한 density ratio를 활용, encoder와 함께 다음 $z$를 예측함으로써 model이 고차원의 데이터인 $x$를 예측해야하는 문제를 해결해줄 수 있다. Encoding된 latent space 상에서의 $z$를 예측하는 방식은 직접적으로 $p(x)$나 $p(x \vert c)$를 건들 수 없지만, 우리가 가정할 수 있는 분포를 가지고 sampling을 진행하는 Noise contrastive estimation과 importance sampling이 사용될 수 있는 것이다. 드디어 우리가 고생고생해서 이해한 NCE를 써먹을 타이밍이 왔다.
 
@@ -203,31 +203,31 @@ density ratio $f$는 정규화되지 않은 값으로, 다음과 같이 $\log$ b
 위의 구조를 잘 보면 결국 우리가 훈련해야 하는 것은 encoder, autoregressive model에 대한 두 개의 모델이다. 두 모델은 모두 NCE를 기반한 loss function에 의해 최적화가 될 것이고, 이를 InfoNCE라 명명하였다.   
 앞서 봤던 NCE와 동일한 방법으로, $N$개의 무작위 샘플을 가정할 건데, 이 중에 1개는 posivie sample이 될 것이고 $N-1$개는 proposal distribution을 통해 추출된 negative sample이 될 것이다.
 
-\\[
+\[
     X = (x_1, x_2, \cdots, x_N)    
-\\]
-\\[
+\]
+\[
     \begin{cases}
         positive~x, & x \sim p(x_{t+k} \vert c_t) \newline
         negative, & x \sim p(x_{t+k})
     \end{cases}   
-\\]
+\]
 그래서 최적화할 loss function은 결국,
 
-\\[
+\[
     \mathcal{L} = -E_X (\log \frac{f_k(x_{t_k}, c_t)}{\sum_{x_j \in X} f_k(x_j,c_t)}) 
-\\]
+\]
 
 요렇게 된다. 근데 사실 이 objective function만 보면, 단순히 categorical cross entropy를 표현한 것처럼 보여 크게 다를 것이 없어 보이는데, 대체 왜 이게 density estimation에 근접한 형태로 학습이 되는지 혼란스러울 수 있다. 왜냐면 내가 그랬는데 똑똑이인 분들은 이걸 보고 바로 이해할 수도 있겠지만 암튼 결국 우리가 얻고자 하는 최종 optimal probability를 생각해볼 수 있는데, 이는 $p(d = i \vert X, c_t)$라고 할 수 있겠다.   
 위에서 말했던 것과 같이 모델이 예측하는 것은 특정 샘플이 context를 보고 나온 녀석인지 아니면 context를 보지 않고 나온 녀석인지에 대한 비율이고, 이 값이 고대로 Mutual information의 logarithm을 통해 수치화된다고 했었는데, 결국 우리는 optimal probability를 주어진 샘플 X와 context vector $c$에 대해서 다음 식으로 나타내볼 수 있다.   
-\\[
+\[
     p(d = i \vert X, c_t) = \frac{p(x_i \vert c_t) \prod_{l \ne i} p(x_l)}{\sum_{j=1}^N p(x_j \vert c_t) \prod_{l \ne j} p(x_l)} = \frac{\frac{p(x_i \vert c_t)}{p(x_i)}}{\sum_{j=1}^N \frac{p(x_j \vert c_t)}{p(x_j)}}
-\\]
+\]
 따라서 앞서 본 식에서 네트워크 f가 예측하는 값이 probability ratio에 비례함을 알 수 있으며, 이는 negative sample의 개수와는 무관한 것을 확인할 수 있다. Training에는 단순히 loss만 사용되지만, mutual information은 다음과 같은 lower bound를 통해 확인할 수 있다.
 
-\\[
+\[
     I(x_{t+k}, c_t) \geq \log(N) - L_N    
-\\]
+\]
 
 이는 $N$이 커질수록 tight해진다. 여기서 tight의 의미는 lower bound가 실제 mutual information의 infimum에 가까워진다는 것이다. 즉 실제 값에 근사한다는 의미. 사실 더 쓰자기엔 Appendix가 있는데 이걸 여기서 다 풀어쓰기에는 무리가 있어 여기서 마무리하도록 하겠다.
 

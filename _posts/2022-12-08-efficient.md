@@ -75,18 +75,18 @@ Spatial dimension을 더 크게 가져가는 resolution factor에 대한 부분�
 2. FLOPS나 네트워크의 용량 등 효율적인 측면을 고려했을 때 네트워크의 <U>모든 dimension에 대한 밸런스를 맞추는 것</U>이 중요하다.
 
 따라서 이러한 조건 속에서 다음과 같은 objective를 가지게 된다.
-\\[
+\[
     \begin{aligned}
         &\max_{d, w, r} Accuracy(\mathcal{N}(d, w, r)) \newline
         \text{s.t. } &\mathcal{N}(d, w, r) = \bigodot_{i=1 \cdots s} \hat{F_i}^{d \cdot \hat{L_i}}(X_{(r \cdot \hat{H_i}, r \cdot \hat{W_i}, w \cdot \hat{C_i})}) \newline
         &\text{Memory}(\mathcal{N}) \le \text{target_memory} \newline
         &\text{FLOPS}(\mathcal{N}) \le \text{target_flops}
     \end{aligned}    
-\\]
+\]
 식을 간단히 해석하자면 $\mathcal{N}$이라 표시된 것이 바로 비교하고자 하는 CNN 모델을 모아놓은 함수의 집합이라 생각하면 된다. 이상한 기호로 표시된 애는(두번째 줄에 s.t.하고 써있는 부분) ($d, w, r$)로 스케일링 된 CNN의 모든 레이어를 함수로 보고, 일련의 output을 input에 대한 합성 함수의 연산으로 해석한 것이다. 따라서 $\mathcal{N}(d, w, r)$은 input에 대한 output, 그리고 우리는 해당 output을 토대로 supervision이 주어지는 어떠한 task에 대해 최대의 정확도를 얻고 싶은 것.   
 그러는 와중에 threshold memory나 flops를 넘지 않는 선에서 네트워크를 서칭하고자 하는 것이다.   
 근데 이렇게 보면 수학적인 모델링이 아니라 그냥 "그런 모델을 만들고 싶다"니까, 실질적으로 수치화할 필요가 있다. 즉, $d, w, r$과 같은 weight factor가 memory나 flops에 어떤 영향을 미칠 것이고, 우리가 가용하고 싶은 resource의 개수를 어떤 방식으로 searching 하느냐이다.
-\\[
+\[
     \begin{aligned}
         \text{depth: }&d = \alpha^\phi \newline
         \text{width: }&w = \beta^\phi \newline
@@ -94,7 +94,7 @@ Spatial dimension을 더 크게 가져가는 resolution factor에 대한 부분�
         \text{s.t. }&\alpha \cdot \beta^2 \cdot \gamma^2 \approx 2 \newline
         &\alpha \ge 1, \beta \ge 1, \gamma \ge 1
     \end{aligned}    
-\\]
+\]
 우리는 애초에 스케일을 키우면서 서칭할 것이기 때문에(첫번째 observation에 의한 결정) 모든 인자는 1보다 크거나 같아야 하고, $\phi$는 compound coefficient로서 얼마나 많은 resource를 사용할 지 지수로 결정한다. 그리고 FLOPS는 각각 network의 depth $d$에 대해서는 linear하게, 그리고 width와 resolution $w, r$에 대해서는 거의 quadratic하게 비례하므로 전체 FLOPS가 $2^\phi$가 넘지 않도록 하는 것이다. 결국 결정되어야 할 파라미터는 총 4개 $(\alpha,~\beta,~\gamma,~\phi)$이다.
 
 ---
