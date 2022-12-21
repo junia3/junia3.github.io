@@ -261,4 +261,4 @@ Transformer는 단연코 neural network 중 최근에 가장 활발히 연구된
 
 ---
 
-... vision transformer에 대해서 쓸 예정입니다
+...쓰는중,,, vision transformer에 대해서 쓸 예정입니다
