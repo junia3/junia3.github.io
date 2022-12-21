@@ -312,9 +312,58 @@ Transformer는 단연코 neural network 중 최근에 가장 활발히 연구된
 
 # Dataset을 효율적으로 사용할 수 있는 방법
 
+가장 먼저, 데이터셋을 많이 사용하지 않고 학습시킬 수 있는 방향에 대해서 연구한 논문인 [DeiT: Training data-efficient image transformers & distillation through attention](https://arxiv.org/pdf/2012.12877.pdf)에 대해서 살펴보도록 하자.
+<p align="center">
+    <img src="transformer/022.png" width="400"/>
+</p>
+DeiT는 ViT와 동일한 transformer 구조에 대한 학습을 진행하되, JFT와 같은 대용량 데이터셋에 대한 pre-training을 하지 않고도 ImageNet dataset에 대해서만 학습하는 방향을 제시했다. 이전에 작성했던 글들 중에서 Knowledge distillation에 대해 간단하게 소개했던 글이 있는데([참고](https://junia3.github.io/blog/transfer)), 바로 distillation을 통해서 transformer가 지지부진할 때 도움을 많이 줄 수 있는 <U>teacher</U> 역할을 <U>convolutional neural network</U>가 해줄 수 있다는 것이다. Convolutional neural network 구조에 의존하지 않더라도, 단순히 distillation loss를 줄 수 있는 token 하나만 추가하면 된다.
+<p align="center">
+    <img src="transformer/023.png" width="400"/>
+</p>
+그런데 여기서 두 가지의 선택권이 있다. 바로 teacher network의 prediction에 대해 soft-label distillation을 loss로 줄 것인지, 아니면 teacher network의 prediction의 최댓값을 one-hot encoding으로 한 hard-label distillation을 loss로 줄 것인지이다.
+
+\[
+    \mathcal{L}\_{\text{global}} = (1-\lambda) \mathcal{L}\_{\text{CE}}(\psi(Z\_s), y) + \lambda \tau^2 \text{KL}(\psi(Z_s/\tau),~\psi(Z_t/\tau))    
+\]
+
+이런 식으로 temperature value $\tau$와 그에 따라 $lambda$ 값을 적절히 조절하여 weighted soft-distillation loss를 더해주는 방법이 있는 한편,
+
+\[
+    \mathcal{L}\_{\text{global}}^\text{hard Distill} = \frac{1}{2} \mathcal{L}\_{\text{CE}}(\psi(Z\_s), y) + \frac{1}{2} \mathcal{L}\_{\text{CE}}(\psi(Z_s),~y_t)   
+\]
+
+위와 같이 hard target에 대해서 예측을 하는 hard distillation이 있다. 여기서 표현된 $y_t$는 $\arg \max_c Z_t(c)$로 표현한다. 즉 teacher prediction의 prediction 최댓값을 1로, 나머지를 0으로 하는 one-hot encoding 형태로 주어진다. DeiT 논문에서는 아래 방법을 소개하면서 해당 loss term을 최적화하였다. 그러나 이 네트워크의 경우 한계점이 상당히 명확하게 존재하는데, 바로 <U>CNN의 성능에 대해 upper bound가 생긴다</U>는 점이다. **ViT**가 제시되고 나서, <U>JFT와 같은 대량의 데이터셋</U>을 활용하여 학습할 수 있다면 <U>CNN보다 성능이 좋아질 수 있다는 것</U>이 transformer based vision approach의 분석이었는데, 데이터를 효율적으로 쓰려고 하면서 CNN을 teacher network로 사용하다보니 다시 원점으로 돌아오게된 것이다.
+
 ---
 
 # High resolution image에 대한 효율적인 연산
+다음으로 언급할 내용으로는 앞서 Vision transformer에서 해결하지 못했던 <U>high resolution image</U>에 대한 연산이다. Vision transformer 연산 과정을 보게 되면, image를 동일한 크기의 patch로 분리하고, 이를 embedding으로 linear projection한 뒤에 일련의 attention 연산을 진행하게 된다. 그러므로 만약 image의 resolution이 2배가 되면, linear projection은 그 값의 제곱인 4배로 늘어나게 되고, attention 연산에 필수적인 $Q,~K,~V$를 통한 attention weight 연산은 그 값의 다시 제곱인 16배로 증가하는 것이다.
+<p align="center">
+    <img src="transformer/toomuch.gif" width="400"/>
+</p>
+그리고 무엇보다 연산 때문에 token의 개수가 한정적이라면, CNN에서 했던 것과 같이 다양한 scale의 feature를 뽑기가 힘들 것이다. Global information을 빠른 시간에 축적하는 건 장점이 될 수 있는데, 결국 그렇게 축적된 데이터는 하나의 scale에만 국한된다는 점. 즉 vision transformer를 더 발전시켜서 segmentation이나 image restoration과 같은 <U>high-level vision task</U>에도 적용할 수 있어야하는데, 지금의 구조로는 가능성이 보이지 않는다. 바로 여기서 나온 것이 지금 설명할 [Swin-Transformer](https://arxiv.org/pdf/2103.14030.pdf)를 통한 hierarchical feature extraction이다.
+<p align="center">
+    <img src="transformer/024.png" width="700"/>
+</p>
+만약 high-resolution인 이미지에 대해서 <U>정해진 개수</U>의 patch를 뽑는 것이 아니라 <U>단계적으로 patch에 대한 연산</U> 이후 이를 merge하는 과정을 추가하면, '초반에 fine detail을 잡는 과정과 후반에 coarse feature를 잡아내는 CNN과 유사하게 동작하지 않을까?'에 대한 내용을 다룬다.
+<p align="center">
+    <img src="transformer/025.png" width="800"/>
+</p>
+네트워크 구조는 위와 같다. ViT에서 크게 달라진 점을 찾아보면 patch partition 부분에 대해 가장 처음에는 $\frac{HW}{4^2}$ 만큼의 patch를(여기서는 갯수를 의미한다), 그리고 점차 patch 크기를 키워서 마지막에는 $\frac{HW}{32^2}$ 크기의 patch를 사용한다. 크기를 키우는 과정은 인접한 패치끼리 붙이는 과정이다.
+
+1. 가장 처음 패치는 patch partition을 통해 $4 \times 4 \times 3$의 크기를 가진다. 참고로 위의 그림에서 보이는 값에 대해서 헷갈릴 수도 있기 때문에 언급하자면, $\frac{H}{4} \times \frac{W}{4}$는 patch 하나의 크기가 되고, 각 패치 내부에는 총 $4 \times 4$ 단위로 RGB 값을 가진 픽셀들이 들어있다고 생각하면 된다.
+
+2. Stage 1을 통해 Linear embedding으로 patch의 채널 수를 $4\times4\times3$에서 $4\times4\times C/16$배로 증가시킨다. 각 패치에 대한 임베딩을 뽑는 stage라고 생각하면 된다. 실제 논문에서는 C = 192를 사용했으니, 원래는 RGB 채널 3개로 시작했지만 $192/16 = 12$로 4배 증가시킨 것과 같다.
+
+3. Stage 2 부터는 우리가 알고있던 attention이 진행된다. 다만, 여기서 patch-merging이 일어난다. Patch merging이 일어나게 되면 인접한 4개의 patch가 합쳐지면서 큰 patch가 되고, 그와 동시에 연산량이 줄기 때문에 그만큼을 channel로 증가시켜준다. 즉, $\frac{H}{4} \times \frac{W}{4}$ 크기를 가지고 있던 패치 4개를 붙이면 각 패치의 크기는 $\frac{H}{8} \times \frac{W}{8}$이 되고, 패치 내부의 구획 개수는 일정하기 때문에(이 부분이 제일 중요하다!) **merge 레이어를 지날수록 Attention 연산량이 줄어드는 것**이다. 왜냐? 패치 내부에 attention을 하게 될 구획 개수는 일정한데, 전체 패치 개수는 merge하면서 점차 줄어들기 때문. 그렇기 때문에 channel 수를 2배 증가시켜준다.
+
+4. 참고로 Attention은 각 윈도우 내부에서만 진행된다. 여기서 말하는 윈도우란 곧 패치를 의미하며, 사실상 윈도우라는 개념과 패치라는 개념을 구분해서 써야하지만 이 논문에서는 혼용해서 쓴 것으로 보인다. 아마도 대부분의 리뷰어들이 여기서 혼란을 겪었을 듯 싶다. 각 윈도우 내에서는 구획 개수가 일정하기 때문에(3번에서 언급한 '패치 내부의 구획 개수는 일정하기 때문에'라는 문장과 같은 의미이다! 혼란스럽지 않기 위해 한번 더 언급)
+
+5. 이러한 과정을 attention block을 거치면서 진행한다. 여기에 추가적으로 W-MSA와 SW-MSA라는 개념은 뒤에서 설명하도록 하겠다.
+
+암튼 이렇게 저렇게 패치 사이즈를 조절해가면서 attention을 한다는 과정을 길게 설명했다. 사실 이 부분은 본인이 직접 깨닫기 전까지는 워딩만 보고서는 절대 이해할 수 없다. 왜냐하면 '<U>patch</U>'라는 워딩과 '<U>window</U>'라는 워딩이 paper에서 너무 겹치기 때문이다. 진짜 엄밀하게 따지면 완전 다르진 않고 어느 정도는 겹치는 개념이긴 하지만, shifted-window라는 method를 위해서 이런 식으로 독자(?)들을 혼란스럽게 하다니 조금은 괘씸하다. 아무튼 이제 W-MSA와 SW-MSA에 대해서 보면,   
+
+W-MSA는 윈도우 내부의 패치들에 대한 attention이다. 하나의 윈도우 크기에 아마 논문에서 구현하기로는 $7 \times 7$의 embedding이 포함될 것이고, 이렇게 하나의 윈도우 내에 포함된 애들끼리의 연산을 의미한다. 그러나 이렇게만 연산을 하게 되면 <U>서로 다른 윈도우에 속한 임베딩은 영영 다른 임베딩의 정보를 얻을 수 없는 경우</U>도 생긴다.
 
 ---
 
