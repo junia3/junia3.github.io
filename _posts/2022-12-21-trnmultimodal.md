@@ -363,7 +363,59 @@ DeiT는 ViT와 동일한 transformer 구조에 대한 학습을 진행하되, JF
 
 암튼 이렇게 저렇게 패치 사이즈를 조절해가면서 attention을 한다는 과정을 길게 설명했다. 사실 이 부분은 본인이 직접 깨닫기 전까지는 워딩만 보고서는 절대 이해할 수 없다. 왜냐하면 '<U>patch</U>'라는 워딩과 '<U>window</U>'라는 워딩이 paper에서 너무 겹치기 때문이다. 진짜 엄밀하게 따지면 완전 다르진 않고 어느 정도는 겹치는 개념이긴 하지만, shifted-window라는 method를 위해서 이런 식으로 독자(?)들을 혼란스럽게 하다니 조금은 괘씸하다. 아무튼 이제 W-MSA와 SW-MSA에 대해서 보면,   
 
-W-MSA는 윈도우 내부의 패치들에 대한 attention이다. 하나의 윈도우 크기에 아마 논문에서 구현하기로는 $7 \times 7$의 embedding이 포함될 것이고, 이렇게 하나의 윈도우 내에 포함된 애들끼리의 연산을 의미한다. 그러나 이렇게만 연산을 하게 되면 <U>서로 다른 윈도우에 속한 임베딩은 영영 다른 임베딩의 정보를 얻을 수 없는 경우</U>도 생긴다.
+W-MSA는 윈도우 내부의 패치들에 대한 attention이다. 하나의 윈도우 크기에 아마 논문에서 구현하기로는 $7 \times 7$의 embedding이 포함될 것이고, 이렇게 하나의 윈도우 내에 포함된 애들끼리의 연산을 의미한다. 그러나 이렇게만 연산을 하게 되면 <U>서로 다른 윈도우에 속한 임베딩은 다른 임베딩의 정보를 얻을 수 없는 경우</U>가 생긴다. 다음과 같은 그림으로 예시를 그려보았다.
+
+<p align="center">
+    <img src="transformer/026.png" width="800"/>
+</p>
+분명 파란색으로 표시된 패치와 붉은색으로 표시된 패치는 위치상 서로 붙어있지만, 가장 마지막 attention layer 전까지는 <U>서로 attention 연산이 불가능</U>하다. 이러한 분단국가 문제는 locality가 중요하게 적용되는 image에 대해서 치명적으로 적용할 수 있을 뿐만 아니라, ViT의 장점 중 하나인 global information을 빠르게 취득하는 것이 불가능해진다. 따라서 다음과 같은 전략을 사용한다.
+윈도우 내의 attention을 하는 것은 위의 그림에서 그려진 대로 계산한다. 그러나 shifted window attention은 다음과 같이 window를 이동시키는 전략을 사용한다. 이해가 쉽도록 이미지 전체를 하나의 window로 생각하고, 그 내부를 $4 \times 4$ 만큼의 패치로 구분해보았다.
+
+<p align="center">
+    <img src="transformer/027.png" width="800"/>
+</p>
+다음과 같이 윈도우를 일부 이동시키면, 움직인 만큼 원래의 윈도우에 포함되던 부분이 빠져나오게 된다. 이를 채워주는 방법으로는 간단하게 '<U>잘라서 붙이기</U>' 방법을 사용한다. 좀 더 명확하게 말하자면, cyclic shift와 같다. 화학에서 분자 구조(체심 입방 구조 뭐 이런거..)에서의 개수를 구하는 과정에서 물질 전체가 반복되는 구조라고 가정하면 쉽게 풀 수 있었던 방법을 기억하면 된다.
+
+<p align="center">
+    <img src="transformer/028.png" width="800"/>
+</p>
+
+이렇게 window를 옮긴 뒤에 attention을 진행하게 되었을 경우에는 다음과 같이 <U>다른 window의 패치와도</U> attention이 연산될 수 있음을 보여준다.
+<p align="center">
+    <img src="transformer/029.png" width="800"/>
+</p>
+
+그리고 단순히 이전에 사용되던 scaled dot product self-attention 식이 아닌, 이번에는 relative position을 반영한 bias를 score에 더해주게 된다.
+
+\[
+    \text{Attention}(Q,~k,~V) = softmax(QK^\top / \sqrt{d}+B)V    
+\]
+
+이는 이전의 positional embedding이 절대적인 좌표(sinusoidal embedding)을 더해주었던 접근과는 다르게 각 패치의 위치를 반영하는 attention embedding 방법이다. 이를 간단하게 설명하자면 만약 현재 query로 삼고있는 패치가 좌측 상단이고, attention을 구할 패치가 우측 하단이라면 $x, y$ 모두 증가하는 방향으로 bias를 더해주고, 만약 그 반대 방향이라면 $x, y$ 모두 감소하는 방향으로 bias를 더해주는 것이다. 
+
+<p align="center">
+    <img src="transformer/30.png" width="400"/>
+    <img src="transformer/31.png" width="400"/>
+</p>
+
+위의 그림을 예시로 삼아보겠다, 만약 Attention을 진행할 하나의 윈도우 내에 총 9개의 patch가 있다면(1~9로 숫자가 붙은 영역들), 이 patch에 대해서 <U>row index의 차이</U>를 나타내는 $x$-axis matrix, 그리고 <U>column index의 차이</U>를 나타내는 $y$-axis matrix를 표현할 수 있다. 
+
+그런 뒤, 여기에 윈도우의 크기를 반영하는 다음과 같은 연산을 거치게 된다.
+
+```
+# 각 matrix에 (window 크기-1) 만큼 더해주기
+y_axis_matrix += window_size - 1
+x_axis_matrix += window_size - 1
+
+# 2M-1로 scaling한 뒤 더해주기
+x_axis_matrix *= (2 * window_size -1)
+relative_position_M = x_axis_matrix + y_axis_matrix
+```
+<p align="center">
+    <img src="transformer/32.png" width="400"/>
+</p>
+
+이렇게 scaling을 해주게 되면 원래 $-M-1 \sim M-1$ 범위를 가지고 있던 relative matrix들이 $0 \sim 2M-1$로 scaling된 뒤, 서로 곱해져서 $0 \sim (2M-1)^2$ 까지의 범위로 표현될 수 있는 것이다.
 
 ---
 
