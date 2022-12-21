@@ -49,9 +49,9 @@ tags:
 ## Generic regularization
 Model의 overfitting을 방지하는 정규화 방식으로, 이후 설명할 MixMatch에서의 MixUp과 관련이 있다. 예를 들어 두 이미지에 대해 지표화가 되어있다고 가정하자. 강아지의 경우 (1, 0, 0)의 라벨을 갖게 되고, 고양이의 경우 (0, 1, 0)의 라벨을 가지게 된다. 이 두 샘플에 대한 convex sample은
 
-\[
+\\[
     \theta \cdot cat + (1-\theta) \cdot dog,~(0<\theta<1)
-\]
+\\]
 
 라고 볼 수 있다. 여기서 convex sample이란 두 샘플을 convex set의 한 지점으로 보고, 그 사이를 보간하는 모든 sample이 포함되는 convex set의 정의를 그대로 따른다고 볼 수 있다. 이를 실제로 시각화하면,
 <p align="center">
@@ -59,9 +59,9 @@ Model의 overfitting을 방지하는 정규화 방식으로, 이후 설명할 Mi
 </p>
 이렇게 개냥이가 각각 50%씩 첨가된 샘플이 생성된다. 해당 샘플에 대한 라벨은 마찬가지로 convex sample과 같은 공식에 따라
 
-\[
+\\[
     \theta \cdot (0,\ 1,\ 0) + (1-\theta) \cdot (1,\ 0,\ 0)\ = (0.5,\ 0.5,\ 0)
-\]
+\\]
 
 이러한 방식을 MixUp이라 부른다.
 앞서 여러 가지의 정규화 방식을 소개하였고, 이제 본격적으로 MixMatch에서 어떠한 방식을 통해 위와 같은 여러 알고리즘을 통합하여 준지도학습을 진행할 수 있었는지 천천히 소개하도록 하겠다.
@@ -89,21 +89,21 @@ Mixmatch를 언급하기 전에 관련된 준지도학습 관련 내용을 간�
 그 중 가장 첫 번째는 Consistency regularization으로, Augmentation이 서로 다르게 적용되었다고 하더라도 같은 라벨을 예측해야한다는 것을 네트워크 학습에 이용하게 된다.
 따라서 stochastic한 함수 Augment(x)가 존재하고, 만약 같은 input image X에 대해 랜덤한 augmentation을 적용하면, 이에 대한 parameterized 모델의 예측은
 
-\[
+\\[
     p_{model}(y \vert \text{Augment}(x); \theta), p_{model}(y \vert \text{Augment}; \theta)    
-\]
+\\]
 
 와 같이 두 개로 나온다. 여기서 주의할 점은 Augment() 함수 자체가 stochastic하다고 했으므로, 두 개의 term은 서로 다른 예측값을 가진다(같은 value가 아님). 따라서 모델은 다음과 같은 loss term을 최소화하는 방향으로 학습된다.
 
-\[
+\\[
     \parallel p_{model}(y \vert \text{Augment}(x); \theta) - p_{model}(y \vert \text{Augment}; \theta) \parallel_2^2
-\]
+\\]
 
 Mean Teacher 방식에서는 두 개의 term을 서로 다른 모델링을 통해 해결하는데, 바로 아래와 같은 그림을 보면 student model의 경우에는 똑같은 방식으로 최적화가 진행되지만, teacher model은 student model의 parameter를 exponential moving average 방식으로 가져와 사용한다. Exponential moving average를 잘 모른다면 그냥 단순히,
 
-\[
+\\[
     w_{k+1}^{teacher} = \beta w_k^{teacher} + (1-\beta)w_k^{student}    
-\]
+\\]
 
 <p align="center">
   <img src="mixmatch/009.png"/>
@@ -112,12 +112,12 @@ Mean Teacher 방식에서는 두 개의 term을 서로 다른 모델링을 통�
 
 두 번째는 엔트로피 최소화이다. 사실 그냥 Entropy minimization을 단순 번역한 것. 곰곰히 생각해보면 정보 이론에서 엔트로피가 어떤 식으로 정의되는지 혹시 기억할지 모르겠다. 만약 랜덤 변수 space X에서 각 랜덤 변수가 추출될 확률을 $P = (p_1, p_2, p_3, ...)$ 등으로 정의한다면 해당 space에서의 엔트로피는
 
-\[
+\\[
     \begin{aligned}
         \text{for }X =& (x_1,~x_2,~\cdots,~x_N)\text{ where each random variable }x_i(i=1,~\cdots,~N)\text{ has a probability }P = (p_1,~\cdots,~p_N), \newline
         H(X) =& -\sum_{i=1}^N p_i \log(p_i)
     \end{aligned}    
-\]
+\\]
 
 라 할 수 있다. 물론 지금 이 상황에서는 이산 확률에 대한 가정이지만, 결론적으로 말하자면 얼마나 분포가 고르냐/고르지 않냐의 문제로 귀결된다.
 
@@ -133,9 +133,9 @@ Mean Teacher 방식에서는 두 개의 term을 서로 다른 모델링을 통�
 
 Sharp label을 만들기 위한 entropy minimization은 temperature hyperparameter $T$에 의해 결정된다. 일반적인 probability에,
 
-\[
+\\[
     Sharpen(p,~T)_i = \frac{p_i^{1/T}}{\sum^L_1 p_j^{1/T}}
-\]
+\\]
 
 이와 같이 적용한 새로운 확률 맵을 이용하는 것이다. 이를 실제로 시각화하여 보면 다음과 같다.
 <p align="center">
@@ -160,21 +160,21 @@ MixMatch 알고리즘이 사용하는 loss objective는 크게 두 가지로 구
 
 뒤이어 알고리즘 전반에 대해 디테일하게 설명하기 전에, $X', U'$는 각각 labeled dataset으로부터의 augmented dataset 그리고 unlabeled dataset으로부터의 augmented dataset을 의미한다.
 
-\[
+\\[
     X',~U' = MixMatch(X, U, T, K, \alpha)    
-\]
+\\]
 
 $X, U$는 augmentation이 진행되기 전 각 dataset을 의미하고 $T$는 entropy minimization에 사용되는 temperature, $K$는 unlabeled dataset에 적용될 augmentation 개수, $\alpha$는 MixUp에 사용될 convex coefficient에 해당된다.
 
-\[
+\\[
     L_X = \frac{1}{\vert X' \vert} \sum_{x, p \in X'} H(p, p_{model}(y \vert x; \theta))   
-\]
+\\]
 
 당연하게도 라벨이 존재하는 데이터에 대해서는 원래의 label에 대한 cross entropy loss를 적용하게 되고,
 
-\[
+\\[
     L_U = \frac{1}{L\vert U' \vert} \sum_{u, q \in U'} \parallel q-p_{model}(y \vert u; \theta) \parallel_2^2    
-\]
+\\]
 
 라벨이 존재하지 않는 데이터세 대해서는 pseudo label $q$를 적용한 consistency regularization loss를 사용한다. 이 두 개를 잘 섞어서 사용한다고 생각하면 된다. 사실 수식만 봐서는 아직 잘 이해가 안될 분들을 위해 직접 알고리즘 코드 한 줄 한 줄 설명해드리도록 하겠다.
 
@@ -201,14 +201,14 @@ $X, U$는 augmentation이 진행되기 전 각 dataset을 의미하고 $T$는 en
 무작위로 나열된 샘플 배치 내에서 X'(labeled dataset)과 MixUp을 진행하고, 나머지 샘플들을 이용하여 U'(unlabeled dataset)과의 MixUp을 진행한다. 이렇게 진행된 MixUp은 lambda 값에 따라 labeled data 혹은 unlabeled data와의 중요도를 결정하는데,
 만약 단순히 샘플링한 W를 MixUp에 사용하면, 구체적으로 labeled dataset과의 MixUp, 혹은 unlabeled dataset과의 MixUp에 대한 중요도가 사라지게 된다. 따라서
 
-\[
+\\[
     \begin{aligned}
         \lambda =& Beta(\alpha,~\alpha) \newline
         \lambda' =& \max (\lambda,~1-\lambda) \newline
         x' =& \lambda'x_1 + (1-\lambda')x_2 \newline
         p' =& \lambda'p_1 + (1-\lambda')p_2
     \end{aligned}
-\]
+\\]
 
 이와 같이 샘플을 MixUp하게 되면 Vanila MixUp(lambda를 서로 같은 값으로 둠)에서 무시했던 batch order를 유지하면서 MixUp sample를 생성할 수 있게 된다.
 

@@ -47,9 +47,9 @@ Computer graphics나 computational photography에서 다루는 image colorizatio
 - Network $G$ 학습하기
 - Image translation $G(S) = T$ 정의하기
 
-\[
+\\[
     \arg \min_{\mathcal{F}} \mathbb{E}_{x,y}(\mathcal{L}(G(x), y))    
-\]
+\\]
 
 그러나 기존의 GAN 방식을 바로 적용하기에는 문제가 있는데, 이는 바로 <U>image generation의 mode(modality)를 제어할 수 없다는 것</U>이다. 즉 우리는 아무런 이미지만 만들면 되는 게 아니라 input으로 넣은 이미지의 translation 버전을 원하는데, 이걸 generator가 인지할 수 없다는 것이 첫번째 문제다. 다음은 generator로 생성한 이미지의 low-resolution 문제가 있다.   
 이러한 task를 다룬 총 세 개의 대표적인 paper가 바로 pix2pix, cycleGAN 그리고 pix2pixHD이다. 그 중 가장 유명한 논문인 pix2pix와 cycleGAN에 대해서 먼저 살펴보도록 하자.
@@ -66,31 +66,31 @@ pix2pix는 대표적인 image to image translation을 GAN으로 해결한 연구
 </p>
 만약, generator가 단순히 sketch image를 가지고 real image를 만들어내는 task에 대해서 생각해보면, 위의 그림과 같이 '그럴듯한 가방'을 만들어내는 것도 가능하지만 그럴 경우 실제 sketch와의 correspondence 문제까지 고려해야한다. 즉, 위쪽 row에 대해서는 sketch 부분에 잘 맞게끔 이미지가 생성되지만, 아래쪽의 row에서는 sketch는 거의 무시한 채 이미지를 생성해낸다.   
 이러한 문제를 기존 GAN loss에서는 고려할 수 없었으며(아래쪽 식을 참고),
-\[
+\\[
     \begin{aligned}
         &\min_G \max_D V(D,G) \newline
         V(D,G) =& \mathbb{E_{x \sim p_{data}(x)}}(\log D(x)) + \mathbb{E_{z \sim p_z(z)}}(\log (1-D(G(z))))
     \end{aligned}    
-\]
+\\]
 이는 generator가 만든 이미지에 대해 loss를 적용할 때 단순히 real distribution에 의한 결과인지 cross-entropy로 구분했기 때문이다. 물론, 이 식을 그대로 적용하지는 않고 input으로 sketch image를 주기 때문에 데이터셋 $(x, y)$를 적용한 GAN loss를 고려해보면,
 
-\[
+\\[
     \begin{aligned}
         &\min_G \max_D V(D,G) \newline
         V(D,G) =& \mathbb{E_{x \sim p_{data}(x)}}(\log D(y)) + \mathbb{E_{z \sim p_z(z)}}(\log (1-D(G(x, z))))
     \end{aligned}    
-\]
+\\]
 
 Generator에 input $x$가 latent vector $z$와 함께 주어지는 구조인 걸 확인할 수 있다. 그러나 이러한 식은 실질적으로 discriminator가 generator에게 줄 수 있는 학습 정보는 "진짜같은" 이미지인지에 대한 loss 뿐이므로 correspondence를 해결할 수 없다는 문제가 생긴다.   
 그래서 제시된 objective function이 conditional GAN의 방법을 이용한 loss이며, 여기에 추가적으로 MAE(Mean absolute error)를 생성된 이미지와 정답(GT) 이미지 사이에 줌으로써 low resolution result 문제와 correspondence 문제 모두 해결하려 했다.
 
-\[
+\\[
     \begin{aligned}
         &\arg \min_G \max_D \mathcal{L} (G,D) + \lambda \mathcal{L}(G) \newline
         \mathcal{L}(G, D) =& \mathbb{E}(\log D(x, y))+\mathbb{E}(\log(1-D(x, G(x, z)))) \newline
         \mathcal{L}(G) =& \mathbb{E}(\parallel y-G(x, z) \parallel_1)
     \end{aligned}  
-\]
+\\]
 
 위에 표현된 식에서 $\mathcal{L}(G, D)$는 conditional GAN loss에 해당되며, 앞서 설명했던 것과 같이 discriminator에 input 정보를 함께 줌으로써 생성된 이미지가 입력된 이미지에 대한 조건을 가지게끔 해준다. 그러나 해당 loss는 content가 유지된다는 보장을 줄 수 없기 때문에 여기에 추가적으로 $\mathcal{L}(G)$로 표현된 식을 통해, 원본 이미지와 유사하게 생성되게끔 만들어준다. $\lambda = 100$ 정도로 크게 생각해주면 된다.
 <p align="center">
@@ -126,9 +126,9 @@ Generator에 input $x$가 latent vector $z$와 함께 주어지는 구조인 걸
 이 위에 나타난 그림이 되게 중요한데, cycleGAN의 프레임워크를 이 그림만 보면 모두 이해할 수 있기 때문이다. $X$를 한쪽 도메인이라고 생각하고 $Y$를 다른쪽 도메인이라고 생각하자. 여기서 도메인이 의미하는 것은 데이터셋이 포함되는 하나의 집합이다.   
 $X$ 도메인에 포함된 데이터셋 $x$와 $Y$ 도메인에 포함된 데이터셋 $y$에 대해서, 각 방향에 대한 generator를 함수로 표현할 수 있다. $X$ 도메인의 데이터셋을 받아 $Y$ 도메인의 데이터를 생성하는 네트워크를 $G$라고 하고, 이렇게 생성된 $G(x)$를 $\hat{y}$라 표현한다. 마찬가지로 $Y$ 도메인의 데이터셋을 받아 $X$ 도메인의 데이터를 생성하는 네트워크를 $F$라고 하고, 이렇게 생성된 $F(y)$를 $\hat{x}$라 표현한다. 두 네트워크에 대해 $X$ 도메인 이미지에 대해 F, G를 최적화하는 과정은 다음과 같다. 우선 $X \rightarrow Y$로 생성된 이미지에 대한 adversarial loss는 다음과 같이 표현된다. 
 
-\[
+\\[
     \mathcal{L}_{GAN}(G, D_Y, X, Y)    
-\]
+\\]
 
 Adversarial loss에서 각 notation이 의미하는 바는 다음과 같다.
 - $X$ 에서 $Y$ 이미지를 생성하는 forward process에 대해서,
@@ -137,9 +137,9 @@ Adversarial loss에서 각 notation이 의미하는 바는 다음과 같다.
 
 요약하자면, $D_Y$와 $G$가 서로 경쟁하면서 학습하는 구조가 된다. 이렇게 되면 문제는 $D_Y$에 대해서나 $G$에 대해서는 학습이 가능한데, 역과정에 대해서는 학습이 안된다. 그렇기 때문에 우리는 추가로 경쟁 구조를 하나 더 만들 것이다.
 
-\[
+\\[
     \mathcal{L}_{GAN}(F, D_X, Y, X)    
-\]
+\\]
 
 위의 식에서 각 notation이 의미하는 바는 다음과 같다.
 - $Y$ 에서 $X$ 이미지를 생성하는 reverse process에 대해서,
@@ -182,9 +182,9 @@ Adversarial loss에서 각 notation이 의미하는 바는 다음과 같다.
 </p>
 학습된 decoder(혹은 generator $G$)에 대해 $z$라는 latent space 상의 한 점은 fake image인 $x = G(z)$를 만들어낸다. 흔히 latent vector를 뽑는 과정은 Normal distribution으로부터 추출한다($z \sim \mathcal{N}(0, I)$).   
 그렇다면 이러한 접근은 어떨까? Real image가 있는데, 이 real image와 비슷한 이미지를 만들어낼 수 있는 $z$를 찾는 것이다. 이를 수식으로 표현한 것이 바로
-\[
+\\[
     z^\* = \arg \min_z (G(z),~x)    
-\]
+\\]
 따라서 우리는 **이상적인 $z^\*$를 찾고 싶고**, real image $x$와 거의 똑같은 이미지를 만들어낼 수 있는 $z$를 찾을 수 있으면, 이 <U>$z$를 조금씩 바꿔가면서 image editing이 가능</U>하다는 것이다. Concept은 GAN을 이해할 수 있다면 받아들일 수 있을 정도로 simple하다.   
 이러한 image manipulation에서 활용되기 쉽게 여러 도메인에 대한 style을 학습시킨 pre-trained styleGAN이 있다. 다음 깃허브 링크를 참고하면 좋을 것 같다. [사전 학습된 StyleGAN 링크](https://github.com/justinpinkney/awesome-pretrained-stylegan)   
 
@@ -206,18 +206,18 @@ Adversarial loss에서 각 notation이 의미하는 바는 다음과 같다.
 
 위의 과정을 보면 성능에 중요한 영향을 미치는 것은 딱 두 가지로 정할 수 있다. 애초에 decoder는 미리 학습된 styleGAN과 같은 generator를 사용하기 때문에 딱히 건드릴 순 없고, image 특성을 잘 반영해서 생성해줄 latent space를 잘 찾는 것과 그 latent space에 속해있는 latent vector를 찾아낼 수 있는 loss function이다.   
 초기화의 경우 무작위의 latent를 샘플링하는 방법도 있으나, 이전 글에서 styleGAN에서 소개했던 바와 같이 **sampling이 분포가 희박한 곳에서 발생할 경우에 문제가 발생한다**. 이게 무슨 의미냐면, initial point에서 gradient descent가 일어나는 feasible direction이 최적화가 힘든 길이면 원하는 이미지가 잘 생성되지 않을 수도 있다. 그렇기 때문에 단순히 랜덤으로 초기화하는 것보다는 평균치를 의미하는 mean latent code(mean face)로부터 시작하는 것이 낫다는 것이다. 또 loss function에 대해서 언급하자면, 단순히 MSE를 계산하는 것은 pixel-wise error를 계산하기 때문에 high quality embedding을 찾기 힘들다. 왜냐하면 MSE loss가 가지는 값이 실제로 그 이미지를 대변할 수 없기 때문이다. 그렇기 때문에 perceptual loss를 사용하여 latent space를 잘 찾을 수 있게 보조해주는 loss를 생각해볼 수 있다.
-\[
+\\[
     w^\* = \min_w L_\text{percept} (G(w), I)+\frac{\lambda_{mse}}{N} \parallel G(w) - I \parallel_2^2   
-\]
+\\]
 [Perceptual loss](https://arxiv.org/abs/1603.08155)는 pre-trained VGG-16(ImageNet에 대해 사전 학습된 네트워크)의 feature extraction 부분을 활용하며, 두 이미지 간의 hidden feature 사이의 유사도를 측정한다.
 <p align="center">
     <img src="imagetoimage/018.png" width="700"/>
 </p>
 위의 그림이 perceptual loss가 제시된 논문에서 발췌한 그림이다. Style에 대한 정보를 VGG-16을 활용한 loss를 토대로 최적화하였고, 이를 컨셉으로 생각하게 되면 우리가 하고자 하는 이미지의 content나 style을 이해하고 최적화하는 상황에서 사용될 수 있음을 시사한다.
 
-\[
+\\[
     L_\text{percept}(I_1, I_2) = \sum_{j=1}^4 \frac{\lambda_j}{N_j} \parallel F_j (I_1) - F_j (I_2) \parallel_2^2
-\]
+\\]
 
 ---
 
@@ -227,9 +227,9 @@ Adversarial loss에서 각 notation이 의미하는 바는 다음과 같다.
 ## Morphing
 Morphing은 image processing technique으로, 흔히 한쪽 이미지에서 다른쪽 이미지로 점진적 변화를 할 때 사용한다. 두 개의 이미지 $I_1$ 그리고 $I_2$에 대해 각각 latent space로 embedding된 코드 $w_1$와 $w_2$를 사용, morphing은 다음과 같이 두 latent code의 convex set의 임의의 점을 가리킨다.
 
-\[
+\\[
     w = \lambda w_1 + (1-\lambda)w_2,~\lambda \in (0, 1)
-\]
+\\]
 
 이렇게 구한 $w$로 morphed image $G(w)$를 구하면 된다.
 
