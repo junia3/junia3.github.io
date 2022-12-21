@@ -261,4 +261,65 @@ Transformer는 단연코 neural network 중 최근에 가장 활발히 연구된
 
 ---
 
-...쓰는중,,, vision transformer에 대해서 쓸 예정입니다
+# Vision transformer
+
+앞서 기계 번역에서 <U>transformer</U>의 구조 및 학습 방법에 대해 알아보았다. 따로 여기서는 첨부하지는 않았지만 실제로 transformer를 사용했을 때의 성능은 굉장히 좋았고, 이후 다양한 tansformer based approach를 통해 많은 <U>NLP 관련 기술들</U>이 발전할 수 있었다. 이에 비전에서도 NLP에서 사용된 transformer 구조를 사용할 수 없을지에 대한 연구가 'Attention is all you need' 논문 이후로 활발하게 진행되기 시작했다.   
+하지만 명확하게 <U>tokenize되기 쉬운</U> natural language나 audio(단어나 음절 단위로 끊는 경우)와는 다르게 image의 경우에는 보다 연속적인 신호로 구성되어 있어서 정확히 어떠한 기준으로 tokenize를 해야할 지 애매하고, 이를 임베딩하는 방법 또한 일반적인 word2vec과 같은 방법을 사용할 수 없다는 점이 문제가 되었다.
+<p align="center">
+    <img src="transformer/017.png" width="400"/>
+</p>
+이러한 과정에서 처음으로 vision transformer의 성능을 보여준 논문이 [ViT: An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale](https://arxiv.org/abs/2010.11929)라는 논문이었고, 해당 논문을 간단하게 살펴보면 다음과 같다. 논문에서 접근한 방식은 상당히 간단하다.
+<p align="center">
+    <img src="transformer/vit.gif" width="600"/>
+</p>
+이미지를 총 $n$개의 patch로 나눈다. 논문 제목에서 확인할 수 있겠지만, 이미지 크기가 $256 \times 256$ 이라면 이를 균등하게 $16 \times 16$의 patch로 분리한다. 위의 그림에서는 이를 좀 더 간단하게 표현하기 위해 이미지의 $H,~W$를 각각 3등분하여 9개의 샘플을 만들어내는 것을 볼 수 있다. 분리한 patch를 각각 flatten해서 1차원의 텐서로 만든 뒤 linear projection을 통해 embedding space로 보내고, 이 patch sequence 앞쪽에 <U>cls token</U>(이미지의 클래스를 구분할 때, global inference를 하기 위해 기준점이 되는 부분이라고 기억해두자)을 추가해준다. 앞서 transformer에서 했던 것과 같이 마찬가지로 여기서도 positional embedding을 더해주는데, 이미지의 경우 natural language embedding에서 사용했던 것과 같은 sinusoidal embedding의 효과가 나타나지 않기 때문에 여기선 그대신 <U>learnable positional embedding</U>을 사용하게 된다. 모든 attention 연산이 끝난 뒤 encoder output에서 <U>cls token</U>을 받아오고, 여러 번의 attention 연산이 진행되면서 이 cls_token에는 16개의 patch embedding에 대한 <U>global reference</U>가 완료된 상황이다. 이 cls token은 $B \times D$ 크기를 가지며, 이를 바로 class 예측에 사용하기보다는 attention 연산이 진행되면서 '<U>다른 패치들의 정보를 요약</U>'한다는 느낌으로 접근한다. 따라서 class embedding을 추출한 다음에는 다음과 같은 연산이 진행된다.
+
+<p align="center">
+    <img src="transformer/018.png" width="600"/>
+</p>
+
+16개의 patch가 있었기 때문에 transformer model의 $Q,~K,~V$ dimension $d$에 대해서 output은 cls token과 함께 $(16+1) \times d$ 크기의 tensor로 추출된다. 여기에 MLP head로 class 개수만큼의 output을 내보내는 linear 연산($d \rightarrow C$ where $C$ is the number of classes)을 진행한 뒤, layer normalization 결과를 <U>class 예측에 대한 score map으로 사용</U>한다. 즉, 이를 logit으로 삼아 softmax 연산을 하게 되면 비로소 cls token의 output에 대한 class 예측이 진행되는 것이다.
+
+<p align="center">
+    <img src="transformer/019.png" width="800"/>
+</p>
+
+그러나 vision transformer의 경우 데이터셋이 충분하지 않으면 BiT(ResNet 기반 transformer)와 같은 CNN 기반 모델에 비해 성능을 기대하기 힘들었는데, 이 이유는 바로 앞서 설명했던 inductive bias의 부재와 관련된다. CNN based network는 적은 데이터셋으로도 기본적으로 가지고 있는 inductive bias를 통해 빠른 일반화 및 최적화가 가능하지만, 패치 단위로 나누어 각각에 대한 attention을 연산하는 구조인 <U>vision transformer는 이런 의존성이 전혀 없기 때문</U>이다.   
+그렇기 때문에 가지고 있는 단점이자 장점은, CNN의 경우 inductive bias 때문에 정해진 연산을 통해 추출할 수 있는 representation map 혹은 feature map이 어느 정도 학습이 진행되고 나면 수렴이 발생하지만, vision transformer는 데이터셋을 대량으로 학습시키면 학습시킬수록 attention 성능을 높일 수 있고, 이는 특정 구조에 따라 수렴하는 형태가 아니라 끊임없이 발전할 수 있다고 해석하였다.   
+그렇기 때문에 Vision transformer를 <U>대량의 데이터셋</U> JFT dataset($3 \times 10^8$ samples)로 사전 학습한 뒤, 원하는 **downstream task**에 맞게 fine-tuning을 하면 더 좋은 성능을 보일 수 있다고 한다.
+
+<p align="center">
+    <img src="transformer/020.png" width="800"/>
+</p>
+
+그리고 <U>convolution</U> 연산에 비해 <U>attention</U> 연산이 가지는 parameter의 개수나 네트워크의 전반적인 규모가 CNN보다 <U>훨씬 크다</U>는 점이 문제가 될 수 있다. VGG-16의 경우 경량화가 많이 부족한 모델임에도 불구하고 175.12M의 parameter 개수를 가지기 때문에 ViT-Large 혹은 ViT-Huge에 비해 훨씬 가벼운 것을 확인할 수 있다. 심지어 ResNet의 경우에 가장 레이어가 깊은 네트워크 중 하나인 <U>ResNet-152</U>의 경우에도 paramter 개수가 <U>60.34M</U>에 그치는 것을 보면, 확실히 transformer 네트워크의 규모가 지나치게 크게 구성된 것을 볼 수 있다. 
+
+---
+
+# 왜 Vision transformer가 CNN을 이길 수 있었을까?
+<p align="center">
+    <img src="transformer/021.png" width="800"/>
+</p>
+가장 간단하게 풀자면 단순히 self-attention 이라는 연산의 mechanism이, 초기의 layer부터 입력된 input 전체에 대한 inference가 가능하기 때문이다. 예를 들어 CNN의 경우에는, $3 \times 3$의 커널 크기를 통해 $32 \times 32$ 크기의 receptive field를 가지기 위해서는
+
+\[
+    3+2 \times (n-1) \ge 32,~n > 14    
+\]
+
+14보다 많은 개수의 layer가 필요하다. 이 과정에서의 연산량을 줄이기 위해 추가적으로 max-pooling과 같은 filtering이 들어가면, 이미지의 특정 부분에서는 <U>global한 fine detail을 알아채기도 전</U>에 **image classification**을 해야 하는 문제가 발생하는 것이다. 이를 다르게 말하면 ViT는 모든 레이어에서 균일한 형태의 representation map을 획득할 수 있고, self-attention 연산을 통해 보다 빠르게 global information을 축약해낼 수 있다. 이렇게 빠르게 요약한 global 정보를 여러 레이어를 통해 각 패치마다 공유하면서, 잘 학습된 representation을 전달할 수 있게 되는 것이다. 그러나 어김없이 <U>dataset의 개수가 대량으로 필요하다는 조건</U>(약 10억 개의 샘플)과 그만큼 <U>parameter 수도 많이 필요</U>하다는 것이 제약 조건이 될 수 있다. 추가적으로는 high-resolution image의 경우 attention 연산이 $Q,~K,~V$에 대한 attention score를 연산하는 과정이 되기 때문에 multi-head self attention의 computation이 $(H \times W)^2$에 비례해서 증가하는 가장 큰 문제가 발생한다. 이제부터 그 각각의 문제점을 해결하기 위한 연구들을 소개해보겠다.
+
+---
+
+# Dataset을 효율적으로 사용할 수 있는 방법
+
+---
+
+# High resolution image에 대한 효율적인 연산
+
+---
+
+# CNN과 ViT을 어떻게 하면 잘 조합할 수 있을까?
+
+---
+
+...작성중
