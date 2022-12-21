@@ -218,4 +218,47 @@ Decoder에서 input 문장에 대해 번역된 결과를 내보낼 때는 recurr
 
 다음과 같이 계산되는 구조다.
 
-...작성중
+## Positional encoding
+RNN 구조에서 없었던 내용 중에 causality는 여전히 존재한다. 그런데 그것보다 더 문제인 것은 각 임베딩 사이의 거리도 어느 정도 context를 판단할 때 고려가 되는 사항인데, 각 token을 sequential하게 연산하는 RNN은 이를 걱정하지 않아도 되지만 transformer의 경우에는 해당 constraint를 줄 수 있는 방법이 필요하다. 예를 들면 다음과 같은 문장이 있다고 생각해보자,
+
+\[
+    \text{I have a dog named Adam and my friend has a cat named Epoch}    
+\]
+한글로 번역하면, 나한테는 <U>'아담'이라는 이름을 가진 강아지</U>가 있으며, 내 친구는 <U>'에폭'이라는 이름을 가진 고양이</U>가 있다는 뜻이다. 여기서 중요한 점은 강아지를 가지고 있는 주체와 고양이를 가지고 있는 주체에 대한 문장에서의 거리다. 만약 특정 이름과 동물이 연관된다는 특성에 대해서 token의 위치와 무관하게 학습이 진행되다보면, 다음과 같은 참사가 발생한다.   
+   
+'I have **a dog** named Adam and my friend has a cat named **Epoch**'   
+'I have a dog named **Adam** and my friend has **a cat** named Epoch'   
+   
+여기서 <U>굵게 표시된 부분끼리 만약 attention value가 높게 책정이 되면</U>, 내가 키우는 강아지와 친구가 키우는 고양이의 이름이 뒤바뀌는 일이 생기는 것이다. 혹은 내 친구가 강아지를 키우고 내가 고양이를 키우는 식으로 번역이 될 수도 있다. 따라서 CNN에서 object가 서로 비슷한 픽셀 위치에 위치한다거나, translation에 불변한다는 특징과 같이 학습하는 과정에서의 inductive bias를 어느 정도 주기 위해서 token의 위치에 따른 임베딩을 추가해주는 방법을 고안하였다.
+<p align="center">
+    <img src="transformer/013.png" width="400"/>
+    <img src="transformer/014.png" width="400"/>
+</p>
+Positional encoding으로 사용된 함수는 흔히 알고 있는 sinusoidal 함수를 사용한다. 
+
+\[  
+    \begin{aligned}
+        PE_{(pos,~2i)} =& \sin (pos/10000^{2i/d_{model}}) \newline
+        PE_{(pos,~2i+1)} =& \cos (pos/10000^{2i/d_{model}})
+    \end{aligned}
+\]
+
+여기서 $i$는 embedding dimension을 따라가는 축이고, $pos$가 각 token의 위치를 나타내는 position이다. 이를 실제로 시각화한 그림이 좌측에 있는 얼룩덜룩한 형태가 된다. 식을 보면 알 수 있듯이 $d_{model}$은 앞서 언급했던 embedding의 차원 수 $d$와 같으며, $i$가 <U>증가할수록</U> sinusoidal 함수의 <U>주파수가 점차 감소</U>하는 모양새가 된다. 주기함수를 보면 알 수 있듯이 y축을 따라가면서 함숫값을 보게 되면 **같은 함숫값을 가지는 index**가 reference 위치와는 관계없이 동일한 것을 알 수 있다. 즉 <U>짙은 파란색이랑 또다른 짙은 파란색 사이의 y축 거리</U>(pos 차이)나, <U>짙은 빨강이랑 또다른 짙은 빨강 사이의 y축 거리(pos 차이)</U>가 일정하게 나타난다는 것이다. 그리고 또한 위의 함수는 각 embedding position마다 서로 다른 encoding을 더해줄 수 있다. 함숫값은 주기 함수에 의해 반복이 되지만, 그 어떤 encoded embedding도(x축에 평행한 value들을 의미) 서로 <U>일치하지 않고 unique</U>하다. 즉, 문장이 얼마나 길어지든 상관없이 각 token에 유일한 값으로 매핑할 수 있기 때문에, <U>문장의 길이와 무관하게 모든 token을 구분할 수 있다</U>.
+<p align="center">
+    <img src="transformer/015.png" width="400"/>
+</p>
+이처럼 구해준 각 token 별 encoding을 dimension에 맞게 생성해서 모든 embedding에 더해주면 된다.
+
+## Transformer 학습
+
+학습은 간단하게 supervision이 있기 때문에 cross-entropy loss에 대해 최적화가 가능하다. Output으로 나오는 softmax prediction에 대해 가장 최댓값을 가지는 index의 단어를 매핑하고, 제대로 된 단어의 확률값이 1에 가까워질 수 있게 학습된다.
+
+## 그래서 요즘은?
+Transformer는 단연코 neural network 중 최근에 가장 활발히 연구된다고 해도 과언이 아닐 정도로 다양한 분야에 접목하기가 좋다. 2017년에 기계 번역 task에 대해서 처음으로 transformer가 제시된 이후, BERT, GPT-3 등등 NLP 관련 모델들이 많이 등장했으며, 특히나 vision 분야에서도 vision transformer가 등장하면서 <U>multimodal approach</U>가 가능해졌다. 모든 modality에 대해 일관적인 구조로 encoding이 가능하다면 이를 토대로 여러 modality를 함께 supervision으로 사용할 수 있다는 관점이다.
+<p align="center">
+    <img src="transformer/012.png" width="600"/>
+</p>
+
+---
+
+... vision transformer에 대해서 쓸 예정입니다
