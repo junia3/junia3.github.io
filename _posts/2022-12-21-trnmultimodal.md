@@ -270,7 +270,7 @@ Transformer는 단연코 neural network 중 최근에 가장 활발히 연구된
 </p>
 이러한 과정에서 처음으로 vision transformer의 성능을 보여준 논문이 [ViT: An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale](https://arxiv.org/abs/2010.11929)라는 논문이었고, 해당 논문을 간단하게 살펴보면 다음과 같다. 논문에서 접근한 방식은 상당히 간단하다.
 <p align="center">
-    <img src="transformer/vit.gif" width="600"/>
+    <img src="https://user-images.githubusercontent.com/79881119/209162457-43a1b681-e2d6-4e20-9e85-b8e964efebf5.gif" width="600"/>
 </p>
 이미지를 총 $n$개의 patch로 나눈다. 논문 제목에서 확인할 수 있겠지만, 이미지 크기가 $256 \times 256$ 이라면 이를 균등하게 $16 \times 16$의 patch로 분리한다. 위의 그림에서는 이를 좀 더 간단하게 표현하기 위해 이미지의 $H,~W$를 각각 3등분하여 9개의 샘플을 만들어내는 것을 볼 수 있다. 분리한 patch를 각각 flatten해서 1차원의 텐서로 만든 뒤 linear projection을 통해 embedding space로 보내고, 이 patch sequence 앞쪽에 <U>cls token</U>(이미지의 클래스를 구분할 때, global inference를 하기 위해 기준점이 되는 부분이라고 기억해두자)을 추가해준다. 앞서 transformer에서 했던 것과 같이 마찬가지로 여기서도 positional embedding을 더해주는데, 이미지의 경우 natural language embedding에서 사용했던 것과 같은 sinusoidal embedding의 효과가 나타나지 않기 때문에 여기선 그대신 <U>learnable positional embedding</U>을 사용하게 된다. 모든 attention 연산이 끝난 뒤 encoder output에서 <U>cls token</U>을 받아오고, 여러 번의 attention 연산이 진행되면서 이 cls_token에는 16개의 patch embedding에 대한 <U>global reference</U>가 완료된 상황이다. 이 cls token은 $B \times D$ 크기를 가지며, 이를 바로 class 예측에 사용하기보다는 attention 연산이 진행되면서 '<U>다른 패치들의 정보를 요약</U>'한다는 느낌으로 접근한다. 따라서 class embedding을 추출한 다음에는 다음과 같은 연산이 진행된다.
 
@@ -339,7 +339,7 @@ DeiT는 ViT와 동일한 transformer 구조에 대한 학습을 진행하되, JF
 # High resolution image에 대한 효율적인 연산
 다음으로 언급할 내용으로는 앞서 Vision transformer에서 해결하지 못했던 <U>high resolution image</U>에 대한 연산이다. Vision transformer 연산 과정을 보게 되면, image를 동일한 크기의 patch로 분리하고, 이를 embedding으로 linear projection한 뒤에 일련의 attention 연산을 진행하게 된다. 그러므로 만약 image의 resolution이 2배가 되면, linear projection은 그 값의 제곱인 4배로 늘어나게 되고, attention 연산에 필수적인 $Q,~K,~V$를 통한 attention weight 연산은 그 값의 다시 제곱인 16배로 증가하는 것이다.
 <p align="center">
-    <img src="transformer/toomuch.gif" width="400"/>
+    <img src="https://user-images.githubusercontent.com/79881119/209162456-586c1b3e-7855-426e-a332-73e7542e2863.gif" width="400"/>
 </p>
 그리고 무엇보다 연산 때문에 token의 개수가 한정적이라면, CNN에서 했던 것과 같이 다양한 scale의 feature를 뽑기가 힘들 것이다. Global information을 빠른 시간에 축적하는 건 장점이 될 수 있는데, 결국 그렇게 축적된 데이터는 하나의 scale에만 국한된다는 점. 즉 vision transformer를 더 발전시켜서 segmentation이나 image restoration과 같은 <U>high-level vision task</U>에도 적용할 수 있어야하는데, 지금의 구조로는 가능성이 보이지 않는다. 바로 여기서 나온 것이 지금 설명할 [Swin-Transformer](https://arxiv.org/pdf/2103.14030.pdf)를 통한 hierarchical feature extraction이다.
 <p align="center">
@@ -581,7 +581,7 @@ def _build_projection(self,
 결론적으로 Transformer based model에 비해 CvT는 더 적은 parameter 수와 FLOPS를 가지고도 더 높은 accuracy를 획득하였다. Attention 연산 시에 MLP에 의존하지 않다보니, 같은 projection을 내보내는데 더 적은 수의 parameter를 요구하기 때문이다. 그러면서도 CNN based model과는 다르게 ViT based network의 성능과 같이 높은 수치를 보여주었다.
 
 <p align="center">
-    <img src="transformer/036.png" width="800"/>
+    <img src="https://user-images.githubusercontent.com/79881119/209162407-d9b17c8b-faf9-4458-987b-ee98bb0abab4.png" width="800"/>
 </p>
 
 ---
@@ -591,31 +591,31 @@ def _build_projection(self,
 지금까지 생각보다 많은 논문들을 리뷰했다. 가장 처음에는 <U>CNN, RNN</U>부터 시작해서 <U>Sequence to sequence</U>. 그리고 이어지는 <U>attention mechanism</U>과 이를 기반으로한 <u>attention only network(transformer)</U>의 발전. 그리고 이러한 NLP에서의 성공이 vision task로 이어질 수 있었던 <U>ViT</U>의 제안 방식과 더불어 여러 한계점을 극복하기 위한 방법들(<U>DeiT, Swin-T, CvT</U>)까지 모두 살펴보았다. 그렇다면 **multimodal**의 지평을 열 수 있게 도와준 transformer가 정확히 어떤 측면에서 다양한 연구에 활용될 수 있는지 짤막하게 소개하며 이번 글을 마무리해볼까 한다.   
 
 <p align="center">
-    <img src="transformer/037.png" width="300"/>
+    <img src="https://user-images.githubusercontent.com/79881119/209162417-87272d02-5e7d-49fd-bec4-55df5e350680.png" width="300"/>
 </p>
 
 <U>Modality</U>란 내포할 수 있는 양상이 너무 막연하기에 다양한 설명이 될 수 있다. 하지만 지금 살펴보고자 하는 '딥러닝'의 측면에서는 다음과 같이 정의할 수 있다. '<U>Modality</U>'는 vision, audio 그리고 language와 같이 특정 sensor나 관측 방법을 통해 취득할 수 있는 개별적인 <U>communication channel</U>이다. 용어가 많이 생소하겠지만 예를 들어 카메라나 LiDAR(센서) 등등 어떠한 형식의 정보만 수집할 수 있다면 이를 modality라고 표현 가능하다. Thermal 센서를 통해 취득한 열화상 이미지도 또다른 modality고, CT나 MRI 기계를 통해 취득한 의학 영상 이미지 또한 또다른 modality 중 하나가 된다.   
 따라서 <U>multimodality</U>, 혹은 <U>멀티 모달</U>이라고 불리는 딥러닝의 task는 vision, text, sound, data 등등 서로 다른 취득 방식으로 획득한 데이터셋을 유의미하게 함께 활용하여 representation learning을 하고자 하는 목적에 있다.
 
 <p align="center">
-    <img src="transformer/038.png" width="700"/>
+    <img src="https://user-images.githubusercontent.com/79881119/209162421-7299f3f4-06d3-4ad1-9fbb-d16ff22339ba.png" width="700"/>
 </p>
 
 간혹 multimodal과 cross-modal 사이에 워딩이 겹치는 문제가 있는데, 각각의 차이점은 다음과 같다. 멀티모달은 딥러닝에서 새롭게 제시된 알고리즘으로, 여러 가지의 modality를 <U>함께 활용</U>하여 학습을 하는 것이다. 예를 들어, 사람은 시각과 청각을 모두 활용해서 사람이나 특정 물체를 판별하는데, 바로 이러한 능력을 computer에 대해서 적용하고자 하는 것이다. 그와는 다르게 cross-modal은 multimodal deep learning으로 접근을 하되, 하나의 <U>modality의 정보</U>가 <U>다른 modality</U>의 <U>성능을 높이는데</U> 사용되는 것이다. 만약 고양이의 이미지를 보았다면, 고양이 울음소리를 들음으로써 '아 이 사진은 고양이겠구나'라고 판단할 수 있는 것이다.   
 AI system 중 다양한 modality에 대해 함께 작동할 수 있는 모델을 multimodal이라고 부르며, cross-modal은 서로 다른 task를 활용함으로써 중간에 있는 지식을 활용하는 것이다. **여러 스타트업**이 모여있는 <U>공동 사무실에서</U> 함께 일하는 과정에서 서로 시너지 효과를 내서 모두의 사업이 성공하는 것이 **cross-modal**의 예시가 될 수 있고, 하나의 스타트업 내 <U>여러 부서</U>가 함께 co-work를 해서 각자 맡은 일을 열심히 해서 회사를 키우는게 **multi-modal**의 예시가 될 수 있겠다.   
 <p align="center">
-    <img src="transformer/039.png" width="600"/>
-    <img src="transformer/040.png" width="600"/>
+    <img src="https://user-images.githubusercontent.com/79881119/209162424-488ac1d5-e7fb-4b7e-aa55-91343d969211.png" width="600"/>
+    <img src="https://user-images.githubusercontent.com/79881119/209162425-9ed2e379-a796-43de-b55c-6940358e2a56.png" width="600"/>
 </p>
 대표적인 text와 vision을 함께 활용하는 multimodal 방식은 위에서 보는 바와 같이 video captioning과 같은 캡셔닝 기술과, video question answering과 같은 reasoning 기술이다. 이외에도 비디오나 미디어의 특정 부분을 text description을 통해 찾아내는 retrieval task도 있으며, text를 적으면 video나 image를 만들어내는 기술이나 audio를 통해 video를 만드는 기술 등등 다양하게 적용될 수 있다.   
 바로 이러한 측면에서 'Transformer'는 multimodal에 접근하기 가장 좋은 네트워크 구조다. 
 
 <p align="center">
-    <img src="transformer/041.png" width="700"/>
+    <img src="https://user-images.githubusercontent.com/79881119/209162442-15f32068-0ad1-455b-b1ea-70bcaf09d8e8.png" width="700"/>
 </p>
 Transformer는 단순하게도 모든 형태의 input을 tokenize할 방법만 찾으면, 이를 대표할 만한 representation space로 embedding한 뒤 attention 학습을 진행하면 된다. Embedding 과정이 복잡하지도 않으며, 가장 중요한 점은 '다양한 데이터 형태'에 적용이 된다는 것이다. 그리고 Multimodal transformer에서는 <U>fusion</U> 및 <U>alignment</U>와 같은 cross-modality interation이 attention을 통해서 자동적으로 발생한다. 혹시라도 궁금한 사람은 [survey paper](https://arxiv.org/pdf/2206.06488.pdf)를 보면 잘 정리되어 있어서 좋은 것 같다.
 <p align="center">
-    <img src="transformer/042.png" width="900"/>
+    <img src="https://user-images.githubusercontent.com/79881119/209162448-0652bcf8-93e9-4427-aa81-96085c12f147.png" width="900"/>
 </p>
 보라색과 초록색이 서로 다른 modality embedding이라고 생각하고 각각을 살펴보면 위와 같다. 처음부터 아예 <U>더해서 attention을 진행하는 과정</U>도 있고(a), 더하지 않고 <U>차원 단위로 붙여서</U> 연산하는 과정도 있다(b). 앞선 방법들과는 다르게 transformer layer를 <u>다르게</U> 사용한 뒤, 이후 각각의 output에 대해 <U>하나의 transformer layer로 합치는</U> 과정도 있으며(c), 오히려 처음에는 하나의 layer로 학습한 뒤에 <U>여러 layer로 분리하는 과정</U>도 있다(d). 또한 서로 다른 layer로 학습하되, 각각의 query가 <U>교차되면서</U> 상대방 layer의 attention을 학습하는 방법도 있고(e), 이러한 cross-attention을 진행한 뒤에 결과를 concatenate하는 방식도 존재한다(f). 이 여러 가지 방법들은 모두 conceptually 그럴듯하게 보이며, 각 modality의 연관성이나 문제 해결 방법에 따라 더 분화할 수 있는 구조를 가진다.   
 사실 어떤 task가 어떤 방법을 쓰는지에 대해서 구체적으로 알 필요가 있는 것은 아니다. 단지 이 그림에서 시사하는 바는 '<U>Transformer 구조는 여러 modality를 함께 학습하는 과정에서 취할 수 있는 전략이 매우 다양하다</U>'라는 것이다.
@@ -626,11 +626,11 @@ Transformer는 단순하게도 모든 형태의 input을 tokenize할 방법만 �
 
 이러한 multimodal 관점에서 등장한 가장 유명하고, 또 많이 인용되고 있는 논문인 CLIP에 대해서 설명하도록 하겠다.
 <p align="center">
-    <img src="transformer/043.png" width="900"/>
+    <img src="https://user-images.githubusercontent.com/79881119/209162453-316f70d1-ae33-4bda-9b11-2cd983ad6d6b.png" width="900"/>
 </p>
 학습법은 간단하게도, 특정 이미지가 있다면 이를 설명하는 text prompt가 각각 주어지고, 이를 transformer encoder를 통한 embedding으로 각각 바꾼다. image embedding과 text embedding 사이에 positive pair는 가깝게(diagonal 부분), negative pair는 서로 멀게(나머지 부분) 학습하게 되면, 최종적으로는 image에 대한 classification을 text-driven으로 학습이 가능하다는 것이다. 첫번째 contrastive pre-training 부분 다음을 보면 label text로부터 dataset classifier를 만드는게 나오는데, <U>학습 시</U>에 <U>text description</U>을 사용했기 때문에 classification 시에도 <U>비슷한 형태의 description</U>을 주기 위해 '이것은 ○○○의 사진입니다'의 형태로 넣어주게 된다.   
 수많은 이미지에 대한 설명과 함께 학습하다보면, 학습 시에 사용되지 않은 classification 이미지에 대해서도 좋은 성능을 보여줄 수 있다는 것이 바로 이 논문이었고, 이후 다양한 형태로 활용되며 현재 multimodal 시장에서 가장 핫한 baseline이라고 볼 수 있다.
 <p align="center">
-    <img src="transformer/044.png" width="400"/>
+    <img src="https://user-images.githubusercontent.com/79881119/209162454-22fc6fb0-c39a-457e-b9a5-c25945eabd37.png" width="400"/>
 </p>
 녹색으로 표시된 부분이 zero-shot clip이 fully-supervised ResNet보다 더 좋은 성능을 보인 데이터셋이다. 모든 데이터셋에 대해 supervision을 가지고 학습한 ResNet보다 전혀 training sample에 대해 접근하지 못했음에도 높은 정확도를 보이는 것은 정말 혁신적이지 않을 수 없다. [CLIP 논문](https://arxiv.org/pdf/2103.00020.pdf)은 사실 실험적인 부분에서 자세하게 보고 넘어갈 부분이 정말 많아서 이후에 따로 다른 게시글에 논문 리뷰로 다룰 예정이다.
