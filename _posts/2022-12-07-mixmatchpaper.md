@@ -25,16 +25,16 @@ tags:
 ## Entropy minimization
 첫 번째는 Enropy minimization이다. 일반적으로 지표화가 진행되지 않은 데이터를 모델이 예측하면 확률값으로 매핑이 된다.
 <p align="center">
-  <img src="mixmatch/001.jpg"/>
+  <img src="https://user-images.githubusercontent.com/79881119/209059028-f13d36bd-c752-4c19-9cc8-b016185d4f75.jpg"/>
 </p> 
 만약 지표화가 된 상황에서의 데이터라면 "개, 고양이, 원숭이"의 3가지 클래스를 구분하는 작업에 있어서 1-hot encoding(이를 hard label이라고도 부른다)을 수행한다. One-hot encoding이란 정답인 확률이 1이고 나머지가 0인 상황이다. 따라서 위의 그림을 그대로 지표화하게 되면 (0, 1, 0)이 되는 것이다.
 <p align="center">
-  <img src="mixmatch/002.png"/>
+  <img src="https://user-images.githubusercontent.com/79881119/209059035-69102d07-26c6-48fb-9b8d-2b15aa0ac992.png"/>
 </p>
 그러나 이를 네트워크에 통과시킨 결과는 다르다. 매우 잘 학습한 모델이 세 클래스에 대해 결과를 아무리 잘 예측하더라도 (0, 1, 0)이 되기 힘들다.
 이는 cross entropy loss의 특성상 softmax를 포함하는 데에서 그 한계를 찾을 수도 있는데, 점수표가 어떤 방식으로 설정되든 이에 대한 CE loss를 계산하기 전 softmax 연산을 통해 확률값으로 매핑한다.
 <p align="center">
-  <img src="mixmatch/003.png"/>
+  <img src="https://user-images.githubusercontent.com/79881119/209059037-8d487115-45d6-46e6-88d7-920feb69f796.png"/>
 </p>
 그러나 softmax 함수의 경우 0과 1을 점근선으로 가지기 때문에, 실제로는 점수표 상의 그 어떠한 value도 softmax 상에서 0과 1의 절대적인 값을 가질 수 없고, 결론적으로는 잘 학습된 모델의 경우에도 '고양이일 확률이 가장 높다' 정도의 예측이 최선인 것이다.
 결국 네트워크를 통과한 각 클래스에 대한 예측값은 확신이 없다고 볼 수 있는데, 이는 지표화되지 않은 데이터셋에 대해 학습을 하게 될 경우 문제가 생긴다. 그렇기 때문에 entropy minimization을 통해 애매한 확률값들을 확실한 값으로 바꿔준다. 이에 대한 내용은 이후 모든 loss term에 대해 설명한 후에 종합적인 분석이 필요한 부분이 있어 뒤로 넘기도록 하겠다.
@@ -42,7 +42,7 @@ tags:
 ## Consistency regularization
 두 번째는 Consistency regularization이다. 이는 생각보다 간단한 개념인데,
 <p align="center">
-  <img src="mixmatch/004.png"/>
+  <img src="https://user-images.githubusercontent.com/79881119/209059039-fb2d2135-7f02-46e5-b713-c73cb6a67e41.png"/>
 </p>
 예를 들어 위와 같이 고양이 사진을 90도 회전시킨 augmented sample을 unlabeled dataset으로 사용한다고 생각해보자. 서로 다르게 augmented(노이즈 추가, 컬러 변경, 회전 등)된 두 이미지는 사실 서로 같은 probability distribution을 가져야 한다. 즉 지표화되지 않은 샘플에 대해 예측이 들쭉날쭉하게 변하지 않게 하는 것이 정규화 방식이다.
 
@@ -55,7 +55,7 @@ Model의 overfitting을 방지하는 정규화 방식으로, 이후 설명할 Mi
 
 라고 볼 수 있다. 여기서 convex sample이란 두 샘플을 convex set의 한 지점으로 보고, 그 사이를 보간하는 모든 sample이 포함되는 convex set의 정의를 그대로 따른다고 볼 수 있다. 이를 실제로 시각화하면,
 <p align="center">
-  <img src="mixmatch/005.png"/>
+  <img src="https://user-images.githubusercontent.com/79881119/209059042-6f90bb89-7f19-4a0f-b7cc-a8756fd5c746.png"/>
 </p>
 이렇게 개냥이가 각각 50%씩 첨가된 샘플이 생성된다. 해당 샘플에 대한 라벨은 마찬가지로 convex sample과 같은 공식에 따라
 
@@ -69,15 +69,15 @@ Model의 overfitting을 방지하는 정규화 방식으로, 이후 설명할 Mi
 # Related works
 준지도 학습의 경우 관련 내용이 좀 있는데, MixMatch 논문에서는 전혀 언급하지 않는 분야도 있다. 이 중에 가장 유명한 transductive model, graph-based model 그리고 generative model에 대해 간단하게 소개하도록 하겠다.
 <p align="center">
-  <img src="mixmatch/006.png"/>
+  <img src="https://user-images.githubusercontent.com/79881119/209059045-b04b1a3a-5b87-42c1-8b93-0d4ca790cc43.png"/>
 </p>
 Transductive learning은 Inductive learning과 다르게, 각 노드(데이터셋)와 엣지(라벨)에 대해 일부 노드에 대한 엣지 정보만 가지고 나머지 노드에 엣지를 부여하는 작업이다. 따라서 그래프 개념으로 해석한 SSL 그 자체로 보면 된다. 그래프 based model도 비슷한 형태로 생각해주면 된다. 물론 위와는 다르게 노드와 엣지의 느낌이 약간 다른데, Graph-based modeling에서 각 노드를 데이터셋으로 보는 방식은 transductive learning에서 해석하는 것과 같지만, 엣지는 유사성을 나타낸다.
 <p align="center">
-  <img src="mixmatch/007.png"/>
+  <img src="https://user-images.githubusercontent.com/79881119/209059047-34b7ea16-352b-4d71-84f2-f5109687188d.png"/>
 </p>
 간단하게 MNIST 데이터셋으로 기준을 보인다면, 같은 숫자일수록 그래프 상에서 엣지(선으로 표현된 부분)가 강하게 나타날 것이고 이는 곧 유사한 클래스의 데이터일수록 높은 유사도(그래프 상에서는 거리가 가깝다고 역으로 이해할 수 있다)를 보인다고 생각할 수 있다. 에너지 based로 생각하는 것, Hessian과 관련된 수식 증명의 경우 나중에 기회가 된다면 따로 다룰 것이고 오늘 언급할 페이퍼는 해당 내용을 신경쓰지 않기 때문에 넘어가도록 하겠다.
 <p align="center">
-  <img src="mixmatch/008.png"/>
+  <img src="https://user-images.githubusercontent.com/79881119/209059049-7a484a0f-631e-47a8-89a2-629b361e2fe9.png"/>
 </p>
 Generative modeling 방식은 말 그대로 생성 모델링을 통해 heuristic한 준지도 학습을 진행하게 된다. 이를 테면 노이즈를 제거하는 방식이 될 수도 있고, 이미지에 color를 입히는 작업이 될 수도 있으며 perturbation(빈 부분, 손상된 부분)을 복원하거나 서로 다른 채널을 예측하는 형태로 진행된다.
 
@@ -106,7 +106,7 @@ Mean Teacher 방식에서는 두 개의 term을 서로 다른 모델링을 통�
 \]
 
 <p align="center">
-  <img src="mixmatch/009.png"/>
+  <img src="https://user-images.githubusercontent.com/79881119/209059052-e06308cd-62b4-4969-8a05-1be0d97cb338.png"/>
 </p>
 처럼 기존 weight에 student weight를 업데이트하는 방식을 사용한다고 생각하면 된다. 자세한 내용은 [여기](https://arxiv.org/abs/1703.01780)를 참고. 그리고 VAT라는 방식(Virtual Adversarial Training)에서는 Adversarial sampling 방법 중에 maximally changes output class distribution을 이용한 perturbation 방식(모델을 가장 혼란스럽게 만드는 augmentation이라고 보면 된다)을 사용, hard sampling을 통해 같은 방식으로 최적화를 한다. MixMatch에서는 단순한 data augmentation 방식으로 볼 수 있는 random horizontal flips and crops를 사용한다.
 
@@ -139,20 +139,20 @@ Sharp label을 만들기 위한 entropy minimization은 temperature hyperparamet
 
 이와 같이 적용한 새로운 확률 맵을 이용하는 것이다. 이를 실제로 시각화하여 보면 다음과 같다.
 <p align="center">
-  <img src="mixmatch/010.png"/>
+  <img src="https://user-images.githubusercontent.com/79881119/209059056-4f683a5d-ce95-4a72-8248-e3a1dd1abb4c.png"/>
 </p>
 $T = 1$이면 원래의 확률 맵과 동일하다. 위와 같이 균등균등하게 설정한 확률 맵에서는 유사한 확률값(0.15, 0.13, 0.12)가 실제 모델 학습에서 dense region problem을 일으킬 수 있다. 이게 무슨 소리냐면,
 <p align="center">
-  <img src="mixmatch/011.jpeg"/>
+  <img src="https://user-images.githubusercontent.com/79881119/209059057-a0ece861-efba-405b-b135-deb59f99f388.jpeg"/>
 </p>
 위와 같은 그림에서, 진하게 표시된 십자가 모양과 삼각형 모양이 라벨링 된 데이터고 이에 대해 학습을 진행한 후에 unlabeld 샘플(파란색/주황색 점들)에 대해 decision boundary를 고려하는 상황이라면, 실선으로 나와있는 경계선보다 점선으로 나와있는 경계선이 분포 상으로 덜 밀집된 부분을 지나가기 때문에 적절한 경계선으로 보인다. 이렇듯 경계선이 밀도가 높은 지점을 지나게 되면, 해당 경계선 위치에 있는 샘플의 경우 보다 확률이 애매하게 매핑되기 때문에 이를 방지하기 위한 minimization 방법을 고안하게 된 것이다.
 <p align="center">
-  <img src="mixmatch/012.gif"/>
+  <img src="https://user-images.githubusercontent.com/79881119/209059060-042b9c8c-5546-443b-bd44-6b8050fba5ca.gif"/>
 </p>
 실제로 $T$값을 점차 감소시키면서 위의 식을 적용해보는 모습이다. $T$가 $0$에 가까워질수록 분포는 one-hot encoding에 가까워지고 $T \rightarrow 0$가 되면 one-hot encoding에 수렴한다.
 <figure class="half">
-    <img src="mixmatch/013.png" width="600" />
-    <img src="mixmatch/014.png" width="600" />
+    <img src="https://user-images.githubusercontent.com/79881119/209059063-258cba67-de1e-4de7-ada3-b6d32971acdb.png" width="600" />
+    <img src="https://user-images.githubusercontent.com/79881119/209059066-0e54d4e6-842d-4fc8-9ed7-3545f8d9a574.png" width="600" />
 </figure>
 
 # MixMatch algorithm
@@ -179,23 +179,23 @@ $X, U$는 augmentation이 진행되기 전 각 dataset을 의미하고 $T$는 en
 라벨이 존재하지 않는 데이터세 대해서는 pseudo label $q$를 적용한 consistency regularization loss를 사용한다. 이 두 개를 잘 섞어서 사용한다고 생각하면 된다. 사실 수식만 봐서는 아직 잘 이해가 안될 분들을 위해 직접 알고리즘 코드 한 줄 한 줄 설명해드리도록 하겠다.
 
 <p align="center">
-  <img src="mixmatch/015.png"/>
+  <img src="https://user-images.githubusercontent.com/79881119/209059068-c301914f-e460-4e6f-accd-0c745e74107f.png"/>
 </p>
 1~6번째 줄을 먼저 보도록 하자. 입력으로는 같은 배치 크기의 labeled dataset과 unlabeled dataset을 사용하고, labeled dataset $x$에 대해서는 stochastic augmentation을 한 개 적용하고, unlabeled dataset $u$에 대해서는 stochastic augmentation을 $K$개 적용한다.
 
 <p align="center">
-  <img src="mixmatch/016.png"/>
+  <img src="https://user-images.githubusercontent.com/79881119/209059073-bbebd988-7b15-4cef-9606-556bb05ac16c.png"/>
 </p>
 요 부분에서 pseudo label이 결정되는데, $K$개의 augmented된 unlabeled sample인 $\hat{u}$ 애들을 가지고 각각 모델의 예측값을 뽑아낸 뒤, 이를 $K$로 나누어 평균 예측값을 구하게 된다. 논문에서도 설명하겠지만 Pseudo-labeling 과정에 대해서는 최적화를 먹이지 않는다고 한다. 즉 오로지 현재 모델의 예측값을 기준으로 삼는다는 것. 그런 뒤 temperature hyperparameter $T$에 대해 sharpening을 진행하면 pseudo label $q_b$를 생성할 수 있게 된다.
 
 <p align="center">
-  <img src="mixmatch/017.png"/>
+  <img src="https://user-images.githubusercontent.com/79881119/209059075-530284c1-90de-4a4e-ab0f-9139e508f01f.png"/>
 </p>
 
 10~12번째 줄은 label data(augmentation 이후) + unlabeled data(augmentation 이후)를 서로 합친 뒤에 셔플링하는 과정이다. 섞게 되면 총 $B + B \times K$개의 샘플이 무작위로 나열되고, 이를 하나의 queue 혹은 dequeue 자료형으로 생각한다.
 
 <p align="center">
-  <img src="mixmatch/018.png"/>
+  <img src="https://user-images.githubusercontent.com/79881119/209059078-b9d40da6-ec11-4bab-904f-dad2d09ae580.png"/>
 </p>
 
 무작위로 나열된 샘플 배치 내에서 X'(labeled dataset)과 MixUp을 진행하고, 나머지 샘플들을 이용하여 U'(unlabeled dataset)과의 MixUp을 진행한다. 이렇게 진행된 MixUp은 lambda 값에 따라 labeled data 혹은 unlabeled data와의 중요도를 결정하는데,
@@ -213,13 +213,13 @@ $X, U$는 augmentation이 진행되기 전 각 dataset을 의미하고 $T$는 en
 이와 같이 샘플을 MixUp하게 되면 Vanila MixUp(lambda를 서로 같은 값으로 둠)에서 무시했던 batch order를 유지하면서 MixUp sample를 생성할 수 있게 된다.
 
 <p align="center">
-  <img src="mixmatch/019.png"/>
+  <img src="https://user-images.githubusercontent.com/79881119/209059081-b3812560-90f9-4fed-954b-52d6519ecc9c.png"/>
 </p>
 
 실제로 CIFAR-10, SVHN에 대해 250~4000 label를 가지고 SSL을 진행한 MixMatch 방식과 오차율을 비교하게 된다. Supervised method는 당연히 다른 방법들에 비해 좋은 것이 맞고, 검은색(제안된 방법)이 적은 라벨을 가지고도 representation을 효과적으로 학습할 수 있음을 보인다.
 
 <p align="center">
-  <img src="mixmatch/020.png"/>
+  <img src="https://user-images.githubusercontent.com/79881119/209059086-cc8045b7-cc5a-4a0c-844e-f43dd1dfeba7.png"/>
 </p>
 
 주요 contribution이라 함은 이런 저런 loss term과 관련된 SSL 방식을 최적화하는 알고리즘을 효율적으로 잘 설계했다는 점이 될 수 있겠다.

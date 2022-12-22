@@ -40,7 +40,7 @@ InfoNCE는 contrastive learning의 기본에 있는 연구가 되며, 흔히 mul
 ---
 
 <p align="center">
-  <img src="InfoNCE/001.png"/>
+  <img src="https://user-images.githubusercontent.com/79881119/209057172-5ca85d2a-98ee-4e32-973b-4b154a7130bc.png"/>
 </p> 
 이러한 방식을 통해, sentence 내에서 특정 단어들의 추출 빈도나 통계를 학습하게 된다. 또한 lookup table의 경우 학습이 가능하므로, 최종적으로 학습이 마무리된 경우 embedding space 상에서 엇비슷한 단어들은 비슷한 위치에 있게 되고, 서로 다른 단어들은 동떨어져서 존재하게 될 것이다.   
 그러나 위에서 4번째 process를 잘 보다보면, 네트워크는 dense layer 구조를 weight matrix of (임베딩의 차원 수, 단어 수)로 가지게 된다. 즉, 우리가 각 vocabulary 단어에 대한 예측을 위해서는, 먼저 각 단어에 대한 layer output을 구하고,
@@ -169,7 +169,7 @@ AI, 딥러닝이라 불리는 분야가 성공하는데 있어서는 gradient ba
 
 ## Contrastive predictive coding
 <p align="center">
-  <img src="InfoNCE/002.png"/>
+  <img src="https://user-images.githubusercontent.com/79881119/209057175-14b2eb0c-a332-4d8d-b2a2-9e1e0d195812.png"/>
 </p> 
 위의 그림은 CPC(Contrastive Predictive Coding) model의 구조를 보여준다. 먼저, non-linear encoder로 표현된 g_enc가 input sequence인 x_t를 latent representation의 sequence로 바꾼다.
 
@@ -236,27 +236,27 @@ density ratio $f$는 정규화되지 않은 값으로, 다음과 같이 $\log$ b
 
 ## Audio dataset
 <p align="center">
-  <img src="InfoNCE/003.png"/>
+  <img src="https://user-images.githubusercontent.com/79881119/209057177-0574457c-a2bc-4272-979e-d6e811a04ada.png"/>
 </p> 
 Librispeech는 총 251명의 발화자에 대한 음성 파일로 구성되고, 각각에 대한 text script가 주어진다. 이러한 text script는 실제 phone sequence와는 alignment가 되어있지 않기 때문에 추가적인 annotation이 필요하다. 필자는 이걸 모 랩실에서 구현할 때 노답 알고리즘을 파이썬으로 구성해서 만들었었는데 [Kaldi Toolkit](https://kaldi-asr.org/)이란게 있다고 한다. 이런 좋은게 있으면 미리 알려주지.. 흔히 CV에서 opencv-python 모듈을 많이 사용하는데, 이건 그거의 오디오 버전이라고 보면 될 것 같다. 좋은 사실 하나 알아갑니다...
 
 <p align="center">
-  <img src="InfoNCE/004.png" width="400"/>
-  <img src="InfoNCE/005.png" width="400"/>
+  <img src="https://user-images.githubusercontent.com/79881119/209057181-2a6a7337-5fc4-454a-af9a-173a7846960e.png" width="400"/>
+  <img src="https://user-images.githubusercontent.com/79881119/209057183-c781b0d7-318c-42a9-b4f4-ed2510522eb3.png" width="400"/>
 </p> 
 
 아니 세상에 심지어 이 논문에서 분리하고 alignment한 데이터셋을 구글 드라이브로 친절하게 공유도 해주셨다. 본인 speech transformer 학습시킬 때 이런 게 있는 줄 진작 알았더라면 이거 다운받아서 할 걸 그랬다. 후회가 막심하구만..   
 암튼 이렇게 구성한 데이터셋으로 할 수 있는 것은 음성을 듣고 발화자를 분류하는 speaker classification, 각 시점에서의 phone(음절)을 분류해내는 phone classification이 있다. 두 task 모두 CPC 방식이 supervised 방식에 대해 좋은 성능으로 보답하는 걸 볼 수 있다. 우측 표는 Phone classification task에 대해 CPC 모델에 대한 ablation을 이것저것 보여준다.
 
 <p align="center">
-  <img src="InfoNCE/006.png" width="400"/>
+  <img src="https://user-images.githubusercontent.com/79881119/209057187-038f0dc9-cdbe-42df-a45c-0743bcf343fd.png" width="400"/>
 </p> 
 
 이건 단순히 loss 그래프처럼 보이는데 그게 아니고 현재 시점을 기준으로 latent step을 몇 번 거치냐에 따른 phone prediction 평균 정확도를 보여준다. Phone 개수는 41 possible classes가 있으니, 아무런 예측을 하지 못하는 확률값 기준은 대강 0.025로 생각하면 될 듯하다. 한 step의 latent은 10ms를 차지하기 때문에, 약 20 step을 기준으로 해당 범위까지 예측이 이어질 수 있음을 그래프로 보여준 것 같다.
 
 # Vision
 <p align="center">
-  <img src="InfoNCE/007.png" width="400"/>
+  <img src="https://user-images.githubusercontent.com/79881119/209057189-814e8e88-7ae3-483c-8bec-9d7eecfc09e2.png" width="400"/>
 </p> 
 Vision은 좀 특이하게 ResNetv2 101 backbone을 이미지용 인코더로 사용하되, 원래 구조에서 batch normalization을 제외하고 사용하였다. Batch normalization은 classification과 같이 정해진 확률 범위 내에서 결과값을 뽑는데는 학습이 안정적이고 좋지만, representation을 학습해야 하는 generation이 연관된 학습 과정에서는 주로 쓰이지 않는 편이 낫다는 해석이 있다. 이건 뭐 믿거나 말거나인데 실제로 batch normalization이 들어가면 feature map 정규화가 진행되면서 보다 distribution collapse가 발생하기도 한다. Unsupervised learning이 끝난 뒤의 linear layer는 ImageNet labels를 추정하기 위해 따로 학습을 진행한다.
 
@@ -269,8 +269,8 @@ Vision은 좀 특이하게 ResNetv2 101 backbone을 이미지용 인코더로 �
 - Linear classifier는 앞서 훈련해놓은 CPC feature map을 통해 학습하는데, CPC 학습에는 Adam optimizer를 사용하고 Linear classifier는 SGD를 활용했다고 한다.
 
 <p align="center">
-  <img src="InfoNCE/008.png" width="400"/>
-  <img src="InfoNCE/009.png" width="400"/>
+  <img src="https://user-images.githubusercontent.com/79881119/209057191-a0a8b0cd-d182-4f25-9d5a-2a8c697b0275.png" width="400"/>
+  <img src="https://user-images.githubusercontent.com/79881119/209057192-6fec3629-5d57-44c0-8409-00a9e026bbdb.png" width="400"/>
 </p> 
 
 결과는 매우 좋았던 것으로 보인다. 참고로 여기서의 Top-1 ACC, Top-5 ACC는 classification task와는 좀 다르게 앞서 언급한 procedure 처럼 unsupervised하게 학습된 feature map을 기준으로 성능을 평가한 것이다.
@@ -282,23 +282,23 @@ Vision은 좀 특이하게 ResNetv2 101 backbone을 이미지용 인코더로 �
 
 저자들이 사용한 분류 task에 대한 데이터셋은 MR(영화 리뷰 감정), CR(고객 상품 리뷰), 주관적/객관적 평가, 의견(MPQA) 그리고 질문 타입(TREC) 분류 등등을 사용하였다.   
 <p align="center">
-  <img src="InfoNCE/010.png" width="400"/>
+  <img src="https://user-images.githubusercontent.com/79881119/209057193-fe7bad9c-fa88-4b46-9170-5376e0c60084.png" width="400"/>
 </p> 
 학습에 있어서 transfer learning setup은 skip-though vectors 논문에서 사용한 방식과 동일하게 했으며, 해당 논문을 기준으로 비교 대상을 선정한 것을 확인할 수 있다. 암튼 어느 정도 잘 된다는 것을 결과로써 보여준 모습.
 
 ## Reinforcement learning
 하다하다 이제 RL(강화학습)까지 흘러들어왔다. 이쯤이면 저자들이 변태라는게 학계의 정설은 아니고 Deepmind 최고   
 <p align="center">
-  <img src="InfoNCE/011.png" width="400"/>
+  <img src="https://user-images.githubusercontent.com/79881119/209057194-b5e93178-d0c9-4178-8275-e2a0885a8bef.png" width="400"/>
 </p> 
 참고로 RL은 딥러닝과 그 결이 조금 다르기 때문에 objective를 다르게 줘야 한다. A2C agent를 base model로 사용하고 CPC를 auxiliary loss로 주었다. 자세한 내용은 사실 나도 잘 몰라서 넘어가도록 하겠다. 빨간색이 잘 나온걸 보면 효과적이라고 결론을 낸 것 같다.   
 
 # Appendix
 <p align="center">
-  <img src="InfoNCE/012.png" width="400"/>
+  <img src="https://user-images.githubusercontent.com/79881119/209057195-fc1c0240-9bb2-400c-99f0-f5832300c995.png" width="400"/>
 </p> 
 Loss function의 lower bound 유도 과정
 <p align="center">
-  <img src="InfoNCE/013.png" width="400"/>
+  <img src="https://user-images.githubusercontent.com/79881119/209057198-12880ba7-686b-4595-9a6d-830c8ae6c6bb.png" width="700"/>
 </p> 
 Mutual information neural estimation과의 연관성을 보여줌. 결국  mutual information에서 intuition을 어떠한 방식으로 얻으셨는지 수식을 통해 보여주는 것 같다.
