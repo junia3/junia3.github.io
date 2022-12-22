@@ -420,7 +420,217 @@ relative_position_M = x_axis_matrix + y_axis_matrix
 ---
 
 # CNN과 ViT을 어떻게 하면 잘 조합할 수 있을까?
+앞서 살펴본 Shifted window 방법을 사용한 <U>Swin-T</U>의 경우, 훨씬 효율적인 연산이 가능하다는 점과 hierarchical 구조로 인해 CNN이 가지던 다양한 scale에 대한 flexibility를 가질 수 있으며, 그러면서도 연산 속도는 image size에 대해 quadratic하지 않고 <U>Linear</U>하게 유지할 수 있다는 점이 큰 장점이 되었다. 또한 이러한 scale flexibility로 인해 classification 이외에도 다양한 vision task, 예를 들어 detection이나 segmentation 등에도 일반적으로 적용될 수 있는 구조를 제시했다는 점이 되겠다.   
+그러나 이러한 Swin-T의 단점은 결국 작은 데이터셋으로 scratch부터 학습하기 힘들다는 점이고, 이런 문제는 ViT에서 제시된 이후로 여전히 해결되지 못했다. 앞서 소개했던 Data effficient transformer의 경우 CNN을 teacher model로 사용하여 knowledge distillation을 진행했지만, 결국 CNN의 성능에 따라 좌우되는 문제가 발생했었다. 그렇다면 과연 CNN이랑 ViT의 장점을 함께 활용하여, inductive bias를 통한 representation의 효율적 학습(<U>data efficiency</U>)과 <U>global information</U> 활용을 함께 할 수 있는 방법은 없을까?   
+바로 이러한 질문으로부터 등장했던 연구가 [Convolutional vision Transformer(CvT)](https://arxiv.org/pdf/2103.15808.pdf)이다. CNN의 여러 장점들을 ViT 구조에 결합하고자 했던 것이다. 예를 들어 CNN은 object에 대해 shift, scale 그리고 어느 정도 용인 가능한 distortion이 일어나더라도 이를 <U>invariance하게 처리</U>할 수 있다. 그에 반하여 ViT는 dynamic attention, global information 그리고 보다 나은 generalization이 가능하다.   
+CvT에서 바꾼 두 가지의 주된 구조적 형태는 바로 다음과 같다.
+
+1. Transformer의 계층적 구조에 대해, convolutional token embedding이라는 새로운 임베딩 방식을 소개한다.
+2. Convolutional transformer block은 연산될 convolutional projection을 생성해낸다.
+
+<p align="center">
+    <img src="transformer/033.png" width="600"/>
+</p>
+
+결론부터 보자면, 구조를 그대로 사용하면서 더 적은 데이터셋을 활용했던 DeiT는 parameter 수를 효과적으로 줄이거나 성능을 CNN teacher network 이상으로 끌어올리지 못했으나, CvT는 parameter 수를 보다 효과적으로 활용하면서도 성능을 ViT 이상으로 높일 수 있음을 보여주었다. 네트워크의 전반적인 구조를 보면,
+
+<p align="center">
+    <img src="transformer/034.png" width="900"/>
+</p>
+
+결국 하고자 하는 것은 input image 혹은 중간의 feature map에 대해서 <U>convolution</U> 연산으로 <U>token embedding</U>을 진행하고, 이 token에 대한 <U>attention</U>을 수행한다. 그런 뒤 output으로 나오게 되는 <U>lower resolution</U>의 feature map에 대해 다시 convolution 연산을 진행, <U>token에 대한 attention을 수행</U>하는 과정이 반복된다.
+
+$l-1$번째 layer에서의 output $x_{l-1}$에 대해 $l$번째 convolution 연산의 output으로 얻을 수 있는 new token map을 $f(x_{l-1})$라고 하자. 여기서의 $f$는 필터링 함수를 의미한다. 실제 official 코드를 참고해보면 convolutional embedding 부분이 다음과 같이 되어있는데,
+
+```python
+class ConvEmbed(nn.Module):
+    """ Image to Conv Embedding
+    """
+
+    def __init__(self,
+                 patch_size=7,
+                 in_chans=3,
+                 embed_dim=64,
+                 stride=4,
+                 padding=2,
+                 norm_layer=None):
+        super().__init__()
+        patch_size = to_2tuple(patch_size)
+        self.patch_size = patch_size
+
+        self.proj = nn.Conv2d(
+            in_chans, embed_dim,
+            kernel_size=patch_size,
+            stride=stride,
+            padding=padding
+        )
+        self.norm = norm_layer(embed_dim) if norm_layer else None
+
+    def forward(self, x):
+        x = self.proj(x)
+
+        B, C, H, W = x.shape
+        x = rearrange(x, 'b c h w -> b (h w) c')
+        if self.norm:
+            x = self.norm(x)
+        x = rearrange(x, 'b (h w) c -> b c h w', h=H, w=W)
+
+        return x
+
+```
+default setting을 참고하게 되면 ```patch_size = 7```, ```stride = 4```, ```padding = 2```라고 되어있기 때문에 input image의 spatial resolution $H_i \times W_i$에 대해서 output embedding의 resolution $H_o \times W_o는$
+
+\[  
+    \begin{aligned}
+        H_o = \left( \frac{H_i + 2 \cdot 2 - 7}{4} + 1 \right) \newline
+        W_o = \left( \frac{W_i + 2 \cdot 2 - 7}{4} + 1 \right) 
+    \end{aligned}
+\]
+
+위와 같다. 이렇게 차원을 축소하면서 embedding을 추출한 뒤, layernorm을 적용하고 난 결과를 추출한다. 이제 이렇게 추출된 <U>token</U>에 대해서 <U>attention 연산</U>을 진행하게 되는데, 기존 방식의 attention과는 다르게 Convolutional projection이 이전의 projection과 다른 점은 다음과 같다.
+
+<p align="center">
+    <img src="transformer/035.png" width="900"/>
+</p>
+
+가장 왼쪽에 보이는 (a)는 ViT에서 token을 Query, Key 그리고 Value에 mapping할 때 사용했던 linear projection 방식이다. 단순히 weight $W^Q,~W^K,~W^V$를 곱해줌으로써 만들어낼 수 있다. 이와는 다르게 convolutional projection은(중간에 보이는 그림 (b)) token을 reshape 및 padding을 통해 convolution 연산이 가능한 window 구조를 만들어주고, 여기에 convolutional projection을 수행하여 query, key 그리고 value를 만들어낸다. 연산 과정에 대한 official 코드 중 일부를 가져와서 간단하게 설명하면 다음과 같다.
+
+```python
+def forward_conv(self, x, h, w):
+    # Class 토큰을 따로 분리하는 과정/ Convolution 연산은 오직 이미지에 대한 토큰에만 적용하겠다는 의미
+    if self.with_cls_token:
+        cls_token, x = torch.split(x, [1, h*w], 1)
+
+    # einops의 rearrange를 통해 HW * C로 들어온 input을 C * H * W로 펴주게 된다
+    x = rearrange(x, 'b (h w) c -> b c h w', h=h, w=w)
+
+    # conv_proj_ 는 모두 embedding dimension을 channel input 그리고 output으로 하는 convolution 연산
+    # 참고로 convolution은 (kernel=3, stride=1, padding=1)로 사용함으로써 spatial dimension을 그대로 유지한다
+    if self.conv_proj_q is not None:
+        q = self.conv_proj_q(x)
+    else:
+        q = rearrange(x, 'b c h w -> b (h w) c')
+
+    if self.conv_proj_k is not None:
+        k = self.conv_proj_k(x)
+    else:
+        k = rearrange(x, 'b c h w -> b (h w) c')
+
+    if self.conv_proj_v is not None:
+        v = self.conv_proj_v(x)
+    else:
+        v = rearrange(x, 'b c h w -> b (h w) c')
+
+    # 모든 연산이 끝나면 다시 rearrange를 통해 원래와 같이 쭉 펴주게 된다.
+    if self.with_cls_token:
+        q = torch.cat((cls_token, q), dim=1)
+        k = torch.cat((cls_token, k), dim=1)
+        v = torch.cat((cls_token, v), dim=1)
+
+    # 그리고 아까 떼어냈던 class 토큰을 다시 붙여주게 되면, attention 연산에 필요한 query, key, value를 얻을 수 있다
+    return q, k, v
+```
+참고로 위에서 사용되는 convolutional block은 depthwise + pointwise convolution을 사용한다. 
+
+```python
+def _build_projection(self,
+                    dim_in,
+                    dim_out,
+                    kernel_size,
+                    padding,
+                    stride,
+                    method):
+    if method == 'dw_bn':
+        proj = nn.Sequential(OrderedDict([
+            ('conv', nn.Conv2d(
+                dim_in,
+                dim_in,
+                kernel_size=kernel_size,
+                padding=padding,
+                stride=stride,
+                bias=False,
+                groups=dim_in
+            )),
+            ('bn', nn.BatchNorm2d(dim_in)),
+            ('rearrage', Rearrange('b c h w -> b (h w) c')),
+        ]))
+    elif method == 'avg':
+        proj = nn.Sequential(OrderedDict([
+            ('avg', nn.AvgPool2d(
+                kernel_size=kernel_size,
+                padding=padding,
+                stride=stride,
+                ceil_mode=True
+            )),
+            ('rearrage', Rearrange('b c h w -> b (h w) c')),
+        ]))
+    elif method == 'linear':
+        proj = None
+    else:
+        raise ValueError('Unknown method ({})'.format(method))
+
+    return proj
+```
+내부 함수인 projection 생성 함수를 보게 되면 알 수 있다. 실제로 논문에서 설명하기로는
+
+- Depth-wise convolution 2d
+- BatchNorm2d
+- Point-wise convolution 2d
+
+라고 되어있지만 실제로 구현되어있는 걸 보니까 두번째 단계까지는 맞고, pointwise convolution 대신 <U>linear projection을 통해</U> 각 channel 간의 correlation을 준 것 같다.   
+결론적으로 Transformer based model에 비해 CvT는 더 적은 parameter 수와 FLOPS를 가지고도 더 높은 accuracy를 획득하였다. Attention 연산 시에 MLP에 의존하지 않다보니, 같은 projection을 내보내는데 더 적은 수의 parameter를 요구하기 때문이다. 그러면서도 CNN based model과는 다르게 ViT based network의 성능과 같이 높은 수치를 보여주었다.
+
+<p align="center">
+    <img src="transformer/036.png" width="800"/>
+</p>
 
 ---
 
-...작성중
+# Multimodal using transformer
+
+지금까지 생각보다 많은 논문들을 리뷰했다. 가장 처음에는 <U>CNN, RNN</U>부터 시작해서 <U>Sequence to sequence</U>. 그리고 이어지는 <U>attention mechanism</U>과 이를 기반으로한 <u>attention only network(transformer)</U>의 발전. 그리고 이러한 NLP에서의 성공이 vision task로 이어질 수 있었던 <U>ViT</U>의 제안 방식과 더불어 여러 한계점을 극복하기 위한 방법들(<U>DeiT, Swin-T, CvT</U>)까지 모두 살펴보았다. 그렇다면 **multimodal**의 지평을 열 수 있게 도와준 transformer가 정확히 어떤 측면에서 다양한 연구에 활용될 수 있는지 짤막하게 소개하며 이번 글을 마무리해볼까 한다.   
+
+<p align="center">
+    <img src="transformer/037.png" width="300"/>
+</p>
+
+<U>Modality</U>란 내포할 수 있는 양상이 너무 막연하기에 다양한 설명이 될 수 있다. 하지만 지금 살펴보고자 하는 '딥러닝'의 측면에서는 다음과 같이 정의할 수 있다. '<U>Modality</U>'는 vision, audio 그리고 language와 같이 특정 sensor나 관측 방법을 통해 취득할 수 있는 개별적인 <U>communication channel</U>이다. 용어가 많이 생소하겠지만 예를 들어 카메라나 LiDAR(센서) 등등 어떠한 형식의 정보만 수집할 수 있다면 이를 modality라고 표현 가능하다. Thermal 센서를 통해 취득한 열화상 이미지도 또다른 modality고, CT나 MRI 기계를 통해 취득한 의학 영상 이미지 또한 또다른 modality 중 하나가 된다.   
+따라서 <U>multimodality</U>, 혹은 <U>멀티 모달</U>이라고 불리는 딥러닝의 task는 vision, text, sound, data 등등 서로 다른 취득 방식으로 획득한 데이터셋을 유의미하게 함께 활용하여 representation learning을 하고자 하는 목적에 있다.
+
+<p align="center">
+    <img src="transformer/038.png" width="700"/>
+</p>
+
+간혹 multimodal과 cross-modal 사이에 워딩이 겹치는 문제가 있는데, 각각의 차이점은 다음과 같다. 멀티모달은 딥러닝에서 새롭게 제시된 알고리즘으로, 여러 가지의 modality를 <U>함께 활용</U>하여 학습을 하는 것이다. 예를 들어, 사람은 시각과 청각을 모두 활용해서 사람이나 특정 물체를 판별하는데, 바로 이러한 능력을 computer에 대해서 적용하고자 하는 것이다. 그와는 다르게 cross-modal은 multimodal deep learning으로 접근을 하되, 하나의 <U>modality의 정보</U>가 <U>다른 modality</U>의 <U>성능을 높이는데</U> 사용되는 것이다. 만약 고양이의 이미지를 보았다면, 고양이 울음소리를 들음으로써 '아 이 사진은 고양이겠구나'라고 판단할 수 있는 것이다.   
+AI system 중 다양한 modality에 대해 함께 작동할 수 있는 모델을 multimodal이라고 부르며, cross-modal은 서로 다른 task를 활용함으로써 중간에 있는 지식을 활용하는 것이다. **여러 스타트업**이 모여있는 <U>공동 사무실에서</U> 함께 일하는 과정에서 서로 시너지 효과를 내서 모두의 사업이 성공하는 것이 **cross-modal**의 예시가 될 수 있고, 하나의 스타트업 내 <U>여러 부서</U>가 함께 co-work를 해서 각자 맡은 일을 열심히 해서 회사를 키우는게 **multi-modal**의 예시가 될 수 있겠다.   
+<p align="center">
+    <img src="transformer/039.png" width="600"/>
+    <img src="transformer/040.png" width="600"/>
+</p>
+대표적인 text와 vision을 함께 활용하는 multimodal 방식은 위에서 보는 바와 같이 video captioning과 같은 캡셔닝 기술과, video question answering과 같은 reasoning 기술이다. 이외에도 비디오나 미디어의 특정 부분을 text description을 통해 찾아내는 retrieval task도 있으며, text를 적으면 video나 image를 만들어내는 기술이나 audio를 통해 video를 만드는 기술 등등 다양하게 적용될 수 있다.   
+바로 이러한 측면에서 'Transformer'는 multimodal에 접근하기 가장 좋은 네트워크 구조다. 
+
+<p align="center">
+    <img src="transformer/041.png" width="700"/>
+</p>
+Transformer는 단순하게도 모든 형태의 input을 tokenize할 방법만 찾으면, 이를 대표할 만한 representation space로 embedding한 뒤 attention 학습을 진행하면 된다. Embedding 과정이 복잡하지도 않으며, 가장 중요한 점은 '다양한 데이터 형태'에 적용이 된다는 것이다. 그리고 Multimodal transformer에서는 <U>fusion</U> 및 <U>alignment</U>와 같은 cross-modality interation이 attention을 통해서 자동적으로 발생한다. 혹시라도 궁금한 사람은 [survey paper](https://arxiv.org/pdf/2206.06488.pdf)를 보면 잘 정리되어 있어서 좋은 것 같다.
+<p align="center">
+    <img src="transformer/042.png" width="900"/>
+</p>
+보라색과 초록색이 서로 다른 modality embedding이라고 생각하고 각각을 살펴보면 위와 같다. 처음부터 아예 <U>더해서 attention을 진행하는 과정</U>도 있고(a), 더하지 않고 <U>차원 단위로 붙여서</U> 연산하는 과정도 있다(b). 앞선 방법들과는 다르게 transformer layer를 <u>다르게</U> 사용한 뒤, 이후 각각의 output에 대해 <U>하나의 transformer layer로 합치는</U> 과정도 있으며(c), 오히려 처음에는 하나의 layer로 학습한 뒤에 <U>여러 layer로 분리하는 과정</U>도 있다(d). 또한 서로 다른 layer로 학습하되, 각각의 query가 <U>교차되면서</U> 상대방 layer의 attention을 학습하는 방법도 있고(e), 이러한 cross-attention을 진행한 뒤에 결과를 concatenate하는 방식도 존재한다(f). 이 여러 가지 방법들은 모두 conceptually 그럴듯하게 보이며, 각 modality의 연관성이나 문제 해결 방법에 따라 더 분화할 수 있는 구조를 가진다.   
+사실 어떤 task가 어떤 방법을 쓰는지에 대해서 구체적으로 알 필요가 있는 것은 아니다. 단지 이 그림에서 시사하는 바는 '<U>Transformer 구조는 여러 modality를 함께 학습하는 과정에서 취할 수 있는 전략이 매우 다양하다</U>'라는 것이다.
+
+---
+
+# CLIP: Learning Transferable Visual Models From Natural Language Supervision
+
+이러한 multimodal 관점에서 등장한 가장 유명하고, 또 많이 인용되고 있는 논문인 CLIP에 대해서 설명하도록 하겠다.
+<p align="center">
+    <img src="transformer/043.png" width="900"/>
+</p>
+학습법은 간단하게도, 특정 이미지가 있다면 이를 설명하는 text prompt가 각각 주어지고, 이를 transformer encoder를 통한 embedding으로 각각 바꾼다. image embedding과 text embedding 사이에 positive pair는 가깝게(diagonal 부분), negative pair는 서로 멀게(나머지 부분) 학습하게 되면, 최종적으로는 image에 대한 classification을 text-driven으로 학습이 가능하다는 것이다. 첫번째 contrastive pre-training 부분 다음을 보면 label text로부터 dataset classifier를 만드는게 나오는데, <U>학습 시</U>에 <U>text description</U>을 사용했기 때문에 classification 시에도 <U>비슷한 형태의 description</U>을 주기 위해 '이것은 ○○○의 사진입니다'의 형태로 넣어주게 된다.   
+수많은 이미지에 대한 설명과 함께 학습하다보면, 학습 시에 사용되지 않은 classification 이미지에 대해서도 좋은 성능을 보여줄 수 있다는 것이 바로 이 논문이었고, 이후 다양한 형태로 활용되며 현재 multimodal 시장에서 가장 핫한 baseline이라고 볼 수 있다.
+<p align="center">
+    <img src="transformer/044.png" width="400"/>
+</p>
+녹색으로 표시된 부분이 zero-shot clip이 fully-supervised ResNet보다 더 좋은 성능을 보인 데이터셋이다. 모든 데이터셋에 대해 supervision을 가지고 학습한 ResNet보다 전혀 training sample에 대해 접근하지 못했음에도 높은 정확도를 보이는 것은 정말 혁신적이지 않을 수 없다. [CLIP 논문](https://arxiv.org/pdf/2103.00020.pdf)은 사실 실험적인 부분에서 자세하게 보고 넘어갈 부분이 정말 많아서 이후에 따로 다른 게시글에 논문 리뷰로 다룰 예정이다.
