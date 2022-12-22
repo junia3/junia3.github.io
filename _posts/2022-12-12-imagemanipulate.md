@@ -31,13 +31,13 @@ Generative model인 GAN은 여러 방면에서 활용될 수 있다.
 Image-to-image translation이라 함은 input image로부터 output 이미지를 생성하는 task가 되며, 이때 output과 input은 서로 어떠한 관계에 놓이게 된다.   
 이를 테면 computer vision이나 machine learning task에서 주로 나오는 semantic labeling이나 boundary detection이 될 수도 있고,
 <p align="center">
-    <img src="imagetoimage/001.png" width="400"/>
-    <img src="imagetoimage/002.png" width="400"/>
+    <img src="https://user-images.githubusercontent.com/79881119/209128127-87d17af5-7a5c-4286-88b0-892aacb811df.png" width="400"/>
+    <img src="https://user-images.githubusercontent.com/79881119/209128133-59673788-fece-4176-bab6-2485f6049932.png" width="400"/>
 </p>
 Computer graphics나 computational photography에서 다루는 image colorization, super-resolution이 될 수도 있다.
 <p align="center">
-    <img src="imagetoimage/003.png" width="400"/>
-    <img src="imagetoimage/004.png" width="400"/>
+    <img src="https://user-images.githubusercontent.com/79881119/209128137-a759fc58-54ff-4881-af7c-579c27016684.png" width="400"/>
+    <img src="https://user-images.githubusercontent.com/79881119/209128139-4ab35598-1900-41eb-bac2-c097da070b6d.png" width="400"/>
 </p>
 
 즉, 해당 task의 supervision은 source로부터 target을 만드는 과정이 되며, generator $G$는 source domain $S$의 이미지를 사용하여 target image $T$를 만들게끔 학습된다.   
@@ -58,11 +58,11 @@ Computer graphics나 computational photography에서 다루는 image colorizatio
 
 # pix2pix: Image-to-Image Translation with Conditional Adversarial Nets
 <p align="center">
-    <img src="imagetoimage/005.png" width="600"/>
+    <img src="https://user-images.githubusercontent.com/79881119/209128143-1afe1947-10ea-4004-a5a1-2e6034374d6d.png" width="600"/>
 </p>
 pix2pix는 대표적인 image to image translation을 GAN으로 해결한 연구이다. 가장 유명한 figure인 sketch to real image에 대한 framework는 위와 같다.   
 <p align="center">
-    <img src="imagetoimage/006.png" width="600"/>
+    <img src="https://user-images.githubusercontent.com/79881119/209128145-2aa6c562-4816-434c-9417-047d39df9ac2.png" width="600"/>
 </p>
 만약, generator가 단순히 sketch image를 가지고 real image를 만들어내는 task에 대해서 생각해보면, 위의 그림과 같이 '그럴듯한 가방'을 만들어내는 것도 가능하지만 그럴 경우 실제 sketch와의 correspondence 문제까지 고려해야한다. 즉, 위쪽 row에 대해서는 sketch 부분에 잘 맞게끔 이미지가 생성되지만, 아래쪽의 row에서는 sketch는 거의 무시한 채 이미지를 생성해낸다.   
 이러한 문제를 기존 GAN loss에서는 고려할 수 없었으며(아래쪽 식을 참고),
@@ -94,13 +94,13 @@ Generator에 input $x$가 latent vector $z$와 함께 주어지는 구조인 걸
 
 위에 표현된 식에서 $\mathcal{L}(G, D)$는 conditional GAN loss에 해당되며, 앞서 설명했던 것과 같이 discriminator에 input 정보를 함께 줌으로써 생성된 이미지가 입력된 이미지에 대한 조건을 가지게끔 해준다. 그러나 해당 loss는 content가 유지된다는 보장을 줄 수 없기 때문에 여기에 추가적으로 $\mathcal{L}(G)$로 표현된 식을 통해, 원본 이미지와 유사하게 생성되게끔 만들어준다. $\lambda = 100$ 정도로 크게 생각해주면 된다.
 <p align="center">
-    <img src="imagetoimage/007.png" width="600"/>
+    <img src="https://user-images.githubusercontent.com/79881119/209128147-a661f2ef-4c41-4177-ac9d-f97edfccd894.png" width="600"/>
 </p>
 
 생성자 구조는 이와 같이 [U-Net](https://arxiv.org/abs/1505.04597) 형태를 이용하였다. 또한 이 논문에서 특별한 점은 $x$에 추가적으로 latent vector $z$를 넣어주지 않고, decoder part의 dropout으로 해당 stochastic한 부분을 충당할 수 있다고 한다. 그래서 사실상 loss 식에서 표현된 $z$를 따로 넣어주지는 않는다. 추가로 넣어주더라도 별로 효과적이진 않다고 판단했다. 즉, 넣어주어도 결국 $z$에는 아무런 영향을 못받는다고 했다.
 
 <p align="center">
-    <img src="imagetoimage/008.png" width="600"/>
+    <img src="https://user-images.githubusercontent.com/79881119/209128149-7dd5735c-0f0b-4e9f-abfd-af21d2df494c.png" width="600"/>
 </p>
 
 각 loss term에 의한 효과를 보여주는 그림이다. L1 loss를 쓰지 않았을 때는 GT의 전체적인 틀을 잃어버리는 문제가 발생하고, cGAN loss를 쓰지 않았을 때는 blurry한 결과가 나오는 것을 확인할 수 있다. Discriminator 구조는 appendix에 따로 나와있는데, 간단하게만 설명하면 모든 ReLU는 LeakyReLU(기울기 0.2)를 사용하였고 [DCGAN](https://arxiv.org/abs/1511.06434)에서와 같이 첫번째 layer에서는 BatchNorm을 사용하지 않았다. 이러한 pix2pix는 두 개의 paired dataset만 있다면 한쪽을 source, 다른 쪽을 target으로 삼아서 다양한 image to image translation task에 적용될 수 있다는 장점이 있다.   
@@ -108,7 +108,7 @@ Generator에 input $x$가 latent vector $z$와 함께 주어지는 구조인 걸
 이를테면 사진이 있는데, 그걸 모네 화풍으로 바꾸고 싶다고 하자. 모네의 화풍에 대한 image를 구하기 위해 우리가 직접 사진을 찍을 수도 없고, 정말 그림을 그린 그 풍경이 현재도 존재한다고 가정할 수도 없다. 심지어 조경이나 날씨 등 환경도 달라지고, 동일 시간대 내에서 사진을 찍은게 아니라면 paired dataset을 구축할 수 없다. ~~그렇다고 모네를 환생시켜서 그림 그려달라고 할 수도 없는 노릇~~
 
 <p align="center">
-    <img src="imagetoimage/009.png" width="600"/>
+    <img src="https://user-images.githubusercontent.com/79881119/209128152-72f039eb-b155-4cb6-9885-bb78eacdf647.png" width="600"/>
 </p>
 이 그림을 보게 되면, pix2pix는 paired dataset에 대해서만 적용될 수 있고, 우측과 같은 unpaired dataset에서는 구현이 불가능한 것을 알 수 있다. 그렇다면 cycleGAN의 intuition을 알아보도록 하자.
 
@@ -117,11 +117,11 @@ Generator에 input $x$가 latent vector $z$와 함께 주어지는 구조인 걸
 # CycleGAN: Unpaired Image-to-Image Translation using Cycle-Consistent Adversarial Networks
 생성 과정을 간단하게 번역 과정으로 생각해보자. 영어를 한국어로 번역하고, 번역된 한국어를 다시 영어로 번역하면 원래의 문장이 나와야한다. 바로 이것이 cycleGAN의 주된 메커니즘이며, 여기서 번역기 기능을 하는 것이 generator라고 생각하면 된다.
 <p align="center">
-    <img src="imagetoimage/010.png" width="600"/>
+    <img src="https://user-images.githubusercontent.com/79881119/209128154-d19c06b6-27cf-44a6-939c-5d59d9e055aa.png" width="600"/>
 </p>
 예를 들어 말 이미지에서 얼룩말 이미지로 바꾸는 task에 대해서 설명하면, 말을 얼룩말로 바꾼 이미지를 다시 말 이미지로 되돌렸을 때 원래의 말 이미지가 나와야 한다는 것이다. 이러한 방법을 통해 unpaired dataset을 가지고 있더라도 원래의 컨텐츠를 유지하면서 이미지를 생성할 수 있게 된다는 것이다.
 <p align="center">
-    <img src="imagetoimage/011.png" width="1000"/>
+    <img src="https://user-images.githubusercontent.com/79881119/209128157-9abd55c3-9674-4c03-8e01-2b219a7019c5.png" width="1000"/>
 </p>
 이 위에 나타난 그림이 되게 중요한데, cycleGAN의 프레임워크를 이 그림만 보면 모두 이해할 수 있기 때문이다. $X$를 한쪽 도메인이라고 생각하고 $Y$를 다른쪽 도메인이라고 생각하자. 여기서 도메인이 의미하는 것은 데이터셋이 포함되는 하나의 집합이다.   
 $X$ 도메인에 포함된 데이터셋 $x$와 $Y$ 도메인에 포함된 데이터셋 $y$에 대해서, 각 방향에 대한 generator를 함수로 표현할 수 있다. $X$ 도메인의 데이터셋을 받아 $Y$ 도메인의 데이터를 생성하는 네트워크를 $G$라고 하고, 이렇게 생성된 $G(x)$를 $\hat{y}$라 표현한다. 마찬가지로 $Y$ 도메인의 데이터셋을 받아 $X$ 도메인의 데이터를 생성하는 네트워크를 $F$라고 하고, 이렇게 생성된 $F(y)$를 $\hat{x}$라 표현한다. 두 네트워크에 대해 $X$ 도메인 이미지에 대해 F, G를 최적화하는 과정은 다음과 같다. 우선 $X \rightarrow Y$로 생성된 이미지에 대한 adversarial loss는 다음과 같이 표현된다. 
@@ -149,12 +149,12 @@ Adversarial loss에서 각 notation이 의미하는 바는 다음과 같다.
 요약하자면 $D_X$와 $F$가 서로 경쟁하면서 학습하는 구조가 된다. 이제 모든 domain에 대한 generator, discriminator 학습이 가능해진다.
 그리고 추가적으로 여기에 앞서 언급한 cycleGAN에서의 주요 intuition인 <U>"다시 돌아왔을 때 원래와 같아야 함"</U>을 적용한 cyclic loss는 다음과 같다. 정말 간단하게도 다시 역방향 generator를 사용해서 생성된 이미지를 기준으로 원래 이미지와의 L1 loss를 계산한다.
 <p align="center">
-    <img src="imagetoimage/012.png" width="600"/>
+    <img src="https://user-images.githubusercontent.com/79881119/209128161-3a5726a6-706f-4190-a084-7686f293a540.png" width="600"/>
 </p>
 
 구현은 pix2pix에서와 동일한 generator과 discriminator를 사용했으나, cycleGAN original paper에서는 Instance Normalization을 사용했으며 modified ResNet based generator를 사용한 점이 살짝 다르다.
  <p align="center">
-    <img src="imagetoimage/013.png" width="800"/>
+    <img src="https://user-images.githubusercontent.com/79881119/209128162-454b45de-740b-4f14-ad57-bc636cbe9f30.png" width="800"/>
 </p>
 위의 그림이 cycleGAN에서 사용된 generator 구조라고 보면 된다.
 학습 알고리즘을 글로 풀어쓰면 다음과 같다.
@@ -167,8 +167,8 @@ Adversarial loss에서 각 notation이 의미하는 바는 다음과 같다.
 6. Generator loss를 최종적으로 계산한다.
 
 <p align="center">
-    <img src="imagetoimage/015.png" width="700"/>
-    <img src="imagetoimage/014.png" width="450"/>
+    <img src="https://user-images.githubusercontent.com/79881119/209128166-90c08835-28d1-4694-91e3-48724217422a.png" width="700"/>
+    <img src="https://user-images.githubusercontent.com/79881119/209128164-6af25b70-ff59-423a-b9bf-8a785910a622.png" width="450"/>
 </p>
 
 위의 좌측 이미지를 보면 알 수 있듯이, 해당 task는 굉장히 다양한 형태로 구현할 수 있고, 서로 연관짓고 싶은 domain에 대한 데이터만 있으면 어떠한 학습도 가능하다는 장점이 있다. 그러나 limitation으로 등장한 것은 GAN 자체가 사물에 대한 인식을 할 수 없기 때문에 얼룩말로 바꾸는 task와 같은 경우 배경에 무늬가 들어가거나, 심지어 사람이 타고 있다면 사람에도 얼룩말 무늬가 들어가는 일이 발생한다. 보통 모든 데이터셋에 말을 타고 있는 사람이 있다면 이런 일은 일어나지 않겠지만, 학습할 때 사람이 추가로 들어있는 경우가 거의 없을 경우에 inference하면 이와 같은 artifact가 발생하게 된다.
@@ -178,7 +178,7 @@ Adversarial loss에서 각 notation이 의미하는 바는 다음과 같다.
 # GAN inversion
 다음으로 볼 내용은 [GAN inversion](https://arxiv.org/pdf/2101.05278.pdf)이다. GAN을 뒤집는다라는 간단한 제목으로 소개되는데, 해당 task는 image manipultation에 있어 다음과 같이 접근한다.
  <p align="center">
-    <img src="imagetoimage/016.png" width="700"/>
+    <img src="https://user-images.githubusercontent.com/79881119/209128169-d2f99af6-41d4-48e6-82e1-2f906f2c6267.png" width="700"/>
 </p>
 학습된 decoder(혹은 generator $G$)에 대해 $z$라는 latent space 상의 한 점은 fake image인 $x = G(z)$를 만들어낸다. 흔히 latent vector를 뽑는 과정은 Normal distribution으로부터 추출한다($z \sim \mathcal{N}(0, I)$).   
 그렇다면 이러한 접근은 어떨까? Real image가 있는데, 이 real image와 비슷한 이미지를 만들어낼 수 있는 $z$를 찾는 것이다. 이를 수식으로 표현한 것이 바로
@@ -193,7 +193,7 @@ Adversarial loss에서 각 notation이 의미하는 바는 다음과 같다.
 # Image to styleGAN
 위에서 언급했던 것과 같이 사전 학습된 StyleGAN이 있다고 하자, image to style이란 GAN이 주어진 이미지를 styleGAN의 latent space로 보내는 task다. StyleGAN에 대해서는 이미 다뤄서 대충 알고 있겠지만, $\mathcal{Z}$ space에서 $\mathcal{W}$로 보내는 MLP 구조가 있다. 그런데 [Image to style](https://arxiv.org/pdf/1904.03189.pdf)에서는 이를 좀 다르게 $\mathcal{W^+}$ space로 보낸다. 기존의 $\mathcal{W}$ space에서의 벡터는 <U>똑같은 벡터를 18개 복사</U>하여 각 styleGAN layer에 넣어주는데, 이와는 다르게 $\mathcal{W^+}$ space에서는 $18 \times 512$ 크기의 벡터를 업데이트하는 것이기 때문에, 보다 세부 조정된 inversion이 가능하다. 즉, <U>18개의 서로 다른 row vector들이</U> style layer에 들어간다고 생각하면 된다.
 <p align="center">
-    <img src="imagetoimage/017.png" width="700"/>
+    <img src="https://user-images.githubusercontent.com/79881119/209128172-15bc984f-5d16-48cd-a13e-cf8e6eb26e9d.png" width="700"/>
 </p>
 대충 그림으로 나타낸 것이 바로 위쪽 그림이다. StyleGAN에 의해 임의로 생성되는 이미지를 사용하는게 아니라, latent를 최적화하여 그럴싸한 원본 이미지를 만드는 latent를 찾은 뒤에, 그 latent를 활용하여 image를 editing하겠다는 전략이다.   
 그렇다면 $\mathcal{W^+}$를 어떤 식으로 최적화할까?
@@ -211,7 +211,7 @@ Adversarial loss에서 각 notation이 의미하는 바는 다음과 같다.
 \]
 [Perceptual loss](https://arxiv.org/abs/1603.08155)는 pre-trained VGG-16(ImageNet에 대해 사전 학습된 네트워크)의 feature extraction 부분을 활용하며, 두 이미지 간의 hidden feature 사이의 유사도를 측정한다.
 <p align="center">
-    <img src="imagetoimage/018.png" width="700"/>
+    <img src="https://user-images.githubusercontent.com/79881119/209128173-bbb6ae26-9699-4b74-9900-cc8bf25f4108.png" width="700"/>
 </p>
 위의 그림이 perceptual loss가 제시된 논문에서 발췌한 그림이다. Style에 대한 정보를 VGG-16을 활용한 loss를 토대로 최적화하였고, 이를 컨셉으로 생각하게 되면 우리가 하고자 하는 이미지의 content나 style을 이해하고 최적화하는 상황에서 사용될 수 있음을 시사한다.
 
@@ -234,7 +234,7 @@ Morphing은 image processing technique으로, 흔히 한쪽 이미지에서 다�
 이렇게 구한 $w$로 morphed image $G(w)$를 구하면 된다.
 
 <p align="center">
-    <img src="imagetoimage/019.png" width="700"/>
+    <img src="https://user-images.githubusercontent.com/79881119/209128176-ffdf81a3-daa6-4137-845b-307a053eea45.png" width="700"/>
 </p>
 좌측 이미지와 우측 이미지의 morphed image가 $\lambda$에 따라 나타난 그림은 위와 같다.
 
@@ -248,7 +248,7 @@ Morphing은 image processing technique으로, 흔히 한쪽 이미지에서 다�
 사실 이쯤만 되어도 어느 정도 감이 좋은 사람이라면 **"웃는 고양이 사진"** 이 의도한 정답이라는 것을 알아채주셨을 것이다. 결국 expression transfer에서 하고자 하는 것은 latent에서의 연산이 해당 feature를 반영하는 latent space에서의 방향이라는 것.
 
 <p align="center">
-    <img src="imagetoimage/020.png" width="700"/>
+    <img src="https://user-images.githubusercontent.com/79881119/209128177-8eba5ab9-dab9-4e4f-b516-91e97c694788.png" width="700"/>
 </p>
 
 ## Style transfer
@@ -259,20 +259,20 @@ StyleGAN에서 했던 style transfer 방식과 완전 동일한데, 다만 이�
 - 중간 부분까지 $w_1$를 가져다 쓰고, 그 다음부터는 $w_2$를 가져다 쓴다. 즉 새로운 latent code $w$는 $w_1$과 $w_2$의 몇개의 row를 concatenate한 구조가 된다(아래 그림 참고).
 
 <p align="center">
-    <img src="imagetoimage/021.png" width="700"/>
+    <img src="https://user-images.githubusercontent.com/79881119/209128180-092a4a59-8600-408f-8f84-49cbd36033eb.png" width="700"/>
 </p>
 
 그렇게 되면 다음과 같이 정말 의미 없는 두 도메인에 대해서도 style transfer가 일어날 수 있다. 단순히 얼굴 이미지에 대한 style synthesis를 제시했던 styleGAN에서 더 확장성 있는 연구 가능성을 제시해준 것과 같다.
 
 <p align="center">
-    <img src="imagetoimage/022.png" width="700"/>
+    <img src="https://user-images.githubusercontent.com/79881119/209128183-9bb9979c-9bd6-440c-a30a-dc5eb64832ae.png" width="700"/>
 </p>
 
 이후 [Image2StyleGAN++](https://arxiv.org/abs/1911.11544)를 통해 더 확장성 있는 application을 보여준다. mask based style transfer, image impainting 그리고 local edit 등등 여러 application이 제시가 되었다.
 
 <p align="center">
-    <img src="imagetoimage/app1.png" width="400"/>
-    <img src="imagetoimage/app2.png" width="400"/>
-    <img src="imagetoimage/app3.png" width="400"/>
-    <img src="imagetoimage/app4.png" width="400"/>
+    <img src="https://user-images.githubusercontent.com/79881119/209128190-242c9a82-0e6f-445a-bbcb-f75adee7d0cd.png" width="400"/>
+    <img src="https://user-images.githubusercontent.com/79881119/209128193-3b0bb6ea-3799-4501-b91d-04a49314c345.png" width="400"/>
+    <img src="https://user-images.githubusercontent.com/79881119/209128194-337469ac-f014-4894-9d17-d82394f7d058.png" width="400"/>
+    <img src="https://user-images.githubusercontent.com/79881119/209128196-c247f424-e564-424a-81bd-9c15601f7bcb.png" width="400"/>
 </p>

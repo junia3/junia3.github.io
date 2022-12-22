@@ -15,8 +15,8 @@ tags:
 
 저번에는 다크모드를 지금 내가 가지고 있는 테마에 적용했었는데, 그 후로 몇가지 바뀐 점이 있다. 우선 첫번째로는 게시물의 태그랑 하이퍼링크 색에 대해서 아예 테마를 맞춰버렸다.
 <p align="center">
-    <img src="dark2/001.png" width="700"/>
-    <img src="dark2/002.png" width="700"/>
+    <img src="https://user-images.githubusercontent.com/79881119/209127880-4f8acac3-7ae4-4127-a61c-298f1f6c4a0e.png" width="700"/>
+    <img src="https://user-images.githubusercontent.com/79881119/209127890-4e75e1ce-0a03-436e-850f-58fa4d152290.png" width="700"/>
 </p>
 근데도 바꾸지 못했던 것이 있는데, utterance(코멘트 기능)였다. 어떻게 할까 엄청 고민하다가 결국 style에 hide 옵션이라는 걸 사용해서 해결할 수 있었다.
 
@@ -79,7 +79,7 @@ style.scss가 먼저 적용이된 뒤에 style_dark.scss가 적용이 된다.
 위와 같이 작성해주면 되는데, 여기서 !important를 빼먹으면 안되는 이유는 아까도 말했듯이 default로 style.scss의 스타일이 먼저 적용되게끔 해놨기 때문에 변환 시에 스타일 적용을 해줘야한다는 의미로 넣어준다. 이렇게 되면 결과는 다음과 같이 잘 나온다.
 
 <p align="center">
-    <img src="dark2/003.gif" width="700"/>
+    <img src="https://user-images.githubusercontent.com/79881119/209127892-c1de94cb-6290-4a8f-bfb5-caa041b94812.gif" width="700"/>
 </p>
 
 처음엔 다크모드 토글에 적용했던 것처럼 스크립트 제어를 통해 테마만 attribute로 넣어줄라했는데 그런 방법들은 잘 안돼서 포기하고 오히려 이 방법이 더 깔끔하고 코드도 몇줄 안바꿔서 좋은 것 같다.
