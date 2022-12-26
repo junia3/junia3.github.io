@@ -119,7 +119,7 @@ Negative Sampling에서는, true target을 1, 그리고 random samples의 target
 다시 한 번 앞서 소개한 word2vec network를 살펴보고 Q가 어떤 방식으로 사용될 수 있는지 살펴보도록 하자.
 
 <p align="center">
-  <img src="InfoNCE/001.png"/>
+  <img src="https://user-images.githubusercontent.com/79881119/209057172-5ca85d2a-98ee-4e32-973b-4b154a7130bc.png"/>
 </p> 
 우리는 context vector를 네트워크의 입력으로 사용할 것이다. 그러나 vocabulary 모든 단어에 대한 output 계산이 아니라, 우리가 미리 정의한 **distribution 'Q'**로부터 무작위 샘플링 된 단어(random samples)에 대해 계산할 것이다. 그렇게 되면 network의 출력값에 대한 계산은 target 단어와 noise distribution으로부터 샘플링된 $N$개의 단어에 대해 진행되는 것이다. 즉, network evaluation은 $N+1$(random samples + target)에 대해 진행된다고 생각하면 된다.   
 우리가 negative sampling을 진행하게 될 noise distribution을 정의하였고, 해당 분포로부터 추출된 noise를 사용하기 때문에 Q에 따라 analytically하게 각 단어의 확률을 계산할 수 있다.   
@@ -294,11 +294,27 @@ Vision은 좀 특이하게 ResNetv2 101 backbone을 이미지용 인코더로 �
 참고로 RL은 딥러닝과 그 결이 조금 다르기 때문에 objective를 다르게 줘야 한다. A2C agent를 base model로 사용하고 CPC를 auxiliary loss로 주었다. 자세한 내용은 사실 나도 잘 몰라서 넘어가도록 하겠다. 빨간색이 잘 나온걸 보면 효과적이라고 결론을 낸 것 같다.   
 
 # Appendix
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/79881119/209057195-fc1c0240-9bb2-400c-99f0-f5832300c995.png" width="400"/>
-</p> 
+
+\[
+    \begin{aligned}
+        \mathcal{L}\_N^\text{opt} =& -\mathbb{E}\_X \log \left( \frac{\frac{p(x_{t+k} \vert c_t)}{p(x_{t_k})}}{\frac{p(x_{t+k} \vert c_t)}{p(x_{t+k})} + \sum\_{x_j \in  X_\text{neg}}\frac{p(x_j \vert c_t)}{p(x_j)}} \right) \newline
+        =& \mathbb{E}\_X \log \left( 1+\frac{p(x_{t+k})}{p(x_{t+k} \vert c_t)} \sum\_{x_j \in X_\text{neg}} \frac{p(x_j \vert c_t)}{p(x_j)} \right) \newline
+        \approx& \mathbb{E}\_X \log \left( 1+\frac{p(x_{t+k})}{p(x_{t+k} \vert c_t)} (N-1) \mathbb{E}\_{x_j} \left( \frac{p(x_j \vert c_t)}{p(x_j)} \right) \right) \newline
+        =& \mathbb{E}\_X \log \left( 1+\frac{p(x_{t+k})}{p(x_{t+k} \vert c_t)} (N-1) \right) \newline
+        \geq& \mathbb{E}\_X \log \left( \frac{p(x_{t+k})}{p(x_{t+k} \vert c_t)} N \right) \newline
+        =& -I(x_{t+k}, c_t)+\log(N)
+    \end{aligned}
+\]
+
 Loss function의 lower bound 유도 과정
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/79881119/209057198-12880ba7-686b-4595-9a6d-830c8ae6c6bb.png" width="700"/>
-</p> 
+
+\[
+  \begin{aligned}
+    \mathbb{E}\_X \left( \log \frac{f(x, c)}{\sum\_{x_j \in X} f(x_j,c)} \right) =& \mathbb{E}\_{(x, c)} \left( F(x, c) \right) - \mathbb{E}\_{(x, c)} \left( \log \sum\_{x_j \in X} e^{F(x_j, c)} \right) \newline
+    =& \mathbb{E}\_{(x, c)} \left( F(x, c) \right) - \mathbb{E}\_{(x, c)} \left( \log \left( e^{F(x, c)} + \sum\_{x_j \in X_\text{neg}} e^{F(x_j, c)} \right) \right) \newline
+    \leq& \mathbb{E}\_{(x, c)} \left( F(x, c) \right) - \mathbb{E}\_c \left( \log \sum\_{x_j \in X_\text{neg}} e^{F(x_j,c)} \right) \newline
+    =& \mathbb{E}\_{(x, c)} \left( F(x, c) \right) - \mathbb{E}\_c \left( \log \frac{1}{N-1} \sum\_{x_j \in X_\text{neg}} e^{F(x_j, c)} + \log (N-1) \right)
+  \end{aligned}
+\]
+
 Mutual information neural estimation과의 연관성을 보여줌. 결국  mutual information에서 intuition을 어떠한 방식으로 얻으셨는지 수식을 통해 보여주는 것 같다.
