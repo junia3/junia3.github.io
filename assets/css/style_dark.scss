@@ -98,10 +98,18 @@ a.navbar-item.is-active {
     }
 
     a {
-        background-color: black;
+        background-color: #242424;
+        border-color: white;
         color:white;
-        min-width: 25vmax;
+        min-width: 16vmax;
         margin: 0.5rem;
+        &:hover {
+            background-color: white !important;
+            color: #242424 !important;
+        }
+        &:hover:after {
+            left: 0;
+        }
     }
 
     .sayhello{
@@ -149,9 +157,20 @@ a.navbar-item.is-active {
     #contact-button {
         margin: 0.5rem auto;
         display: flex;
+        border-color: white;
         justify-content: center;
-        background-color:black;
+        background-color:#242424;
         color: White;
+        &:hover {
+            background-color: white !important;
+            color: #242424 !important;
+            svg {
+                color: #242424 !important;
+            }
+        }
+        &:hover:after {
+            left: 0;
+        }
     }
 
     svg {
@@ -160,7 +179,6 @@ a.navbar-item.is-active {
         margin: auto 0.75vmax;
 
         &:hover {
-
             transform: scale(1.10);
             filter: opacity(0.75);
         }
@@ -558,4 +576,19 @@ a.navbar-item.is-active {
     top: 50%;
     left: 50%;
     z-index: 100;
+}
+
+#cv{
+    color: White !important;
+    ul, ol, strong, th, h1, h2, h3, h4, h5, h6{
+        color: White !important;
+    }
+    hr{
+        background: White !important;
+    }
+
+    #btn{
+        background-color: #242424 !important;
+        color: White !important;
+    }
 }

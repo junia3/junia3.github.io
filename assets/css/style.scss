@@ -100,8 +100,15 @@ a.navbar-item.is-active {
     }
 
     a {
-        min-width: 25vmax;
+        min-width: 16vmax;
         margin: 0.5rem;
+        &:hover {
+            background-color: #242424;
+            color: white;
+        }
+        &:hover:after {
+            left: 0;
+        }
     }
 
     .sayhello{
@@ -149,6 +156,13 @@ a.navbar-item.is-active {
         margin: 0.5rem auto;
         display: flex;
         justify-content: center;
+        &:hover {
+            background-color: #242424;
+            color: white;
+        }
+        &:hover:after {
+            left: 0;
+        }
     }
 
     svg {
@@ -528,4 +542,37 @@ a.navbar-item.is-active {
     top: 50%;
     left: 50%;
     z-index: 100;
+}
+
+#cv{
+    p, ul, ol, strong, th, h1, h2, h3, h4, h5, h6{
+        text-align: center;
+    }
+
+    p, strong{
+        font-size: larger;
+    }
+
+    tr, th, td{
+        border: none;
+        font-size: large;
+    }
+
+    th{
+        font-size: x-large;
+        font-weight: 500;
+
+    }
+    hr{
+        margin-top: 50px;
+        margin-bottom: 50px;
+        padding-bottom: 2px;
+        padding-top: 2px;
+        background: black;
+    }
+}
+
+#cvtitle{
+    padding-top: 100px;
+    padding-bottom: 50px;
 }
