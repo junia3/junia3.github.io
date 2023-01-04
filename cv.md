@@ -42,10 +42,9 @@ Reseach on generative models, multimodal
 
 |Yonsei artificial intelligence(YAI)|04/2022 – Present|
 |:---|---:|
-||Graduate research(3D object detection)|
 ||Finance Management|
 ||Report Management|
-   
+||Recruiting Member|
 ---
 
 ## EDUCATION
