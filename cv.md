@@ -40,11 +40,10 @@ Reseach on generative models, multimodal
 ||Internship(Generative adversarial networks)|
 ||M.S. degree researcher|
 
-|Yonsei artificial intelligence(YAI)|04/2022 – Present|
+|Yonsei artificial intelligence(YAI)|01/2022 – Present|
 |:---|---:|
-||Finance Management|
-||Report Management|
-||Recruiting Member|
+||Management|
+
 ---
 
 ## EDUCATION
