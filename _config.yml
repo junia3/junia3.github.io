@@ -10,6 +10,9 @@ url:
 # Base URL of the Site (i.e., Name of the Repository in which the Site is hosted)
 baseurl: 
 
+# Code highlighter
+highlighter: rouge
+
 # Title of the Site
 title: Welcome to JunYoung's blog
 # Description of the Site

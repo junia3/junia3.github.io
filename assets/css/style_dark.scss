@@ -399,6 +399,9 @@ a.navbar-item.is-active {
         text-decoration: none;
         color: salmon !important;
     }
+    blockquote{
+        background-color: #444444 !important;
+    }
     span.tag{
         background-color: salmon !important;
     }
@@ -591,4 +594,86 @@ a.navbar-item.is-active {
         background-color: #242424 !important;
         color: White !important;
     }
+}
+
+
+.highlight table td { padding: 5px; }
+.highlight table pre { margin: 0; }
+.highlight, .highlight .w {
+  color: #f8f8f2 !important;
+}
+.highlight .err {
+  color: #272822 !important;
+  background-color: #f92672 !important;
+}
+.highlight .c, .highlight .ch, .highlight .cd, .highlight .cm, .highlight .cpf, .highlight .c1, .highlight .cs {
+  color: #75715e !important;
+}
+.highlight .cp {
+  color: #f4bf75 !important;
+}
+.highlight .nt {
+  color: #f4bf75 !important;
+}
+.highlight .o, .highlight .ow {
+  color: #f8f8f2 !important;
+}
+.highlight .p, .highlight .pi {
+  color: #f8f8f2 !important;
+}
+.highlight .gi {
+  color: #a6e22e !important;
+}
+.highlight .gd {
+  color: #f92672 !important;
+}
+.highlight .gh {
+  color: #66d9ef !important;
+  background-color: #272822;
+  font-weight: bold;
+}
+.highlight .k, .highlight .kn, .highlight .kp, .highlight .kr, .highlight .kv {
+  color: #ae81ff !important;
+}
+.highlight .kc {
+  color: #fd971f !important;
+}
+.highlight .kt {
+  color: #fd971f !important;
+}
+.highlight .kd {
+  color: #fd971f !important;
+}
+.highlight .s, .highlight .sb, .highlight .sc, .highlight .dl, .highlight .sd, .highlight .s2, .highlight .sh, .highlight .sx, .highlight .s1 {
+  color: #a6e22e !important;
+}
+.highlight .sa {
+  color: #ae81ff !important;
+}
+.highlight .sr {
+  color: #a1efe4 !important;
+}
+.highlight .si {
+  color: #cc6633 !important;
+}
+.highlight .se {
+  color: #cc6633 !important;
+}
+.highlight .nn {
+  color: #f4bf75 !important;
+}
+.highlight .nc {
+  color: #f4bf75 !important;
+}
+.highlight .no {
+  color: #f4bf75 !important;
+}
+.highlight .na {
+  color: #66d9ef !important;
+}
+.highlight .m, .highlight .mb, .highlight .mf, .highlight .mh, .highlight .mi, .highlight .il, .highlight .mo, .highlight .mx {
+  color: #a6e22e !important;
+}
+.highlight .ss {
+  color: #a6e22e !important;
 }
