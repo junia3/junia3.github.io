@@ -68,7 +68,7 @@ Additional: Latex
 ---
 
 ## PAPER
-J. Park, K. Choi, K. Sohn, “Motion blur measurement of face image using cosine similarity and regression network”
+J. Park et al., “Motion blur measurement of face image using cosine similarity and regression network”
 
 ---
 
