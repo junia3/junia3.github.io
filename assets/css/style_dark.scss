@@ -625,7 +625,7 @@ a.navbar-item.is-active {
   color: #a6e22e !important;
 }
 .highlight .gd {
-  color: #f92672 !important;
+  color: #ff5c97 !important;
 }
 .highlight .gh {
   color: #66d9ef !important;
@@ -676,4 +676,14 @@ a.navbar-item.is-active {
 }
 .highlight .ss {
   color: #a6e22e !important;
+}
+.highlight .nl, .nf {
+    color: #ff8e0d !important;
+    font-weight: bold;
+}
+.highlight .bp {
+    color: #00c774 !important;
+}
+.highlight .nb {
+    color: #65ecb4 !important;
 }
