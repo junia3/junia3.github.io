@@ -52,4 +52,156 @@ StyleCLIP도 결론부터 말하자면 사전 학습된 StyleGAN을 활용한 Im
 2. Latent residual mapper를 학습하는 방법. 이 과정에서는 latent vector를 직접 최적화하는 것이 아니라 latent mapper를 학습하여, $W$ space의 특정 latenr를 CLIP representation에 맞는 또다른 latent vector로 mapping한다.
 3. 이미지에 상관 없이 text prompt에 맞는 style space를 학습하는 방법. 이 방법은 styleGAN이 가지고 있는 $\mathcal{W}$ space의 disentanglement 특징을 그대로 유지하면서 style mapping을 하고자 하는 것이 주된 목적이다.
 
-...작성중
+---
+
+# Related works
+
+## Vision-Language tasks
+가장 먼저 언급할 수 있는 related works로는 <U>vision + language</U> representation에 대한 내용이 될 것이다. Vision과 Language가 융합된 연구에는 language based image retrieval(원하는 부분 찾아내기), image captioning(이미지를 묘사하는 캡션 달기) 혹은 visual question answering(시각적인 정보를 토대로 질문에 대한 답변하기) 등등 여러 가지 task가 있다. BERT 모델이 여러 language task에 대해 좋은 성능을 보였던 바를 토대로, 최근 VL 방법들은 대부분 joint representation(이미지와 텍스트 간의 유의미한 관계)를 학습하기 위해 <U>transformer backbone</U>을 활용하기 시작했다. CLIP도 마찬가지로 <U>transformer backbone</U> 기반으로 학습되었다고 생각하면 된다. 물론 image encoder는 ResNet50 구조를 차용한 구조의 경우 완전한 transformer라고 볼 수는 없지만, attention pooling을 통해 어느 정도 embedding을 추출하는데 있어 transformer와 유사하게 동작한다고 할 수 있다. 
+
+## Text-guided image generation and manipulation
+물론 image generation에 대한 연구도 multimodal로 진행되었던 적이 있다. 예를 들어 conditional GAN 구조를 사용하면서, 이때 condition vector를 text embedding을 활용하여 학습하는 형태가 될 수 있다. 가장 초창기 연구([논문링크](https://arxiv.org/abs/1605.05396))의 경우 아직 transformer 아키텍쳐가 발전되기 전이었기 때문에 단순한 RNN 구조를 차용하여 text embedding을 추출, 이를 generator와 discriminator 학습에 있어서 conditional 요소로 사용하게 된다.
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/215374864-a3774c59-1894-4e93-925b-bbba30f72354.png" width="900"/>
+</p>
+
+이후에는 multi-scale GAN 구조를 활용하여 image quality를 올리거나, attention mechanism을 text와 image feature 간에 활용하는 형태의 연구도 진행되었다([논문링크](https://arxiv.org/pdf/1711.10485.pdf)).
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/215375227-be754bf6-97c0-4b3a-9ca0-dadbcd63ae91.png" width="900"/>
+</p>
+
+앞서 설명한 간단한 내용들은 image generation에 해당되고, 우리가 지금 포커싱하는 것은 특정 image에 대해서 text가 이미지 수정에 대한 supervision을 줄 수 있는 image manipulation과 관련된 이야기를 해볼까 한다. 사실 image manipulation이라는 task는 generation보다 까다롭기 때문에 위에서 언급한 것과 같이 <U>딥러닝 초창기</U>부터 연구가 진행되어오던 것은 아니다. 그럼에도 GAN 구조를 활용한 초창기 연구들이 있었다.
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/215375676-9fc38293-eff9-41d8-bb78-8b525cf9322c.png" width="900"/>
+</p>
+GAN encoder/decoder structure를 활용한 초반 여러 방법들의 경우 image와 text description 각각의 semantic을 disentangle하는데 초점을 맞추었다. 비교적 가장 최근의 image manipulation 논문 중 하나라고 볼 수 있는 [ManiGAN](https://arxiv.org/pdf/1912.06203.pdf)은 ACM이라는 text-image <U>affine combination module</U>을 제안하여 manipulated된 이미지의 퀄리티를 높일 수 있었다. 구조를 보게 되면 styleGAN에서 사용되는 affine을 기반으로 한 style modulation 과정과 상당히 닮아있는 것을 확인할 수 있다. 이러한 앞선 연구들의 특징은 styleGAN base로 접근하지 않고 대부분 basic GAN approach를 사용했지만, StyleCLIP 논문에서는 StyleGAN approach를 사용했다는 점이 차이점이 될 것 같다.   
+물론 StyleGAN을 사용한 approach는 StyleCLIP이 처음은 아니다. [TediGAN](https://arxiv.org/pdf/2012.03308.pdf)도 마찬가지로 StyleGAN의 approach를 사용했는데, StyleCLIP 논문에서의 방법과 차이가 있다면 text를 StyleGAN의 latent space로 mapping하는 encoder를 학습하고, 이를 통해 text 기반으로 찾은 style space와 image의 style space를 융합하고자 한 것이다.
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/215376914-5c2dedbc-189c-49b9-b9c0-8054b37e78d8.png" width="600"/>
+</p>
+
+어찌보면 TediGAN의 approach는 StyleGAN에서 8개의 MLP로 생성한 $\mathcal{W}$-space 구조가 normal distribution $\mathcal{Z} \sim \mathcal{N}(0,~I)$에 기반하기 때문에, image modality와 text modality의 차이가 있다고 하더라도 <U>encoder에 의한 implicit functional mapping이 가능</U>하다고 생각했던 것 같다. 사실 이러한 방법이 조금은 더 text와 image 간의 유의미한 representation을 찾는 방법이라고 생각되지만, CLIP의 성능 덕분인지 TediGAN보다는 StyleCLIP의 성능이 더 좋았다고 한다. 이외에도 DALL-E 방식도 있지만 GPU가 어마무시하게 사용된다는 점에서 text to image manipulation의 용이성이 떨어진다는 점이 있다. StyleCLIP처럼 논문 형태로 나온 것은 아니고 단순히 온라인 포스팅으로 StyleGAN과 CLIP을 image manipulation에 사용한 방식이 있다([참고 링크](https://towardsdatascience.com/generating-images-from-prompts-using-clip-and-stylegan-1f9ed495ddda)).
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/215377921-95be986c-42e7-436a-811b-640742392199.png" width="500"/>
+</p>
+
+위의 그림을 잘 보게되면 결국 StyleCLIP에서 image manipulation approach로 생각한 latent optimization 과정이 거의 똑같은 것을 알 수 있다. 하지만 위의 방식은 이미지를 처음부터 생성하는 관점에서의 latent optimization이고, 이 논문은 특정 이미지를 만들어내는 style space의 latent vector에 대해서 optimization을 진행, <U>image manipulation</U>에 보다 초점을 맞췄다는 점이 차이가 될 수 있겠다.
+
+## Latent space image manipulation
+Image manipulation이라는 task에서 pre-trained styleGAN generator를 사용하는 방법은 이미 다양한 논문들이 존재한다. StyleGAN의 intermediate style space인 $\mathcal{W}$는 disentanglement 등 image manipulation 관점에서 도움될 특징이 많기 때문이다. 보통 특정 이미지를 latent space로 매핑한 뒤에, manipulated image의 representation으로 guidance를 주는 방법이 일반적인데, 여기서 image annotation을 supervision으로 사용하는 approach와 직접 meaningful direction을 찾는 approach로 나눌 수 있다. 대부분의 styleGAN을 base로 한 manipulation 연구들에서는 $512$ 차원의 $\mathcal{W}$-space vector를 사용하거나, 이를 확장시켜서 각 feature level에 따라 style를 넣는 $\mathcal{W}+$ vector를 사용한다. 그러나 [stylespace 분석 논문](https://arxiv.org/pdf/2011.12799.pdf)에서 stylespace $\mathcal{S}$를 사용하는 것이 더 좋다는 주장을 하였고, 기존 space보다 disentanglement에 효과적임을 보여주었다.
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/215379873-de5b104f-831d-4240-bf46-97d1a6705691.png" width="700"/>
+</p>
+앞서 말했던 바와 같이 StyleCLIP 논문에서는 총 세가지의 optimization 방법을 제시했는데, 다시 언급해보면
+
+1. 각 이미지 별로 text-guided latent optimization을 진행하는 방법. 단순히 CLIP model을 loss network(latent vector를 trainable parameter로 gradient를 보내고, clip encoder의 결과와 text encoder의 결과 사이의 similarity를 loss로 주게 되면 latent 최적화가 진행되는 방식)
+2. Latent residual mapper를 학습하는 방법. 이 과정에서는 latent vector를 직접 최적화하는 것이 아니라 latent mapper를 학습하여, $W$ space의 특정 latenr를 CLIP representation에 맞는 또다른 latent vector로 mapping한다.
+3. 이미지에 상관 없이 text prompt에 맞는 style space를 학습하는 방법. 이 방법은 styleGAN이 가지고 있는 $\mathcal{W}$ space의 disentanglement 특징을 그대로 유지하면서 style mapping을 하고자 하는 것이 주된 목적이다.
+
+위와 같다. 따라서 latent optimization을 직접 진행하게 되는 1번과 2번 방법은 기존 StyleGAN space인 $\mathcal{W}$, 그리고 $\mathcal{W}+$를 그대로 사용하게 되고, 3번의 경우 $\mathcal{S}$ space를 새롭게 학습하는 과정이 된다(input agnostic).
+
+---
+
+# StyleCLIP text-driven image(latent) manipulation
+
+논문에서는 위에서 설명한 세 가지 방법에 대해 따로 실험을 진행하였다. 가장 간단한 방법은 각 source image와 원하는 style에 대해 묘사하는 text prompt를 기반으로 최적화하는 것이다. 다만 이러한 방법은 hyperparameter에 대해 불안정한 학습이 진행될 수 있기 때문에 각 샘플 별로 mapping network를 학습시켜서 latent space를 mapping하는 방법을 사용할 수도 있다. 이를 <U>local mapper</U>라고 부르는데, mapper의 목적은 latent space에서 이미지를 생성하는 각 latent vector를 최적화하는 step을 inference하여 한 번에 mapping할 수 있게끔 학습하고자 하는 것이다. 각 mapper의 학습에는 단일 text prompt에 대해 각 image sample의 latent starting point를 기준으로 학습하게 된다.   
+하지만 저자들이 실험한 결과를 바탕으로는 이러한 각 manipulation에 대한 mapper 학습을 할 경우 mapper의 step이 유사해진다는 것(manipulation 다양성이 떨어짐)과 disentanglement를 제대로 활용할 수 없다는 점이 문제가 되었다. 따라서 input agnostic(샘플의 starting point에 상관없이) mapping network를 학습하는 방법을 사용했으며, 이때의 global manipulation direction은 style space $\mathcal{S}$에서 계산되었다고 한다.
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/215386009-5771a369-9e87-4e98-8bea-427fe25502e4.png" width="900"/>
+</p>
+
+## Latent optimization
+Latent optimization은 상당히 간단한 식으로 표현된다. 딱히 길게 풀어쓸 내용은 아니기 때문에 수식을 먼저 보고 해석하는 식으로 마무리하겠다.
+
+\[
+    \begin{aligned}
+    &\arg \min \_{w \in \mathcal{W}+} D\_\text{CLIP} (G(w), t) + \lambda\_\text{L2} \parallel w - w_s \parallel_2 + \lambda\_\text{ID} \mathcal{L}\_\text{ID} (w) \newline
+    &\mathcal{L}\_\text{ID} (w) = 1- \left< R(G(w_s)), R(G(w)) \right>
+    \end{aligned}
+\]
+
+위에서 $R$은 ArcFace network(얼굴 인식)의 pretrained된 feature extractor로 보면 되고, $\left< \cdot, \cdot \right>$ 연산은 곧 두 생성된 이미지에 대한 feature embedding 사이의 cosine similarity를 계산한 것과 같다. Input image는 [e4e](https://arxiv.org/abs/2102.02766)를 기반으로 $w_s$로 mapping된다고 생각하면 된다. $D\_{\text{CLIP}}$은 보이는 바와 같이 생성된 이미지에 대한 <U>CLIP image embedding</U>과 <U>text embedding</U> 사이의 코사인 거리를 좁혀주는 역할을 하게 되고, 나머지 term은 <U>원본 이미지를 얼만큼 유지할 지</U>(contents 유지력)에 대한 지표가 된다. 해당 유지력에 대한 weight는 $\lambda\_\text{L2},~\lambda\_\text{ID}$로 조절할 수 있다.
+
+## Latent mapper
+그러나 위에서 보이는 latent optimization 과정은 각 input image와 text prompt에 대해 변동성이 크기 때문에 각 process마다 적절한 hyperparamer 조정 과정이 필요하다. 그렇기 때문에 다음으로 생각해볼 수 있는 방법은 latent starting point $w$에 상관없이(input image를 고정하지 않고), text prompt $t$에 대한 latent mapper $M_t$를 학습하여 $\mathcal{W}+$로의 manipulation step을 학습하고자 하는 것이다. 즉, pretrained styleGAN 기반으로 latent를 최적화하던 과정을 <U>하나의 함수로 구현</U>한 것이 mapper라는 개념이다.   
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/215380004-e5e82b34-8b57-44fe-9211-6dc1013b3178.png" width="900"/>
+</p>
+StyleGAN의 각 layer level에 따라 조절하는 image의 detail이 달라지기 때문에 coarse, medium 그리고 fine에 대한 mapper를 다르게 설정하였다. 모든 mapper는 StyleGAN의 mapper layer 수의 절반인 4개의 layer를 가지는 fully-connected networks를 사용했다. 보다 디테일하게 살펴보면, latent mapper는 latent $w_s$를 다이렉트로 최적의 latent vector $w$로 매핑하는 형태가 아니라, <U>변화량을 예측</U>하는 네트워크가 된다.
+
+\[
+    \mathcal{L}\_\text{CLIP}(w) = D\_\text{CLIP}(G(w + M_t (w)), t)    
+\]
+
+이외에는 이전에 사용했던 loss term과 모두 동일하다. 이때, $M_t(w) = w - w_s$와 같다고 생각하면 된다. 논문에서는 $\lambda\_\text{L2} = 0.8$ 그리고 $\mathcal{L}\_\text{ID} = 0.1$을 사용했다.
+
+\[
+    \mathcal{L}(w) = \mathcal{L}\_\text{CLIP}(w) + \lambda\_\text{L2} \parallel M_t(w) \parallel_2 + \lambda\_\text{ID} \mathcal{L}\_\text{ID} (w)
+\]
+
+그런데 고정으로 사용한 것은 아니고 <U>샘플마다 다른 parameter를 사용한 것</U>도 있다고 한다. 사실 여기서 이미 <U>논문의 limitation</U>이 보인다고 할 수 있는게, text based approach를 사용했으면 어느 정도 **latent searching** 과정에서의 편의성은 보장되었지만 **hyperparameter searching** 과정에서의 편의성은 보장되지 않았기 때문에 결국 거기서 거기라고 생각했다.
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/215389280-7f136251-9a53-4692-ab5a-1c4265161981.png" width="700"/>
+</p>
+
+
+## Global direction
+Latent mapper는 optimization 과정에 비해 빠른 inference time을 보장했지만, fine-grained disentangled manipulation(디테일한 부분들을 서로 구분지어 manipulation)하는 과정이 기존 방식에서는 어렵다는 것을 알게 되었고, 이는 결국 $\mathcal{W}+$ spcae 자체가 가지고 있는 한계점으로 분석되었다. 따라서 논문에서는 앞서 소개했던 style space $\mathcal{S}$에서 global direction을 찾고자 하였다. 만약 $s \in \mathcal{S}$가 style space에서의 code라고 해보자. 그리고 $G(s)$는 해당 style code를 기반으로 생성된 image라고 생각해볼 수 있다. Manipulation을 원하는 attribute에 대한 text prompt가 있다고 생각하고, 여기서 style code $s$의 manipulation direction인 $\Delta s$를 찾고자 한다. 즉, 우리가 원하는 attribute를 최대화하는 방향으로 $G(s + \alpha \Delta s)$라는 이미지를 만들고 싶다는 것이다. 여기서 style direction $\Delta s$는 <U>manipulation을 원하는 attribute를 제외하고는 다른 attribute를 변화시키지 않아야한다</U>. 변화의 정도를 step size $\alpha$가 결정하게 된다.   
+먼저 CLIP text encoder를 사용하여 joint language-image embedding으로부터 $\Delta t$를 구하고, 이를 다시 manipulation direction $\Delta s$로 mapping하는 것이다. Text에 대한 direction $\Delta t$는 natural language를 text prompt engineering하여 구하고, 이에 해당되는 $\Delta s$는 각 style channel이 target attribute에 끼치는 영향을 고려하여 설정된다. 이를 보다 자세히 풀어쓰면 다음과 같다. 예를 들어 image embedding에 대한 manifold $\mathcal{I}$와 text embedding에 대한 manifold인 $\mathcal{T}$가 있다고 했을 때, image에서의 semantic changes를 이끌어내는 방향 벡터와 text에서의 semantic changes를 이끌어내는 방향 벡터는 서로 어느 정도 collinear(large cosine similarity)를 가질 것으로 예상되고, 특히 각각을 normalization을 거친다면 거의 동일할 것으로 예상된다.   
+따라서 원본 style의 이미지 $G(s)$와 변화된 style에 대한 이미지 $G(s + \alpha \Delta s)$에 대해 각각의 $\mathcal{I}$ manifold에서의 embedding을 $i$, $i+\Delta i$로 표현할 수 있다. 두 이미지의 CLIP 상에서의 차이를 $Delta i$로 표현할 수 있기 때문에, 스타일 변화에 대한 text embedding 벡터인 $\Delta t$가 있다면 둘 사이의 유사도를 통해 global direction을 찾을 수 있게 된다.
+
+##### Natural language to $\Delta t$
+
+사실 이 부분은 대부분의 CLIP based approach에서 모두 사용하는 코드/방법이기 때문에 알아두는 것이 좋은데, 그 이유는 특정 text prompt에 대한 특징을 단일 image 하나에 mapping하는 것은 사실상 이미지와 텍스트 간의 modality 차이 때문에 바람직하지 않다는 점 때문이다. 만약 '안경을 쓴 사람'이라는 image description 하나로는 정확하게 어떤 머리를, 어떤 얼굴을 그리고 어떤 성별의 사람이 안경을 썼는지 표현할 수 없기 때문에 흔히 image와 text 사이에는 one to one mapping function이 불가능하고, 결국 학습된 CLIP space 또한 이러한 manifold 간의 차이가 있다고 말할 수 있다.   
+이런 inconsistency를 줄이기 위해서 제시된 방법 중 하나가 바로 ImageNet zero-shot classification에서 사용된 template이고, 물론 지금 task는 해당 dataset 기반이 아니지만 여전히 text prompt augmentation 관점에서는 유용하기 때문에 사용하였다. 사용하는 방법은 다음과 같다.
+
+
+```python
+imagenet_templates = [
+    'a bad photo of a {}.',
+    'a photo of many {}.',
+    'a sculpture of a {}.',
+    'a photo of the hard to see {}.',
+    'a low resolution photo of the {}.',
+    'a rendering of a {}.',
+    'graffiti of a {}.',
+    'a bad photo of the {}.',
+    ...
+    ...
+]
+```
+
+위와 같이 중괄호 안에 들어갈 text prompt 부분을 남겨둔 채로 약 $80$개의 prompt engineering template를 사용한다. 일종의 앙상블 혹은 정규화라고 보면 되는데, 각 embedding을 평균내는 것으로 embedding space 상에서의 한 점을 mapping하는 것이 아닌, probability distribution을 mapping하는 효과를 줄 수 있다.
+
+##### Channelwise relevance
+
+그리고 사실 앞서 말했던 사항은 $\Delta i$와 $\Delta t$의 관계이고 실상 우리가 접근해야하는 style code $s$를 어떤 식으로 manipulation해야하는지 언급하지 않았는데, 보통 style code를 channel 별로 구분해서 원하는 attribute를 변화하고자 할 때 다음과 같은 메커니즘을 사용할 수 있다. 만약 각 <U>style code의 coordinate</U> $c$를 증가시키거나 감소하여 생성한 이미지에 대해 <U>CLIP image manifold</U> $\mathcal{I}$에서의 변화를 $\Delta i_c$라고 하자. 만약 이미지가 coordinate 상관없이 $\Delta i$라는 방향으로 변화했을 때, <U>style coordinate $c$에 대한 relevance</U>($R_c$)는 $\Delta i_c$를 $\Delta i$에 projection한 것과 같다.
+
+\[
+    R_c (\Delta i) = \mathbb{E}\_{s \in \mathcal{S}} \left( \Delta i\_c \cdot \Delta i \right)    
+\]
+
+실제로는 100개의 image pair를 사용하여 평균 변화량에 대해 예측하도록 하였다. 우선 각 image pair는 $G(s \pm \alpha \Delta s_c)$로 성정되었으며, 여기서 $s_c$는 $c$ coordinate를 제외하고는 모두 $0$인 벡터이고, $c$ coordinate은 해당 channel의 standard deviation으로 설정한다. 각 채널에 따른 relevance $R_c$를 계산했을 때 만약 relevance가 threshold인 $\beta$보다 작아진다면 해당 채널을 무시한다. Threshold parameter는 <U>entanglement를 얼마나 허용할 지</U>에 대한 지표가 된다.
+
+\[
+    \Delta s = \begin{cases}
+        \Delta i_c \cdot \Delta i, & \text{if }\vert \Delta i_c \cdot \Delta i \vert \ge \beta \newline
+        0, & \text{otherwise}
+    \end{cases}    
+\]
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/215396601-781f1bdf-d647-4ed8-bc39-532e271cb8e0.png" width="1200"/>
+</p>
+
+---
+
+# 결론
+
+이 논문의 main contribution이라고 하면 stylespace를 적절하게 사용하여 CLIP embedding을 어떤 방식으로 image manipulation에 사용할 지 다양한 방법을 적용했다는 점과 text embedding을 직접 활용하는 것이 아니라 CLIP space에서의 유사도를 활용하여 style transfer를 진행했다는 점이 될 수 있다. 그러나 결국 <U>hyperparameter에 취약</U>하여 각 sample마다 clip에 대한 <U>attribute change가 안정적으로 일어나지 않을 수 있다는 점</U>과, 서로 유의미한 관계에 있는 object가 아니라면(호랑이와 사자) <U>image manipulation이 어렵다는 점</U>을 한계점으로 생각해볼 수 있다.   
+특히 StyleGAN이 학습된 baseline인 얼굴 이미지와 비슷한 형태의 modality에는 style mixing이 자유로운데, 그에 반해 CLIP space는 보다 broad하고 diversity가 보장된 embedding representation을 활용할 수 있다. 그냥 본인 생각을 소신있게 풀어보자면, StyleGAN baseline이 style mapping이라는 관점에서 image manipulation 연구에 최적화가 되어있지만, 어찌보면 그 때문에 다양한 연구나 많은 paper가 나오지 못하는 원인일 수도 있겠다고 생각해본다.
