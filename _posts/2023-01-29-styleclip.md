@@ -1,5 +1,5 @@
 ---
-title: About CLIP based image manipulation
+title: About CLIP based image manipulation(StyleCLIP에 대하여)
 layout: post
 description: Image manipulation, VL contrastive
 use_math: true
