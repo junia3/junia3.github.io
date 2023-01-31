@@ -1,9 +1,7 @@
 ---
-<<<<<<< HEAD:_posts/2023-01-29-styleclip+stylenada.md
 title: (StyleCLIP, StyleGAN-NADA) CLIP based image manipulation에 대하여
 =======
 title: About CLIP based image manipulation(StyleCLIP에 대하여)
->>>>>>> 307dec8c882b7980cbc61804dd137d505cb9782f:_posts/2023-01-29-styleclip.md
 layout: post
 description: Image manipulation, VL contrastive
 use_math: true
