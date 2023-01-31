@@ -1,7 +1,5 @@
 ---
 title: (StyleCLIP, StyleGAN-NADA) CLIP based image manipulation에 대하여
-=======
-title: About CLIP based image manipulation(StyleCLIP에 대하여)
 layout: post
 description: Image manipulation, VL contrastive
 use_math: true
