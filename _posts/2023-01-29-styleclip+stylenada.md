@@ -1,5 +1,5 @@
 ---
-title: About CLIP based image manipulation
+title: (StyleCLIP, StyleGAN-NADA) CLIP based image manipulation에 대하여
 layout: post
 description: Image manipulation, VL contrastive
 use_math: true
@@ -13,7 +13,7 @@ tags:
 - Text(prompt) guidance
 ---
 
-# 들어가며
+# StyleGAN
 [StyleGAN](https://arxiv.org/abs/1812.04948)의 등장은 사실상 생성 모델을 style based approach로 해석한 첫번째 논문이라고 볼 수 있다. StyleGAN 논문을 이 글에서 자세히 설명하지는 않겠지만 가볍게 요약하자면, constant vector로 표현된 하나의 feature map 도화지가 있고($4 \times 4 \times 512$), 이 도화지에 latent vector로부터 추출된 style 정보들(평균값인 $\mu$와 표준편차인 $\sigma$)를 affine layer를 통해 얻어내어 이전의 feature map을 modulation하면서 점차 사이즈를 키워나가는 구조다. 점차 feature map의 spatial resolution을 키운다는 점에서 타겟팅이 된 논문 구조인 [PGGAN](https://arxiv.org/abs/1710.10196)도 같이 읽어보면 좋다.
 
 ---
@@ -205,3 +205,107 @@ imagenet_templates = [
 
 이 논문의 main contribution이라고 하면 stylespace를 적절하게 사용하여 CLIP embedding을 어떤 방식으로 image manipulation에 사용할 지 다양한 방법을 적용했다는 점과 text embedding을 직접 활용하는 것이 아니라 CLIP space에서의 유사도를 활용하여 style transfer를 진행했다는 점이 될 수 있다. 그러나 결국 <U>hyperparameter에 취약</U>하여 각 sample마다 clip에 대한 <U>attribute change가 안정적으로 일어나지 않을 수 있다는 점</U>과, 서로 유의미한 관계에 있는 object가 아니라면(호랑이와 사자) <U>image manipulation이 어렵다는 점</U>을 한계점으로 생각해볼 수 있다.   
 특히 StyleGAN이 학습된 baseline인 얼굴 이미지와 비슷한 형태의 modality에는 style mixing이 자유로운데, 그에 반해 CLIP space는 보다 broad하고 diversity가 보장된 embedding representation을 활용할 수 있다. 그냥 본인 생각을 소신있게 풀어보자면, StyleGAN baseline이 style mapping이라는 관점에서 image manipulation 연구에 최적화가 되어있지만, 어찌보면 그 때문에 다양한 연구나 많은 paper가 나오지 못하는 원인일 수도 있겠다고 생각해본다.
+
+---
+
+# StyleGAN-NADA
+
+StyleCLIP과 접근법은 비슷하지만, latent manipulation으로 접근했던 것과 다르게 layer finetuning으로 접근한 [styleGAN-NADA](https://arxiv.org/pdf/2108.00946.pdf) 방식도 있다. 결국 이 논문에서 해결하고자 하는 task도 image generator를 이미지 manifold 상의 특정 target domain으로 mapping하는 과정에서 <U>text prompt만 가지고 guidance(supervision)</U>을 줄 수 있다면, 굳이 style에 대한 image를 supervision으로 사용하지 않고도 domain에 한정된 image manipulation에서 벗어나 <U>다양한 형태의 스타일링이 가능</U>하다는 것이다. 아래는 실제로 StyleGAN-NADA 방법을 통해 다양한 스타일로 변환된 결과를 보여준다.
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/215648852-17c8a3ef-4706-4bd5-ac3b-63b845322d30.png" width="500"/>
+    <img src="https://user-images.githubusercontent.com/79881119/215648859-836d6a4d-0823-4d12-8d9e-7e1778baf484.png" width="500"/>
+</p>
+
+**StyleCLIP**이 가졌던 단점 중 하나는 $\mathcal{W}+$ space, $\mathcal{S}$ space 모두 결국 사전 학습된 StyleGAN의 domain 내에서 image manipulation이 진행되기 때문에 in-domain이라는 문제가 해결될 수 없다는 점이었다. 그러나 해당 논문이 접근했던 방식과 더불어 CLIP의 text guiding이 쉽게 적용된 것은 아니었다. 자칫 잘못된 방법으로 최적화를 진행하게 되면 adversarial solution(실제로 현실적인 image manifold에서 벗어나 artifact가 많이 생기는 현상)으로 **target domain이 학습될 수 있기 때문**이다. 뒤에서도 추가로 계속 설명하겠지만 최적화에 사용된 loss 형태는 StyleCLIP에서 사용한 방식과 유사하게 CLIP embedding space에서 **text direction**과 **image direction**을 맞춰주는 것이다(나란히).
+
+---
+
+# Related works
+
+그동안 text guided image synthesis 관점에서 다양한 연구들이 진행되어왔다. 사실 CLIP이라는 논문은 학습 과정에서 image와 text의 관계에 대해 초점을 맞춘 것 뿐이지만, 이 연구는 text prompt를 활용한 image synthesis나 manipulation task에도 다양하게 활용될 수 있었다. StyleCLIP 방법에서도 확인할 수 있지만, CLIP을 사용하여 StyleGAN과 같은 사전 학습 모델에 대한 최적화 관점으로 접근하는 방식이 대부분 latent optimization 방법이고, <U>특정 이미지를 생성하는 latent code를 찾고자 하는 것</U>이 주된 목적으로 작용했다. 하지만 StyleGAN-NADA에서는 이런 방법들 대신 <U>image generator 자체를 text prompt guidance를 통해 최적화</U>하여, 한정된 domain에서 벗어난 image manipulation이 가능하게 하였다.
+
+그리고 무엇보다 text-guided synthesis와 관련되어 찾아볼 task는 한정된 데이터를 기반으로 generator를 학습시키는 연구들이다.  일종의 few-shot learning을 generator에 적용하고자 했던 연구들은 적은 수의 데이터가 generator를 overfitting시키거나 mode-collapse(샘플의 다양성이 떨어지는 현상)를 일으킬 수 있는 문제가 있었기 때문에 augmentation 방법을 사용하거나 auxiliary task를 사용하여 representation을 보다 풍부하게 학습하고자 하였다. Style-NADA에서는 이러한 데이터의 부족함 때문에 생기는 overfitting이나 mode-collapse를 걱정할 필요 없이, 어떠한 데이터도 사용하지 않고 단순히 CLIP based text prompt만 guidance로 사용하게 된다.
+
+추가로 이 논문을 이해하기 위해 StyleGAN, StyleCLIP에 대한 이해가 필요하지만 이 부분은 이미 작성한 내용이므로 넘어가도록 하겠다. StyleCLIP 관련 내용은 위에서 확인해볼 수 있고, StyleGAN 관련 내용은 게시글로 포스팅하였다([참고 링크](https://junia3.github.io/blog/gan2)).
+
+---
+
+# CLIP based guidance
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/215648862-2005c3e6-3ee6-4692-b814-eee2b7aff28b.png" width="500"/>
+</p>
+
+결론적으로 논문에서 사용한 방식을 간단한 그림으로 나타낸 것이 위의 figure이다. Source domain에 대해 사전 학습된 generator $G$를 copy한 뒤, 하나는 <U>frozen</U>하여 계속 source domain의 이미지를 만들게 하고 다른 하나는 <U>fine tuning</U>하여 target domain을 만들게 하되, 이때의 guidance를 CLIP loss로 주는 방식이다.
+
+물론 저자들은 StyleCLIP에서 겪었던 시행착오와 동일하게 Global loss부터 시작하여 왜 directional CLIP loss가 중요한지 설명하였다. 사실 해당 부분이 **CLIP based style transfer, image manipulation 논문**에서 가장 중요한 점이라고 생각되어 디테일하게 짚고 넘어가고 싶었다.
+
+### Global loss
+
+가장 쉽게 생각할 수 있는 것은 generator가 생성한 이미지와 target이 되는 text prompt 사이의 CLIP loss를 최적화하는 방식이다.
+
+\[
+    \mathcal{L}\_\text{global} = D_\text{CLIP} (G(w), t_\text{target})
+\]
+
+Latent code $w$가 주어졌을 때, image generator $G$에 의해 생성된 이미지를 image encoder $E_I$에 통과시켜 나온 임베딩과, target text prompt를 text encoder $E_T$에 통과시켜 나온 임베딩 사이의 코사인 유사도를 계산한다. StyleCLIP과 다른 점은 위의 loss에서 최적화하고자 하는 parameter가 $w$가 아닌 $G$의 parameter라는 점이다. 아무튼 가장 간단하게 생각할 수 있는 방법이지만, 위의 방법을 사용하게 되면 <U>adversarial solution</U>으로 최적화가 되는 문제가 발생한다. Generator parameter가 고정되지 않고 학습이 되는 상황에서 Wassertein loss나 adversarial loss와 같이 real image manifold를 유지해줄 수 있는 방법이 없기 때문에 이러한 문제가 발생한다. 또다른 문제는 이러한 loss term은 <U>mode collapse</U>를 일으킨다는 것인데, 바로 다음과 같은 그림을 보면 이해가 쉽다.
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/215648868-84893a52-5139-413f-8a42-45c5777f728f.png" width="500"/>
+</p>
+
+예를 들어 **고양이 이미지**가 target domain에 해당되고 **강아지 이미지**가 source domain에 해당된다고 하자. 둘을 각각 CLIP space(image embedding) 상에 올려놓은 것이 붉은색 점들과 푸른색 점들이다. 그리고 **‘고양이’라는 text prompt**에 대한 CLIP space(text embedding)상의 점과 **‘강아지’라는 text prompt**에 대한 CLIP space(text embedding)상의 점을 각각 표시한 것이 청록색/보라색 점에 해당된다.
+
+단순히 생성된 이미지가 text prompt에 부합하고자 한다면 학습은 (b)에서 보는 바와 같이 진행된다. 모든 강아지 이미지가 단순히 text prompt에 가장 가까운 image embedding을 만들게끔 하는 것이 minimizer가 되기 때문에, 붉은색 점들이 그리는 분포와 같이 <U>다양한 고양이 이미지를 생성하지 못하고</U> 녹색 분포와 같이 협소한 공간에서 이미지를 생성하게 된다. 이를 mode-collapse라고 부른다.
+
+### Directional CLIP loss
+
+위와 같은 문제가 발생할 수 있기 때문에 StyleCLIP에서 사용한 방법과 같이 global direction approach를 사용하게 된다. Global direction approach란, 이미지를 target text prompt에 가까워지도록 움직이는 것이 아니라 source text에서 target text로의 방향만 알려주고, 이를 source image 벡터에 더하게 되면 방향에 대한 정보만 더해줄 수 있기 때문에 샘플의 다양성은 유지할 수 있다는 것이다. 
+
+\[
+    \begin{aligned}
+        \Delta T =& E_T(t_\text{target}) - E_T (t_\text{source}) \newline
+        \Delta I =& E_I (G_\text{train}(w)) - E_I (G_\text{frozen}(w)) \newline
+        \mathcal{L}_\text{direction} =& 1-\frac{\Delta I \cdot \Delta T}{\vert \Delta I \vert \vert \Delta T \vert}
+    \end{aligned}
+\]
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/215648873-6a890147-2e22-4e6a-a66e-629cb218cb7f.png" width="400"/>
+    <img src="https://user-images.githubusercontent.com/79881119/215648877-d6a9ac55-27b5-4fa5-ab6d-2cf4085ff31a.png" width="500"/>
+</p>
+
+이 방법에 대해 잘 나타낸 것이 위에 보이는 그림이다. 이전과는 다르게 방향을 일치시켜주는 것만으로도 충분히 target domain에 유사한 이미지를 생성할 수 있는 것을 확인할 수 있다.
+
+---
+
+# Layer freezing
+
+Domain shift가 texture를 바꾸는 방식(예를 들어, 실제 사진을 그림처럼 바꾸는 과정)의 경우 같은 training scheme을 적용하더라도 mode collapse가 발생하거나 overfitting이 발생했다고 한다. 기존의 few-shot domain adaptation 방법들에서 network weights의 일부를 제한하는 형태를 통해 synthesized result의 퀄리티를 높였는데, 저자들은 이 방법이 zero-shot인 이 task에서도 적용될 수 있을 것이라 생각했다. <U>파라미터 수를 줄이고 최적화하는 방법</U>을 통해 간접적으로 학습되는 network의 크기를 줄일 수 있고, 적은 데이터셋에 대해 overfitting을 방지할 수 있는 <U>정규화 작업</U>이 된다.
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/215648878-55b6b464-864e-46b3-bde7-8dbda2792575.png" width="500"/>
+</p>
+
+그렇다면 학습할 레이어는 어떻게 고를 수 있을까? 
+
+이를 설명하기 위해서 저자들은 **본인들이 아이디어를 빌드업한 과정**을 차례대로 설명해준다. StyleGAN을 읽어봤다면 알겠지만 각 위치에 들어가는 style code가 서로 다른 semantic attribute에 영향을 끼친다. 예를 들어 위의 그림에서 $w_1$, $w_2$는 상대적으로 coarse feature를 담당하는 latent code가 될 것이고, 그와 반대로 $w_l$에 가까워질수록 fine feature를 담당하는 latent code가 될 것이다. Image manipulation 논문에서 좋은 효과를 보였던 $\mathcal{W}+$도 어찌보면 각 layer 층에서 style에 영향을 미치는 style code를 서로 다르게 사용하였기 때문이라고 할 수 있다. 이처럼 특정 스타일의 이미지 혹은 도메인의 이미지를 만들기 위해서는 여러 개의 $w_i \in \mathcal{W}$ 중 가장 도메인 변화에 큰 영향을 끼치는 layer를 위주로 fine-tuning하는 것이 효과적이고, high quality 이미지를 만들 수 있는 방법이다.
+
+우선 $k$개의 layer를 골라야하기 때문에 랜덤한 갯수 $N$개의 latent code를 $M(z) = w$의 형태로 추출해내고, 이를 $\mathcal{W}+$로 각 레이어에 대한 style code로서 replicate하게 된다. 이 내용은 본인 게시글 중 image manipulation 관련 글을 보면 보다 이해가 쉬울 것이다([참고 링크](https://junia3.github.io/blog/imagemanipulate)). 그런 뒤 $i$번의 iteration을 통해 StlyeCLIP의 latent-code optimization을 진행하고(여기서는 학습되는 parameter가 generator가 아니라 latent code라고 보면 된다), 각 latent code의 변화를 측정한다. 그렇게 가장 많이 변화한 $w$ code를 기준으로 $k$개의 layer를 고르고, 이를 학습에 사용한다.
+
+---
+
+# Latent-Mapper mining
+
+앞서 말했던 방법들을 통해 생성되는 이미지의 정규화를 효과적으로 진행했음을 알 수 있다. 그러나 이러한 방법들은 generator로 하여금 완전히 target domain을 생성하게끔 학습하지 못하게 했는데, 예를 들어 dog를 cat으로 바꾸는 task에서, fine-tuning을 거친 네트워크가 강아지와 고양이 모두 생성하는 네트워크가 되거나, 혹은 강아지랑 고양이 그 사이의 애매한 이미지를 만들게 된다는 것이다. 이러한 문제들을 피하기 위해 StyleCLIP의 latent-mapping 방식을 같이 사용하여, latent code를 cat과 관련된 region으로 옮기는 작업을 추가했다고 한다.
+
+---
+
+# 결론
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/215648880-5fcf3a4d-9426-46d1-ab6b-9fc4d76902c0.png" width="1000"/>
+</p>
+
+최적화 과정에 있어서 해당 논문은 <U>image embedding, text embedding</U> 모두 guidance로 사용할 수 있고, 같은 최적화 방법이 두 guidance 모두에서 잘 작용했다고 한다. 이 논문이 가지는 contribution은 StyleCLIP과는 다르게 StyleGAN의 generator 부분의 parameter를 효과적으로 fine-tuning하는 방식을 사용했고, 이를 통해 기존에 할 수 없었던 out of domain style 적용이 효과적으로 이루어질 수 있음을 보여주었다. 다만 최적화 과정에서 latent code를 배제했을 때 domain이 섞이는 현상을 해결하기 위해 latent mapping 방식을 같이 사용한다던지, 학습할 layer를 mining하는 과정에 시간이 걸린다는 점이 문제가 될 수 있다. 그럼에도 불구하고 **CLIP을 사용하여 기존 style mixing 방식과는 다르게 접근**했다는 점이 인상깊었다.
