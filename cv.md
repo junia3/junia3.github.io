@@ -22,25 +22,25 @@ Reseach on generative models, multimodal
 ||Assistant instructor|
 ||Management|   
    
-|Yonsei University, Seoul/South Korea|08/2020 – 12/2020|
+|Yonsei University, Seoul/South Korea|08/2020 ~ 12/2020|
 |:---|---:|
 ||Teaching Assistant on engineering information processing(2020 Fall)|
 
-|Yonsei University/Digital Signal Processing Lab|05/2021 – 08/2021|
+|Yonsei University/Digital Signal Processing Lab|05/2021 ~ 08/2021|
 |:---|---:|
 ||Internship(Keyword spotting, voice assistant AI)|
 
-|Yonsei University, Seoul/South Korea|09/2021 – 12/2021|
+|Yonsei University, Seoul/South Korea|09/2021 ~ 12/2021|
 |:---|---:|
 ||Teaching Assistant on engineering information processing(2021 Fall)|
 
-|Yonsei University, Seoul/Digital Image Processing Lab|09/2021 – Present|
+|Yonsei University, Seoul/Digital Image Processing Lab|09/2021 ~ Present|
 |:---|---:|
 ||Graduate research(3D object detection)|
 ||Internship(Generative adversarial networks)|
 ||M.S. degree researcher|
 
-|Yonsei artificial intelligence(YAI)|01/2022 – Present|
+|Yonsei artificial intelligence(YAI)|01/2022 ~ Present|
 |:---|---:|
 ||Management|
 
@@ -48,11 +48,11 @@ Reseach on generative models, multimodal
 
 ## EDUCATION
 
-|Bachelor Degree of Electrical and Electronic engineering|03/2016 - 08/2022|
+|Bachelor Degree of Electrical and Electronic engineering|03/2016 ~ 08/2022|
 |:---|---:|
 ||Yonsei University, Seoul (GPA : 3.95/4.5)|
 
-|Master Degree of Electrical and Elecronic engineering|09/2022 - Present|
+|Master Degree of Electrical and Elecronic engineering|09/2022 ~ Present|
 |:---|---:|
 ||Yonsei University, Seoul|
 

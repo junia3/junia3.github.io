@@ -122,7 +122,7 @@ NeRF는 사실 앞서 논문 리뷰로 따로 다루기도 했고, 하도 유명
 \]
 
 
-위의 식에서 $T(r, t)$는 transmittance로, $t_n$에서 출반한 ray가 $t$위치에 도달할 때까지 absorb(object에 의해 decaying)되지 않을 확률을 의미한다. 즉, scene boundary $t_n$ 부터 $t$ 까지 물체가 존재하지 않을 확률값으로 해석하면 된다.
+위의 식에서 $T(r, t)$는 transmittance로, $t_n$에서 출발한 ray가 $t$위치에 도달할 때까지 absorb(object에 의해 decaying)되지 않을 확률을 의미한다. 즉, scene boundary $t_n$ 부터 $t$ 까지 물체가 존재하지 않을 확률값으로 해석하면 된다.
 
 \[
 T(r, t) = \exp\left( -\int_{t_n}^t \sigma_\theta (r(s))ds \right)
