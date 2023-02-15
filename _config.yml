@@ -27,8 +27,8 @@ favicon-url:
 darkmode_switch: true
 
 # URL of the Image of Custom Hero Image (i.e., the image in the background of the very first section of the Homepage)
-heroimage: https://github.com/junia3/junia3.github.io/blob/main/assets/images/light.jpg?raw=true
-heroimage_dark: https://github.com/junia3/junia3.github.io/blob/main/assets/images/dark.jpg?raw=true
+heroimage: https://user-images.githubusercontent.com/79881119/218953740-843e2d2e-9812-4009-80d7-6d242c472c1c.jpg
+heroimage_dark: https://user-images.githubusercontent.com/79881119/218953740-843e2d2e-9812-4009-80d7-6d242c472c1c.jpg
 
 # Social Media and Contact
 # If you don't want to use any icon, you can leave them blank.
