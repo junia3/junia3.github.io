@@ -15,6 +15,7 @@ layout: compress
 
 <body>
   {% include navbar.html %}
+  <span class="bar"></span>
   <section class="hero is-fullheight has-text-centered" id="post">
     <div class="hero-body">
       <div class="container">
@@ -66,3 +67,10 @@ layout: compress
   {% include footer.html %}
 </body>
 </html>
+
+<script>
+    $(window).scroll(function() {
+            var scrollY = ($(window).scrollTop() / ($(document).height() - $(window).height()) * 100).toFixed(3);
+            $(".bar").css({"width" : scrollY + "%"});
+    });
+</script>	
