@@ -1,7 +1,7 @@
 ---
 title: 깃허브 블로그를 구글 검색 엔진에 등록했지만 검색이 안된다면?
 layout: post
-description: Blog theme, 서버 관리
+description: 블로그 검색, 구글 검색 오류
 use_math: true
 post-image: https://user-images.githubusercontent.com/79881119/219984439-657bf38a-7dc9-4e16-94de-c06dee0fae9e.gif
 category: github blog
