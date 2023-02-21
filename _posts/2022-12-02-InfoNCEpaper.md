@@ -3,7 +3,7 @@ title: Simple explanation of NCE(Noise Contrastive Estimation) and InfoNCE
 layout: post
 description: paper review
 use_math: true
-post-image: http://24.media.tumblr.com/2b36cdef695ebf16157f2b260d7bc238/tumblr_mx7dwc19Ng1qdfja2o1_500.gif
+post-image: https://user-images.githubusercontent.com/79881119/220251868-6804a167-f742-41f7-ae6e-03fbb25d9dac.gif
 category: paper review
 tags:
 - Contrastive learning
@@ -22,8 +22,9 @@ InfoNCE는 contrastive learning의 기본에 있는 연구가 되며, 흔히 mul
 
 ---
 
-1. "빠른 주황색 여우가 점프를 한다." 라는 문장이 있다.
-2. Sliding window 방식으로 문장의 각 단어들에 대해 (문맥, 타겟)의 pair를 생성한다. 여기서 타겟은 sliding window가 포함하는 영역에서의 중간 단어를 의미하고, 문맥은 그 주변 단어를 의미한다. 간단한 문제 제시를 위해 여기서는 문맥을 neighboring 1 word라고 가정한다.
+"빠른 주황색 여우가 점프를 한다." 라는 문장이 있다.
+
+Sliding window 방식으로 문장의 각 단어들에 대해 (문맥, 타겟)의 pair를 생성한다. 여기서 타겟은 sliding window가 포함하는 영역에서의 중간 단어를 의미하고, 문맥은 그 주변 단어를 의미한다. 간단한 문제 제시를 위해 여기서는 문맥을 neighboring 1 word라고 가정한다.
 
 - ((빠른, 여우가), 주황색),
 
@@ -31,11 +32,11 @@ InfoNCE는 contrastive learning의 기본에 있는 연구가 되며, 흔히 mul
 
 - ((여우가, 한다), 점프를)
 
-3. 각 문맥에 대한 word를 vector로 바꾸는데, 이러한 방식은 lookup table를 사용하는 방법이 될 수 있다. 자세한 방법론에 대한 부분은 tensorflow가 제시하는 튜토리얼을 참고하면 좋다. 임베딩은 보통 벡터 형태로 바꾸는 것을 의미하는데, 이렇게 되면 전체 context를 대표하는 context embedding은 각 context word의 임베딩의 평균으로 생각할 수 있다.
+각 문맥에 대한 word를 vector로 바꾸는데, 이러한 방식은 lookup table를 사용하는 방법이 될 수 있다. 자세한 방법론에 대한 부분은 tensorflow가 제시하는 튜토리얼을 참고하면 좋다. 임베딩은 보통 벡터 형태로 바꾸는 것을 의미하는데, 이렇게 되면 전체 context를 대표하는 context embedding은 각 context word의 임베딩의 평균으로 생각할 수 있다.
 
-4. 이렇게 임베딩의 평균을 사용한 context vector를 MLP(Fully connected NN layers)에 넣게 되고, softmax를 토대로 target word에 대한 확률 매핑을 추출하게 된다. 즉 output이 target 단어들의 후보군에 대한 확률 map이라 생각하면 된다.
+이렇게 임베딩의 평균을 사용한 context vector를 MLP(Fully connected NN layers)에 넣게 되고, softmax를 토대로 target word에 대한 확률 매핑을 추출하게 된다. 즉 output이 target 단어들의 후보군에 대한 확률 map이라 생각하면 된다.
 
-5. 맞는 단어에 대한 one-hot encoding에 대해 CrossEntropyLoss 최적화를 진행하면 된다.
+맞는 단어에 대한 one-hot encoding에 대해 CrossEntropyLoss 최적화를 진행하면 된다.
 
 ---
 
@@ -75,8 +76,9 @@ InfoNCE는 contrastive learning의 기본에 있는 연구가 되며, 흔히 mul
 
 ---
 
-1. "빠른 주황색 여우가 점프를 한다." 라는 문장이 있다.
-2. Sliding window 방식으로 문장의 각 단어들에 대해 (문맥, 타겟)의 pair를 생성한다. 여기서 타겟은 sliding window가 포함하는 영역에서의 중간 단어를 의미하고, 문맥은 그 주변 단어를 의미한다. 간단한 문제 제시를 위해 여기서는 문맥을 neighboring 1 word라고 가정한다.
+"빠른 주황색 여우가 점프를 한다." 라는 문장이 있다.
+
+Sliding window 방식으로 문장의 각 단어들에 대해 (문맥, 타겟)의 pair를 생성한다. 여기서 타겟은 sliding window가 포함하는 영역에서의 중간 단어를 의미하고, 문맥은 그 주변 단어를 의미한다. 간단한 문제 제시를 위해 여기서는 문맥을 neighboring 1 word라고 가정한다.
 
 - ((빠른, 여우가), 주황색),
 
@@ -84,11 +86,11 @@ InfoNCE는 contrastive learning의 기본에 있는 연구가 되며, 흔히 mul
 
 - ((여우가, 한다), 점프를)
 
-3. 각 문맥에 대한 word를 vector로 바꾸는데, 이러한 방식은 lookup table를 사용하는 방법이 될 수 있다. 자세한 방법론에 대한 부분은 tensorflow가 제시하는 튜토리얼을 참고하면 좋다. 임베딩은 보통 벡터 형태로 바꾸는 것을 의미하는데, 이렇게 되면 전체 context를 대표하는 context embedding은 각 context word의 임베딩의 평균으로 생각할 수 있다.
+각 문맥에 대한 word를 vector로 바꾸는데, 이러한 방식은 lookup table를 사용하는 방법이 될 수 있다. 자세한 방법론에 대한 부분은 tensorflow가 제시하는 튜토리얼을 참고하면 좋다. 임베딩은 보통 벡터 형태로 바꾸는 것을 의미하는데, 이렇게 되면 전체 context를 대표하는 context embedding은 각 context word의 임베딩의 평균으로 생각할 수 있다.
 
-4. 이렇게 임베딩의 평균을 사용한 context vector를 MLP(Fully connected NN layers)에 넣게 되고, softmax를 토대로 target word에 대한 확률 매핑을 추출하게 된다. 이 때, 전체 단어에 대한 확률 매핑이 아닌, 일부 추출된 negative sample과 positive sample을 entire sample space라 가정하고 계산한다.
+이렇게 임베딩의 평균을 사용한 context vector를 MLP(Fully connected NN layers)에 넣게 되고, softmax를 토대로 target word에 대한 확률 매핑을 추출하게 된다. 이 때, 전체 단어에 대한 확률 매핑이 아닌, 일부 추출된 negative sample과 positive sample을 entire sample space라 가정하고 계산한다.
 
-5. 맞는 단어에 대한 one-hot encoding에 대해 CrossEntropyLoss 최적화를 진행하면 된다.
+맞는 단어에 대한 one-hot encoding에 대해 CrossEntropyLoss 최적화를 진행하면 된다.
 
 ---
 
