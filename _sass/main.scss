@@ -72,3 +72,11 @@ hr {
         }
     }
 }
+
+.bar{
+	position: fixed;
+	top: 0px; left: 0px;
+	width: 0%; height: 5px;
+	background: linear-gradient(to right, black, rgb(0, 76, 148), rgb(9, 158, 250), #009999);
+	z-index: 9999999;
+}
