@@ -13,7 +13,7 @@ tags:
 
 # 들어가며...
 
-제목이 너무 어그로성이 짙었는데, 논문에서는 backpropagation을 <U>완전히 대체하는 알고리즘을 소개한 것은 아니고</U> 새로운 연구 방향성을 잡아준 것과 같다.
+제목이 너무 어그로성이 짙었는데, 논문에서는 backpropagation을 <U>완전히 대체하는 알고리즘을 소개한 것은 아니고</U> 딥러닝의 새로운 연구 방향을 잡아준 것과 같다.
 
 이 논문에서는 neural network를 학습하는 <U>기존 방법들</U>로부터 벗어나 새로운 학습법을 소개한다. 새롭게 제시된 방법인 <U>FF(forward-forward)</U> 알고리즘은 뒤에서 보다 디테일하게 언급되겠지만 Supervised learning과 unsupervised learning의 몇몇 간단한 task에 잘 적용되는 것을 볼 수 있고, 저자는 이를 통해 FF 알고리즘이 기존의 foward/backward 알고리즘과 더불어 더 많은 연구가 진행될 수 있을 것이라고 전망한다. 아마 딥러닝을 하던 사람들은 가장 기초부터 배울 때 backpropagation이라는 개념을 필수로 배울 수 밖에 없으며, 본인이 블로그에 작성한 글 중 신경망 학습을 위해 제시된 backpropagation이라는 개념을 perceptron의 역사와 함께 소개하는 내용이 있었다([참고 링크](https://junia3.github.io/blog/cs231n04)).   
 기존 backpropagation 방법은 forward pass를 통해 <U>오차를 계산한 뒤</U>(supervision이 있다고 가정하면) backward pass 시 chain rule을 통해 각 parameter를 learning rate에 따라 업데이트했다면, forward forwad algorithm(FF)은 한 번의 <U>positive pass(real data에 대한 stage)</U>와 한 번의 <U>negative pass(네트워크 자체에서 생성되는 data에 대한 stage)</U>로 구성된다.   
