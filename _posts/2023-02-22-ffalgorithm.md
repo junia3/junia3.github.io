@@ -109,4 +109,180 @@ FF는 <U>볼츠만 머신</U>이나 <U>noise contrastive estimation(NCE)</U>에�
 
 FF algorithm이 제시하는 방법은 다음과 같다. <U>서로 반대되는 objective</U>를 가지는 두 data가 <U>각각 forward pass</U>되면서 backpropagation을 대체한다는 것이다. 이러한 두 forward pass를 각각 'positive pass' 그리고 'negative pass'라고 한다. Positive pass는 <U>real data</U>에 적용되고, 각 <U>hidden layer의 weight</U>로 하여금 <U>'goodness'</U>를 증가시키게끔 작동한다. 그와는 반대로 negative pass는 <U>negative data</U>에 적용되며 각 hidden layer에 대해 <U>'goodness'</U>를 감소시키는 방향으로 작용한다. 각각의 pass에 대한 goodness는 서로 같은 식이지만 부호가 반대라고 생각하면 되는데, positive pass의 경우에는 goodness가 neural activities의 squared sum이 되고, negative pass의 경우에는 goodness가 neural activities의 negative squared sum이 된다. 이 논문에서 제시한 goodness란 greedy 알고리즘에서 '최적의 선택'을 의미하며, 굳이 이 논문에서 주장한 <U>squared sum</U>이 아니라 다른 형태가 될 수 있다고 말한다. 본인이 생각하기에는 이 부분이 아마도 앞으로 FF algorithm을 활용한 다양한 딥러닝 연구의 기준이 되지 않을까 생각해본다.
 
-..작성중
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/220526904-ba8ddae0-6cc4-466a-bda7-535ccd91b2d8.png" width="700">
+</p>
+
+위의 그림을 토대로 보면, 각 레이어는 each pass에 따라 real data(positive input)에 대해서 negative input을 기준으로 특정 threshold 만큼 높이는 것이 목적이 된다. 기존의 backpropagation은 <U>output node에서만</U> objective function을 가졌다면, FF algorithm에서는 <U>각 레이어마다</U> objective function을 가진다고 생각할 수 있다. 각 레이어에서의 objective function은 <U>positive input</U>과 <U>negative input</U>을 이진 분류하는 classifier와 같기 때문에 특정 레이어의 노드 index $j$에 대해 positive sample일 확률을 logistic $\sigma$를 통해 다음과 같이 표현할 수 있다.
+
+\[
+    p(\text{positive}) = \sigma \left( \sum\_j y_j^2 - \theta \right)    
+\]
+
+식에서의 $y_j$는 <U>layer normalization 이전의 activity</U>에 해당되고, $\theta$는 threshold다. 식에서 확인할 수 있는 것은 저자가 목적함수로 삼은 goodness가 <U>데이터의 이진 분류</U>를 위한 logistic의 input으로 사용되기 때문에 likelihood(squared sum)를 최대화하는 방향으로 <U>positive pass</U>의 goodness를, negative likelihood(negative squared sum)를 최대화하는 방향으로 <U>negative pass</U>의 goodness를 설정했다고 해석할 수 있다.
+
+---
+
+# Learning MLP with greedy algorithm
+위의 방법을 그대로 생각해보면 <U>단일 hidden layer</U>에 대해서는 각 데이터에 대한 goodness를 구하는 방식이 명확하고, 학습할 때의 objective 또한 마찬가지인 것을 볼 수 있다. 하지만 만약 <U>첫번째 layer의 output</U>이 그대로 <U>두번째 layer의 input으로</U> 사용된다면 이미 output의 squared sum을 통해 positive/negative 구분이 가능하게끔 학습되었기 때문에 첫번째 layer의 output vector의 크기를 비교하는 것만으로도 두번째 layer에서는 goodness를 판별할 수 있게 된다.
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/220530960-9729f287-48b7-46a3-a55f-a74838df93b7.png" width="700">
+</p>
+
+쉽게 말하자면 <U>볼츠만 머신과 같은 greedy 알고리즘</U>에서 추구하고자 하는 것은 각 레이어마다 <U>input이 다르기 때문에</U> 그에 맞게 <U>서로 다른 representation</U>을 학습하게 되는 것인데, 이미 이전 레이어에서 학습한 결과만 있다면 goodness 판별이 어렵지 않기 때문에 이후 레이어는 새로운 feature(representation)을 <U>학습할 필요가 없게 된다</U>(일종의 identity mapping이라고 생각하면 될 것 같다).
+
+이러한 <U>feature collapse</U> 문제를 막기 위해서 FF는 hidden layer output으로 나오는 feature vector의 길이를 다음 layer의 input으로 넣기 전에 normalize하게 된다. 그렇게 되면 길이에 대한 정보를 통해 <U>상대적인 길이만 유지</U>한 채로 input으로 들어가게 된다. 다르게 표현하자면 activity vector는 크기와 방향을 가지는데, <U>크기 정보를 필터링</U>하고 <U>방향에 대한 정보</U>만 다음 layer로 보낸다고 생각하면 된다.
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/220537279-c58edcd9-69ff-4663-802b-41879e23378b.png" width="600">
+</p>
+
+FF algorithm에서의 layer normalization은 activity에 대해 <U>layer mean을 빼주는 과정 없이</U> activity vector의 <U>길이로 나눠주는 작업</U>을 진행했다고 한다.
+
+---
+
+# FF experiments
+앞서 말했던 바와 같이 이 논문의 주된 목적은 <U>FF algorithm의 feasibility를 확인</U>하는 것이기 때문에 상대적으로 적은 parameter 수를 가지는 작은 neural network에 대해 적용한 실험이 대부분이고, 저자는 <U>이후의 연구들을 통해</U> FF를 <U>large neural network에 적용</U>하는 것은 future work로 남겼다.
+
+## Backpropagation baseline for MNIST
+이 논문에서 대부분의 실험은 <U>MNIST dataset</U>(숫자 손글씨)을 기반으로 한다. MNIST의 원래 구성은 $60,000$개의 training images와 $10,000$개의 test images 인데, 이 중에서 $50,000$의 training image와 $10,000$개의 validation image로 분리하여 최적의 hyper-parameter를 찾는 과정을 거친다. MNIST는 딥러닝에서 원래 사용되던 backpropagation 알고리즘을 적용한 연구에서 많이 활용되던 데이터셋이기 때문에, <U>저자가 제시한 새로운 알고리즘의 feasibility를 확인</U>하기 좋은 구조가 된다.
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/220541733-4f57acde-0604-4d97-9d23-bea840547492.png" width="600">
+</p>
+
+CNN(Convolutional neural network)와 같은 구조는 MNIST에 대해 대략 $0.6\%$의 오차를 보인다. 보통 CNN과 같은 구조는 permutation-invariant하지 않다고 하는데, permutation invariant란 <U>순열의 변화</U>가 <U>output에 영향을 미치지 않는 경우</U>를 의미한다. 즉 ReLU를 activation function으로 사용하는 MLP 구조는 permutation invariant 구조인데, 이 경우 대략 $1.4\%$의 test error를 보이고 dropout이나 label smoothing 같은 regularizer를 사용할 경우 $1.1\%$까지 성능이 올라간다. 이에 추가로 이미지의 확률 분포를 모델링하는 unsupervised learning 방법을 추가하면 더 성능이 올라가지만, 요약하자면 정규화를 고려하지 않는다면 CNN은 $0.6\%$, MLP는 $1.4\%$의 test error를 보인다.
+
+## Unsupervised learning in FF
+FF algorithm을 길게 설명했는데, 여기서 두 가지의 의문이 나오게 된다. 첫번째는 <U>negative data를 학습하는 과정</U>이 dataset의 <U>multi-layer representation</U> 학습에 어떤 방식으로 효과를 주는가이고, 두번째는 <U>negative data를 어떻게 만들어내는가</U>이다. 저자는 첫번째 질문에 대한 대답을 하기 위해 <U>hand-crafted negative data</U>를 만들어내게 되었다.
+
+<U>Contrastive learning</U>을 supervised learning에서 활용할 때 주로 적용하는 방식은 input vector를 label에 대한 정보 없이 <U>representation vector로 바꾸는 작업</U>을 진행한 뒤에, 이를 label에 대한 softmax probability를 구하는 <U>linear transformation</U>으로 학습하는 구조를 활용한다.
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/220544597-6a6533da-3184-4d29-86bd-654c87e2d0a5.png" width="600">
+</p>
+
+Linear transformation을 학습하는 과정은 supervision을 가지지만, <U>hidden layer 없이</U> 학습되기 때문에 <U>backpropagation</U>이 따로 필요하지 않다.
+FF는 바로 이러한 관점에서 <U>positive example</U>과 <U>corrupted example</U>을 활용한 representation learning을 한다고 볼 수 있다. Dataset을 corrupt하는 방법은 data augmentation과 마찬가지로 여러 가지가 있을 수 있다.
+
+이러한 여러 augmentation 중에서 FF 알고리즘의 효과적인 학습을 위해서는 다음과 같은 조건을 충족해야한다고 한다. FF가 image에서의 object shape와 같은 long-range correlation(이미지 전반을 보게끔)을 가질 수 있게 하는 방법은 <U>negative dataset</U>이 real dataset과 <U>long range correlation</U>은 **다르게**, <U>short range correlation</U>은 **유사하게** 구성하는 것이다. 이렇게 데이터셋을 구성하게 되면 네트워크의 각 레이어는 short range correlation로는 fake/real을 <U>구분할 수 없기 때문에</U> longer range correlation에 집중하는 경향성이 생긴다. 가장 간단한 방법은 ones/zeros로 구성된 마스크를 넓은 영역으로 구성하는 것이다. 그런 뒤 서로 다른 real image를 mask와 reversed mask를 적용하여 합한 데이터셋을 구성하게 되면, <U>적은 영역에 대해서는 real dataset과 구분할 수 없는</U> negative sample을 구성할 수 있게 된다.
+
+넓은 영역의 mask를 만드는 방법은 다음과 같은데, 먼저 random한 bit image를 기준으로 가로/세로 모두에 $(1/4,~1/2,~1/4)$의 값으로 블러링하는 과정을 계속 반복한다. 실제로 negative sample을 만드는 과정이 궁금해서 논문에서 제시한 방법을 코드로 옮겨보았다.
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/220559410-cc6e67cf-7e3e-41b9-b6fe-d12eb2da9dda.png" width="600">
+</p>
+
+## Hand-crafted negative sample
+
+#### MNIST dataset sample 가져오기
+
+```python
+from torchvision.datasets import MNIST
+import matplotlib.pyplot as plt
+import numpy as np
+
+train_dataset = MNIST('./data/', train=True,download=True)
+sample1, _ = train_dataset[5]
+sample2, _ = train_dataset[20]
+sample1_array = np.array(sample1)
+sample2_array = np.array(sample2)
+```
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/220557403-e28b43bf-8617-4af5-b747-d7944a567025.png" width="400">
+</p>
+
+#### $28 \times 28$ 크기의 random bit image 생성하기
+
+```python
+random_bit_image = np.random.randint(2, size=(28, 28))
+```
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/220557637-bf65cdf3-6e43-4139-9aae-98f691a215ae.png" width="200">
+</p>
+
+#### $3 \times 3$ 크기의 blur kernel 생성하기
+
+```python
+blur_kernel = np.array([[0, 1/4, 0],[1/4, 1/2, 1/4],[0, 1/4, 0]])
+```
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/220558021-d792c287-77ad-4419-ad88-d26e659ac99e.png" width="200">
+</p>
+
+#### Numpy 배열에 대한 2D convolution 함수
+```python
+# Define convolution operation for 2D numpy matrix
+def conv2d(image, kernel):
+    output_height, output_width = image.shape
+    output = np.zeros((output_height, output_width))
+
+    # zero padding
+    image = np.pad(image, ((1, 1), (1, 1)), 'constant', constant_values=0)
+    
+    # calculate 2d convolution
+    for h in range(output_height):
+        if (h + 3) <= image.shape[0]:
+            for w in range(output_width):
+                if (w + 3) <= image.shape[1]:
+                    output[h][w] = np.sum(
+                        image[h : h + 3, w : w + 3] * kernel
+                    ).astype(np.float32)
+    return output
+```
+
+#### Iteration 돌리면서 blur kernel 적용하기
+
+```python
+iteration = 5
+blurred = random_bit_image[:, :]
+
+for i in range(iteration):
+  blurred = conv2d(blurred, blur_kernel)
+
+output = (blurred-np.min(blurred))/(np.max(blurred)-np.min(blurred))
+```
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/220558492-f8ce61ec-1d0b-4a25-a876-3af816573cf4.png" width="200">
+</p>
+
+#### Thresholding 적용하여 mask 생성하기
+```python
+def thresholding(image, thresh=0.5):
+    return np.where(image > thresh, 1, 0)
+
+mask = thresholding(output)
+```
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/220558727-932c0804-839f-4f7a-9764-f26bc1571b6d.png" width="200">
+</p>
+
+#### Sample 섞기
+```python
+mixed = sample1 * mask + sample2 * np.where(mask==0, 1, 0)
+```
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/220558989-74c7a012-ad90-4a75-8c5c-c920d4082f32.png" width="200">
+</p>
+
+이게 맞나...? <U>논문에서 주어진 그림처럼</U> 깔끔한 mask가 잘 안나온다.
+
+아무튼 negative sample을 잘 만들어주었고, 이를 토대로 $4$개의 layer를 가지는 MLP를 학습한 결과 test error rate로 $1.37\%$를 얻을 수 있다고 한다. Label을 prediction할 때 <U>마지막 세 layer의 normalized activity vector를 사용</U>했으며, 첫번째 hidden layer의 output을 사용했을 경우에는 performance가 악화되었다고 언급한다. 물론 fully-connected layer 말고도 local receptive field를 가지는 구조를 활용할 수도 있는데, 이때는 보다 성능이 올라서 $1.1\%$의 오차율을 보였다고 한다. 참고로 <U>CNN이랑 조금 다른 점</U>은 원래 CNN에서는 weight parameter가 sharing되는데, FF 알고리즘에서는 필터의 weight가 공유되지 않는다는 것이다. 저자들이 밝힌 local receptive field 구조는 다음과 같다.
+
+- The first hidden layer used a $4 \times 4$ grid of locations with a stride of $6$, a receptive field of $10 \times 10$ pixels and $128$ channels at each location. The second hidden layer used a $3 \times 3$ grid with $220$ channels at each grid point. The receptive field was all the channels in a square of $4$ adjacent grid points in the layer below. The third hidden layer used a $2 \times 2$ grid with $512$ channels and, again, the receptive field was all the channels in a square of $4$ adjacent grid points in the layer below. This architecture has approximately 2000 hidden units per layer.
+
+---
+
+# Supervised learning in FF
+앞서 진행한 학습은 label 없이 representation을 학습하는 방법에 대한 문제였다(Like contrastive learning method). Unsupervised learning 방법은 네트워크 크기가 크고, 학습 가능한 feature가 여러 downstream task에 활용될 수 있을 때 유용하다는 특징이 있지만 굳이 그러지 않고 작은 네트워크를 <U>원하는 task</U>에 대해 <U>fine-tuning</U> 혹은 단순 <U>fitting</U> 시켜서 사용하고 싶을 수도 있다.
+
+FF에서는 이를 해결하는 방법이 input에 label을 추가하는 것인데, 예를 들면 <U>text 학습 시에 앞단에 prompt를 붙여주는 것</U>처럼 이미지에 <U>label에 대한 정보를 함께 주는</U> 방식이다.
+
+...작성중... 생각보다 쓸 내용이 많..
