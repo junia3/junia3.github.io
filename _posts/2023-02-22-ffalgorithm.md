@@ -13,7 +13,9 @@ tags:
 
 # 들어가며...
 
-이 논문에서는 neural network를 학습하는 <U>기존 방법들</U>로부터 벗어나 새로운 학습법을 소개한다. 새롭게 제시된 방법인 <U>FF(forward-forward)</U> 알고리즘은 뒤에서 보다 디테일하게 언급되겠지만 Supervised learning과 unsupervised learning의 몇몇 간단한 task에 잘 적용되는 것을 볼 수 있고, 저자는 이를 통해 FF 알고리즘의 기존의 foward/backward 알고리즘을 대체하여 더 많은 연구가 진행될 수 있을 것이라고 전망한다. 아마 딥러닝을 하던 사람들은 가장 기초부터 배울 때 backpropagation이라는 개념을 필수로 배울 수 밖에 없으며, 본인이 블로그에 작성한 글 중 신경망 학습을 위해 제시된 backpropagation이라는 개념을 perceptron의 역사와 함께 소개하는 내용이 있었다([참고 링크](https://junia3.github.io/blog/cs231n04)).   
+제목이 너무 어그로성이 짙었는데, 논문에서는 backpropagation을 <U>완전히 대체하는 알고리즘을 소개한 것은 아니고</U> 새로운 연구 방향성을 잡아준 것과 같다.
+
+이 논문에서는 neural network를 학습하는 <U>기존 방법들</U>로부터 벗어나 새로운 학습법을 소개한다. 새롭게 제시된 방법인 <U>FF(forward-forward)</U> 알고리즘은 뒤에서 보다 디테일하게 언급되겠지만 Supervised learning과 unsupervised learning의 몇몇 간단한 task에 잘 적용되는 것을 볼 수 있고, 저자는 이를 통해 FF 알고리즘이 기존의 foward/backward 알고리즘과 더불어 더 많은 연구가 진행될 수 있을 것이라고 전망한다. 아마 딥러닝을 하던 사람들은 가장 기초부터 배울 때 backpropagation이라는 개념을 필수로 배울 수 밖에 없으며, 본인이 블로그에 작성한 글 중 신경망 학습을 위해 제시된 backpropagation이라는 개념을 perceptron의 역사와 함께 소개하는 내용이 있었다([참고 링크](https://junia3.github.io/blog/cs231n04)).   
 기존 backpropagation 방법은 forward pass를 통해 <U>오차를 계산한 뒤</U>(supervision이 있다고 가정하면) backward pass 시 chain rule을 통해 각 parameter를 learning rate에 따라 업데이트했다면, forward forwad algorithm(FF)은 한 번의 <U>positive pass(real data에 대한 stage)</U>와 한 번의 <U>negative pass(네트워크 자체에서 생성되는 data에 대한 stage)</U>로 구성된다.   
 
 ---
@@ -64,9 +66,42 @@ Accomodation은 조금 다르게, 처음 보는 존재를 분류할 때 본인�
 </p>
 시각 정보를 처리하는 visual cortex가 연결된 구조는 top-down 형태로, 시각 정보를 받아들이는 <U>가장 바깥쪽 부분</U>부터 차례로 정보를 처리하게끔 되어있다. 만약 backpropagation이 진행되는 구조는 이와는 반대로 <U>가장 안쪽 cortex부터 망막까지 이어지는 시신경 세포들까지</U>의 bottom-up mirror 구조를 가져야하는데, 실제로는 그렇게 되지 않는다는 것이다. 오히려 우리가 보는 시각 정보는 연속적인 프레임을 가진 일종의 동영상이며, <U>잘못된 판단에 대한 ground truth가 주어졌을 경우</U>(강아지라고 했는데 사실은 고양이였을 경우) 이전에 관찰한 시각 정보에 대한 <U>nerve signal</U> 오차를 계산해서 역방향으로 정보를 학습하는 것이 아니라, 우리가 <U>지금 보고 있는 이미지에 대해</U> 정보 체계를 수정하게 된다. 즉 backpropagation 구조라기 보다는 시각 정보를 통해 신경 activity가 발생하는 내부에서 <U>하나의 루프를 생성</U>하고, 이 과정으로 <U>정보 체계를 바꿔가는 것</U>으로 볼 수 있다.
 
-그리고 만약 <U>우리가 학습하는 정보에 대해서도</U> backpropagation이 진행된다면 형광등이 빠른 속도로 점멸하는 것처럼 우리의 <U>인식 체계에도 주기적인 time-out</U>이 필요하다. 딥러닝에서 하는 일종의 online-learning과 비슷한데, 우리가 일상생활을 유지하면서 그와 동시에 backpropagation이 가능하기 위해서는 뇌의 각 단계에서의 sensory processing 결과를 저장할 pipeline이 필요하고, 이를 오차에 맞춰 수정한 뒤 원래의 인식 체계에 적용할 수 있어야 한다. 하지만 <U>pipeline의 뒤쪽에 있는 정보</U>가 backpropagation을 통해 <U>earlier stage</U>(보다 input에 가까운 위치)에 영향을 끼치지 위해서는 <U>실시간으로 인식을 진행하는</U> 우리의 학습 과정과는 차이가 있어야 한다.
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/220513070-eb6e8bb0-f122-4fe9-9da6-8dac3584a4d9.png" width="800">
+</p>
+
+그리고 만약 <U>우리가 학습하는 정보에 대해서도</U> backpropagation이 진행된다면 형광등이 빠른 속도로 점멸하는 것처럼 우리의 <U>인식 체계에도 주기적인 time-out</U>이 필요하다. 딥러닝에서 하는 일종의 <U>online-learning</U>과 비슷한데, 우리가 일상생활을 유지하면서 그와 동시에 backpropagation이 가능하기 위해서는 뇌의 각 단계에서의 sensory processing 결과를 저장할 pipeline이 필요하고, 이를 오차에 맞춰 수정한 뒤 원래의 인식 체계에 적용할 수 있어야 한다. 하지만 <U>pipeline의 뒤쪽에 있는 정보</U>가 backpropagation을 통해 <U>earlier stage</U>(보다 input에 가까운 위치)에 영향을 끼치지 위해서는 <U>실시간으로 인식을 진행하는</U> 우리의 학습 과정과는 차이가 있어야 한다.
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/220514216-e547f003-4f09-4cf9-867a-3857f6f95a41.png" width="800">
+</p>
 
 Backpropagation은 또한 forward pass 과정에서의 <U>모든 연산 결과</U>를 알아야한다는 것이다. Chain-rule에 의해 각 노드에서의 <U>local gradient를 계산</U>하기 위해서는 노드에서의 input을 알아야하고, 이는 곧 이전 노드들의 output을 모두 알아야 가능하기 때문이다. 그렇기에 <U>forward pass 과정이 black box</U>라 가정하면(어떤 연산이 진행되는지 전혀 모른다고 생각하면), 미분 가능한 모델이 확립된 상황이 아니라면 <U>backpropagation이 진행될 수 없는 것</U>을 알 수 있다. 이를 바꿔 설명하자면 만약 인간의 인식 체계가 backpropagation을 적용하기 위해서는 시신경을 포함하여 판단을 내리는 모든 구조에 대해 <U>differentiable closed form</U>으로 알고 있다는 전제가 필요하다. 이러한 문제들을 forward-forward algorithm에서는 고려할 필요가 없다.
 
+또다른 방법으로는 강화학습을 생각해볼 수 있다. Forward process에 대한 정보가 부재할 경우에는 단순히 neural activity에 대한 weight의 일부에 random한 변화를 가해주고, 변화에 따라 바뀌는 <U>결과값에 대한 보상</U>을 해주면 된다.
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/220514711-1707850b-19dc-45ac-b9dc-55275351196a.png" width="400">
+</p>
+
+하지만 특정 parameter의 변화가 <U>다른 parameter의 변화에 종속</U>할 수 있는 기존의 backpropagation과는 달리, 강화학습의 경우에 <U>variance(경우의 수)가 너무 크기 때문</U>에 각 parameter의 변화가 output에 미치는 영향을 제대로 확인할 수가 없다. 이러한 문제를 학습 과정에서 생기는 noise라 하는데, 이를 완화하기 위해서는 변화가 가해지는 parameter의 개수에 반비례하게 learning rate를 구성하는 방법이 있다. 결국 <U>parameter의 개수가 증가할수록</U> 학습 속도는 이에 반비례해서 <U>계속 감소</U>하게 되며, 대용량의 네트워크를 학습시킬 수 있는 backpropagation 알고리즘에 비해 <U>학습 속도 측면</U>에서 불리하게 작용한다.
+
+이 논문에서는 <U>ReLU나 softmax</U>와 같이 closed form으로 구할 수 있는 non-linearity를 포함하지 않는 네트워크도 학습할 수 있는 forward-forward algorithm(FF)을 제안한다. FF의 가장 큰 장점은 backpropagation 방법에서는 forward pass에 대한 <U>레이어 연산이 불명확한 경우</U>에는 <U>학습이 불가능</U>하다는 점을 해결할 수 있다는 사실이다.
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/220517775-fe18eb62-c188-4ba5-99cb-6478931496e6.png" width="1000">
+</p>
+
+또한 <U>연속된 데이터</U>가 주어졌을 때 다음과 같이 neural network의 output에 대한 <U>error를 통해 parameter를 업데이트</U>하는 과정에서 pipelining을 멈출 필요가 없다는 점도 장점이 될 수 있다.
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/220519115-745feb79-b4f3-4631-82ac-fbcdc1d680a7.png" width="400">
+</p>
+
+하지만 논문에서 밝히는 것은 backpropagation보다는 forward-forward algorithm이 <U>속도가 더 느리고</U> 실험한 몇몇의 toy problem 이외에는 아직 일반화가 힘들다는 문제가 있기 때문에 FF 알고리즘이 backpropagation을 완전히 대체하기는 힘들다고 밝힌다. 그렇기 때문에 여전히 대용량의 데이터셋을 기반으로 하는 딥러닝은 <U>backpropagation을 계속 사용할 것</U>이라고 한다.
+
+---
+
+# Forward forward algorithm이란?
 
 ...작성중
