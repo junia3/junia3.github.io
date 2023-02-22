@@ -104,4 +104,9 @@ Backpropagation은 또한 forward pass 과정에서의 <U>모든 연산 결과</
 
 # Forward forward algorithm이란?
 
-...작성중
+FF는 <U>볼츠만 머신</U>이나 <U>noise contrastive estimation(NCE)</U>에서 말하는 greedy multi-layer learning procedure라고 볼 수 있다. Greedy 알고리즘이라 불리는 이유는 다음과 같다. 어떠한 <U>문제(task)</U>를 해결하려면 그에 맞는 <U>해결책(solution)</U>이 필요하고 이를 우리는 <U>알고리즘</U>이라고 부른다. 실생활에서 우리가 접하는 것과 같이 <U>복잡한 문제를 컴퓨팅 환경에서 해결</U>하는 상황에서 단번에 최적의 해를 구할 수 없는 것이 일반적이다. 따라서 복잡한 문제들을 여러 sub-task로 분류하여 해결해가는 형태의 <U>dynamic programming</U>을 활용하기도 하지만, 복잡한 문제를 타개할 마땅한 sub-task 조차도 정의하기 어려운 상황이 있다면 그럴 땐 <U>직면한 상황을 해결하면서</U> 최종 task의 solution에 근접해가는데, 이를 <U>greedy algorithm</U>이라 부른다.
+볼츠만 머신이나 NCE 그리고 신경망 구조도 결국 layer-wise greedy algorithm이라고 할 수 있다. 예컨데 학습 과정에서 <U>서로 다른 위치</U>의 레이어는 <U>input 정보</U>가 다르기 때문에(distribution) 이들을 통해 얻을 수 있는 representation(feature) 또한 달라지게 되고, 결국 각 layer는 <U>각자가 직면한 상황</U>에서 <U>독립적인 solution을 구하는</U> task로 귀결된다. Greedy MLP algorithm은 각 레이어가 학습되는 단계에서는 각자가 내릴 수 있는 최선의 해결책을 내놓아야 한다는 점이고, 이는 모든 레이어가 <U>독립적으로 학습된다는 assumption</U>이 포함된다.
+
+FF algorithm이 제시하는 방법은 다음과 같다. <U>서로 반대되는 objective</U>를 가지는 두 data가 <U>각각 forward pass</U>되면서 backpropagation을 대체한다는 것이다. 이러한 두 forward pass를 각각 'positive pass' 그리고 'negative pass'라고 한다. Positive pass는 <U>real data</U>에 적용되고, 각 <U>hidden layer의 weight</U>로 하여금 <U>'goodness'</U>를 증가시키게끔 작동한다. 그와는 반대로 negative pass는 <U>negative data</U>에 적용되며 각 hidden layer에 대해 <U>'goodness'</U>를 감소시키는 방향으로 작용한다. 각각의 pass에 대한 goodness는 서로 같은 식이지만 부호가 반대라고 생각하면 되는데, positive pass의 경우에는 goodness가 neural activities의 squared sum이 되고, negative pass의 경우에는 goodness가 neural activities의 negative squared sum이 된다. 이 논문에서 제시한 goodness란 greedy 알고리즘에서 '최적의 선택'을 의미하며, 굳이 이 논문에서 주장한 <U>squared sum</U>이 아니라 다른 형태가 될 수 있다고 말한다. 본인이 생각하기에는 이 부분이 아마도 앞으로 FF algorithm을 활용한 다양한 딥러닝 연구의 기준이 되지 않을까 생각해본다.
+
+..작성중
