@@ -283,6 +283,126 @@ mixed = sample1 * mask + sample2 * np.where(mask==0, 1, 0)
 # Supervised learning in FF
 앞서 진행한 학습은 label 없이 representation을 학습하는 방법에 대한 문제였다(Like contrastive learning method). Unsupervised learning 방법은 네트워크 크기가 크고, 학습 가능한 feature가 여러 downstream task에 활용될 수 있을 때 유용하다는 특징이 있지만 굳이 그러지 않고 작은 네트워크를 <U>원하는 task</U>에 대해 <U>fine-tuning</U> 혹은 단순 <U>fitting</U> 시켜서 사용하고 싶을 수도 있다.
 
-FF에서는 이를 해결하는 방법이 input에 label을 추가하는 것인데, 예를 들면 <U>text 학습 시에 앞단에 prompt를 붙여주는 것</U>처럼 이미지에 <U>label에 대한 정보를 함께 주는</U> 방식이다.
+FF에서는 이를 해결하는 방법이 input에 label을 추가하는 것인데, 예를 들면 <U>text 학습 시에 앞단에 prompt를 붙여주는 것</U>처럼 이미지에 <U>label에 대한 정보를 함께 주는</U> 방식이다. 앞서 unsupervised learning에서 했던 것과는 다르게 이번에는 <U>label 정보가 맞다면</U>(correct label) positive data이고 <U>다르다면</U>(incorrect label) negative data가 된다. 이번에는 <U>positive</U>와 <U>negative</U> 간의 차이가 오직 label이기 때문에, FF 과정에서 negative label이 있다면 해당 상황에서 <U>모든 feature를 무시하게끔</U> 학습해야한다. 왜냐하면 잘못된 라벨과 이미지를 매칭하는 상황 자체가 잘못된 correlation이 형성되는 과정이기 때문이다.
 
-...작성중... 생각보다 쓸 내용이 많..
+MNIST 이미지는 black border를 가지고 있기 때문에 CNN을 적용하기 적절한 데이터 구조가 된다. 첫번째 $10$개의 픽셀을 $N$ 만큼의 <U>label representation 중 하나로 치환</U>하게 되면 첫 hidden layer가 학습하는 형태를 간단하게 시각화할 수 있다.
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/220803989-e3b018e6-b76c-4c74-938e-d0e36ec19d85.png" width="900">
+</p>
+
+앞서 <U>unsupervised에서 사용했던 MLP</U> 구조(4개의 ReLU를 포함한 hidden layers)를 학습시켰을 때 $1.36\%$의 test error가 나왔다고 한다. Backpropagation은 FF보다 약 $1/3$만큼의 epoch에도 비슷한 결과가 나오는 것으로 봤을 때 아직 이 논문에서 제시하는 FF 알고리즘이 완벽하지는 않다는 것을 보여주는 것 같다. <U>수렴 속도를 늘리기 위해서</U> Learning rate를 높이고 더 적은 epoch에 대해 학습하게 되면 오히려 test error 성능이 $1.46\%$로 하락했다고 한다. FF 방법을 통해 학습하고 난 후에는 test digit에 neutral label($10$개의 픽셀이 모두 $0.1$ 값을 가짐)이 추가된 input을 분류할 수 있게 된다. 이런 방법을 사용하게 되면 사실 <U>들어가는 input을 제외하고</U>는 unsupervised learning과 동일한데, 첫번째 hidden layer의 activation을 제외하고 <U>나머지 activation을 모두 사용</U>하여 학습된 softmax를 통해 classification을 진행한다. 그러나 굳이 이런 방법을 사용할 필요가 없고, 단순히 특정 라벨과 test image를 통과시킨 후, <U>activation 결과로 축적된 goodness</U>가 가장 높은 label을 prediction하는 경우를 생각해볼 수 있다. 학습 과정에서 neutral label을 hard negative label로 사용할 때는 <U>학습이 더 어려워졌다</U>고 한다.
+
+## Supervised learning MNIST sample
+
+#### MNIST sample 가져오기
+
+```python
+from torchvision.datasets import MNIST
+import matplotlib.pyplot as plt
+import numpy as np
+
+train_dataset = MNIST('./data/', train=True,download=True)
+sample1, label1 = train_dataset[5]
+sample2, label2 = train_dataset[20]
+sample1_array = np.array(sample1)
+sample2_array = np.array(sample2)
+```
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/220806706-912847a9-ee8d-401e-b736-9f3b60ade2b8.png" width="400">
+</p>
+
+#### MNIST에 Label 씌우기
+
+```python
+def label_on_mnist(image, label):
+    overlay = image[:, :]
+    overlay[0, :10] = 0
+    overlay[0, label] = np.max(image)
+    return overlay
+```
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/220807486-75c16ef7-ece3-41b5-9c2a-f8a4c60e2706.png" width="600">
+</p>
+
+#### Positive sample 만들기
+
+```python
+overlay_pos1 = label_on_mnist(sample1_array, label1)
+overlay_pos2 = label_on_mnist(sample2_array, label2)
+```
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/220806997-706465ff-ba3d-4c2e-8960-0052922621c0.png" width="400">
+</p>
+
+#### Negative sample 만들기
+
+```python
+overlay_neg1 = label_on_mnist(sample1_array, np.random.choice([num for num in range(10) if num != label1]))
+overlay_neg2 = label_on_mnist(sample2_array, np.random.choice([num for num in range(10) if num != label2]))
+```
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/220808333-bb077ab7-9eae-41db-b552-c17731750bfe.png" width="400">
+</p>
+
+---
+
+# FF를 사용하여 perception 모델링하기
+지금까지 제시된 방법은 모두 <U>단일 layer</U>를 각각 <U>greedy algorithm</U>을 기반으로 따로 학습하는 과정이었다. 즉, 이후의 레이어가 학습하는 것이 기존의 <U>backpropagation과는 다르게</U> 이전 레이어의 학습에 아무런 영향을 미치지 않고 <U>독립적으로 학습된다</U>는 뜻이다.   
+이는 backpropagation에 대해 가지는 <U>FF 알고리즘의 명백한 한계점</U>이다. 따라서 computation에서 학습되는 과정보다는 인간이 실제로 시각 정보를 받아들이는 과정을 생각해보았다. 예를 들어, 단순히 이미지를 학습에 사용하고 끝나는 것이 아니라, 정적 이미지를 좀 지루한 비디오로 간주하고, 기존의 신경망 구조를 <U>다층 recurrent neural network</U>로 보자는 것이다.
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/220810512-6c43d83a-b28e-4751-a096-559b28204b4d.png" width="700">
+</p>
+
+그런데 여기서 의문점이 생긴다. 앞서 설명했던 FF는 forward pass를 진행하는 과정에서 positive와 negative data를 각각 processing하는 과정을 거쳤었는데, 결국 단일 이미지를 연속된 input으로 간주하게 되면 <U>negative sample은 학습에 활용할 수 없는 구조</U>가 되는 것이 아닌가라는 것이다. 
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/220811042-0f013fa1-2e35-458a-b80c-2433209320bf.png" width="700">
+</p>
+
+저자는 다음과 같이 밝힌다. FF가 forwarding을 진행하는 것은 기존에 제시했던 positive data와 negative data에 대해 모두 해당되는 것은 맞지만, recurrent 구조에서는 <U>각 layer의 output이 activity에 관여하는 과정</U>만 달라지는 것이다.
+
+예컨데 $t$ 시점에서의 이전 레이어의 output과 다음 레이어의 output(인접한 레이어를 의미)가 $t+1$ 시점에서의 <U>기준 레이어의 activity vector</U>를 결정하게 된다. 보다 디테일하게 구현한 형태는 다음과 같다.
+
+저자는 MNIST 이미지를 여러 time frame으로 늘려 사용하였다. 가장 <U>bottom layer</U>는 위의 figure에서 볼 수 있듯이 MNIST 이미지를 의미하고 가장 <U>top layer</U>는 각 이미지의 one-hot encoding label을 의미한다. 각 hidden layer는 $2000$개의 뉴런을 가지고 총 $2 \sim 3$개의 층을 가진다고 한다. 위의 그림을 기준으로 보면 input/output layer를 포함해서 총 $4$개의 layer가 있다고 생각하면 될 것 같다.
+
+이 논문이 preliminary로 삼은 recurrent multilayer learning 논문은 'How to represent part-whole hierarchies in a neural network'이다([참고 링크](https://arxiv.org/pdf/2102.12627.pdf)). 각 시점에서 짝수 번째의 layer activity는 홀수 번째의 layer activity를 normalize한 결과(앞서 봤었던 <U>layer normalization</U>)를 기준으로 업데이트가 되며, 반대로 홀수 번째의 layer activity는 짝수 번째의 layer activity를 normalize한 결과를 기준으로 업데이트가 된다.
+
+그러나 이러한 방식의 alternating(번갈아 가며 학습하는) 구조는 biphasic oscillation(서로 다른 상(phase)이 공존하는 형태를 의미하는 말인 것 같은데, <U>학습 과정의 불안정성</U>이라고 보면 될 것 같다)를 방지하기 위함이었지만, 이러한 학습법이 굳이 <U>불필요하다는 것</U>이 밝혀졌다. 약간의 정규화 장치를 포함한 synchronize(짝수/홀수 layer를 구분하지 않고 <U>한번에 layer를 학습</U>하는 것)이 효과적이었으며, 실제 실험에서는 모든 층의 layer를 동시에 학습하였고 앞서 말했던 biphasic oscilation을 방지하기 위해 new pre-normalized state와 previous pre-normalized state를 <U>$7 : 3$로 weight하는 방식</U>을 대신 사용하였다.
+
+앞서 본 구조에 따라 MNIST가 학습되는 과정은 이와 같다. 먼저 각 이미지는 hidden layer를 단일 bottom-up pass를 통해 초기화하게되고,
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/220823188-bd5efd49-3dfe-4ef8-adc5-93e5961f0e4d.png" width="600">
+</p>
+그 후에 $8$번의 synchronous iteration(damping 적용)이 <U>단일 이미지에 대한 학습</U>을 진행하게 된다.
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/220824075-9118741a-72d0-4454-9a18-400776871989.png" width="600">
+</p>
+Test data에 대해서 performance를 측정할 때에는 $10$개의 <U>각 라벨에 따라</U> goodness 측정을 하게 되고, $3$에서 $5$ iteration 동안 <U>평균 goodness가 가장 높은 label</U>을 기준으로 예측을 진행한다. 그 결과 $1.31\%$의 test error를 보였다고 한다.
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/220824953-e237739d-d727-48b1-955d-7c6e6089680e.png" width="600">
+</p>
+
+Negative data는 single forward pass를 통해 모든 class에 대한 probability를 구한 뒤 각 probability에 따라 incorrect class를 고르는 식으로 결정하였으며, 이러한 방식이 <U>학습 과정에서 효과적</U>이라고 하였다. 아무래도 probability에 따라서 incorrect class를 정하게 될수록 <U>hard negative sample이 생성될 가능성이 높기 때문</U>이지 않을까 생각해본다.
+
+---
+
+# Predictions from spatial context as a teacher
+Recurrent network 구조를 사용하게 되면 objective를 학습하는 과정은 위쪽 그리고 아래쪽 layer의 input과 <U>높은 agreement</U>를 가지게 된다(인접한 레이어끼리 의견 공유가 활발하다고 생각하면 된다). 즉 positive data에 대해서는 위쪽과 아래쪽 레이어와의 agreement가 크게, 반대로 negative data에 대해서는 작게끔 학습되는 구조가 되는데, 이는 <U>spatially local connectivity</U>를 가지는 네트워크 구조에서는 <U>좋은 property로 사용</U>될 수 있다.
+
+위쪽 레이어로부터 내려오는 input은(top-down) prediction의 결과에 가까운 레이어로부터 오기 때문에 이미지를 기준으로 보다 넓은 영역에 의해 결정된 representation일 것이고, 이는 아래쪽 레이어로부터 올라오는 input(bottom-up)으로 하여금 어떠한 output을 만들어내야 하는지에 대한 내용이 된다. 즉 시간이 지남에 따라 <U>recurrent하게 forward forward algorithm을 적용하는 것</U>은 local representation을 학습하는 <U>bottom layers</U>가 prediction에 대한 contextual information을 가지고 있는 <U>top layers</U>로부터 영향을 받을 수 있게 되는 것이다. 반복된 input의 노출이 lower layer의 causality에 대한 문제를 줄여주고, layer 간 <U>의존성이 없던 forward 알고리즘</U>에게는 일종의 문맥상의 힌트를 줄 수 있게 된다는 것이다.
+
+Positive data의 경우에는 <U>bottom-up information</U>(image에 대한 representation)이 prediction(label) information을 보다 <U>잘 반영하게끔</U> activity를 학습하고, 반대로 negative data의 경우에는 <U>bottom-up information</U>이 prediction(wrong label) information을 <U>cut-off(ignore)</U>하도록 activity를 학습하게 된다.
+
+---
+
+# CIFAR-10 dataset 실험
+MNIST dataset의 경우 modality 특성상 단순한 형태를 가지다보니 forward forward algorithm으로도 충분히 성능이 보장되는 것을 확인할 수 있다. 하지만 CIFAR-10 dataset은 <U>이와는 다르게</U> $50,000$ 장의 $32 \times 32$ 크기의 RGB 이미지를 modality로 가지고, black border를 가지는 MNIST와는 다르게 background나 object의 형태가 보다 다양하기 때문에 <U>한정된 training data로</U> 모델링하기 힘들다는 특징이 있다. 그렇기 때문에 단순히 $3\sim 4$개의 hidden layer를 가지는 MLP 구조를 사용하게 되면 overfitting이 발생하는 등 학습이 제대로 진행되지 않는 것을 볼 수 있으며, <U>대부분의 결과</U>는 <U>convolutional</U> neural network 구조에 대한 내용이다.
+
+앞서 설명했던 convolution 구조에서 얼핏 확인했겠지만, FF는 <U>weight sharing이 불가능</U>한 네트워크이다. 기존 CNN이라면 단일 convolutional layer에서의 parameter는 feature map의 모든 receptive에 동일하게 적용되겠지만, FF 알고리즘에서는 불가능하다. 그렇기 때문에 지나치게 weight 개수를 제한하지 않는 선에서 최대한 <U>적당한 갯수의 hidden unit를 적용한 backpropagation baseline과 비교</U>를 하였다.
+
+...작성중
