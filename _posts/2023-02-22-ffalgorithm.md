@@ -400,9 +400,27 @@ Positive data의 경우에는 <U>bottom-up information</U>(image에 대한 repre
 
 ---
 
-# CIFAR-10 dataset 실험
-MNIST dataset의 경우 modality 특성상 단순한 형태를 가지다보니 forward forward algorithm으로도 충분히 성능이 보장되는 것을 확인할 수 있다. 하지만 CIFAR-10 dataset은 <U>이와는 다르게</U> $50,000$ 장의 $32 \times 32$ 크기의 RGB 이미지를 modality로 가지고, black border를 가지는 MNIST와는 다르게 background나 object의 형태가 보다 다양하기 때문에 <U>한정된 training data로</U> 모델링하기 힘들다는 특징이 있다. 그렇기 때문에 단순히 $3\sim 4$개의 hidden layer를 가지는 MLP 구조를 사용하게 되면 overfitting이 발생하는 등 학습이 제대로 진행되지 않는 것을 볼 수 있으며, <U>대부분의 결과</U>는 <U>convolutional</U> neural network 구조에 대한 내용이다.
+# CIFAR-10 dataset을 통한 실험
+MNIST dataset의 경우 modality 특성상 단순한 형태를 가지다보니 forward forward algorithm으로도 충분히 성능이 보장되는 것을 확인할 수 있다. 하지만 CIFAR-10 dataset은 <U>이와는 다르게</U> $50,000$ 장의 $32 \times 32$ 크기의 RGB 이미지를 modality로 가지고, black border를 가지는 MNIST와는 다르게 background나 object의 형태가 보다 다양하기 때문에 <U>한정된 training data로</U> 모델링하기 힘들다는 특징이 있다. 그렇기 때문에 단순히 $3\sim 4$개의 hidden layer를 가지는 MLP 구조를 backpropagation 알고리즘으로 학습하게 되면 overfitting이 발생하는 등 학습이 제대로 진행되지 않는 것을 볼 수 있으며, <U>대부분의 결과</U>는 <U>convolutional</U> neural network 구조에 대한 내용이다.
 
 앞서 설명했던 convolution 구조에서 얼핏 확인했겠지만, FF는 <U>weight sharing이 불가능</U>한 네트워크이다. 기존 CNN이라면 단일 convolutional layer에서의 parameter는 feature map의 모든 receptive에 동일하게 적용되겠지만, FF 알고리즘에서는 불가능하다. 그렇기 때문에 지나치게 weight 개수를 제한하지 않는 선에서 최대한 <U>적당한 갯수의 hidden unit를 적용한 backpropagation baseline과 비교</U>를 하였다.
+
+네트워크는 총 $2 \sim 3$개의 hidden layer 수를 가지는데, 각 layer는 $3072$의 ReLU 노드로 구성된다. 각 hidden layer에서 output으로 나오는 <U>tensor의 차원을 모두 곱한 값</U>을 곧 노드 갯수라고 생각하면 된다($32 \times 32 \times 3 = 3072$). 연산이 되는 hidden unit은 $11 \times 11$의 receptive field를 가지기 때문에 각 point에서의 input 크기는 $11 \times 11 \times 3 = 363$이다. FF 알고리즘의 경우 sequential input에 대해 단일 레이어를 기준으로 top-down activity와 bottom-up activity에 대해 receptive를 가지는데, 가장 말단의 hidden layer를 제외하고는 모두 $11 \times 11$의 크기를, 가장 말단의 hidden layer의 경우 top-down activity에 대해서는 $10$의 input을 가지게 된다. 그림으로 간단하게 표현하면 다음과 같다. 
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/221398579-a7a1b8db-3f6d-4a69-89c1-d2823e08e9ea.png" width="800">
+</p>
+
+그림의 구조를 보면 마치 CNN(Convolutional Neural Network) 처럼 표현되어있지만, 사실은 <U>fully-connected되지 않은</U>(한정된 receptive field 크기를 가지는) <U>MLP 구조</U>로 볼 수 있다. 그리고 input/output resolution을 유지할 때 padding을 사용했던 CNN 방식과는 다르게, edge 부분의 hidden unit에 대해서는 receptive field를 <U>input에 맞게 truncate</U>해서 사용하게 된다.   
+학습 과정에서 CIFAR dataset 특성 상 overfitting 문제가 생기는 것을 방지하기 위해서 정규화 방법으로는 <U>weight decay</U>를 사용했다.
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/221399147-72e210a6-165d-42a2-a991-d375ee2976e5.png" width="400">
+    <img src="https://user-images.githubusercontent.com/79881119/221399178-0c5a71ff-e5af-448a-993c-8d285b9b9f7d.png" width="400">
+</p>
+
+같은 학습 구조에 대해 <U>BP와 FF algorithm</U>의 각 objective에 대해 <U>training/test error</U>를 비교하였다. 실험하는 과정이 앞서 설명한 image를 boring video로 간주하는 작업이기 때문에 각 이미지를 $10$ iteration 동안 네트워크에 통과시키며 activity를 연산하고, 이 중에서 goodness 기반 error가 가장 적은 $4 \sim 6$의 <U>energy를 축적</U>하여(summation or mean으로 간주하면 될 듯) 하는 방법을 사용하거나, 단순히 <U>single-pass softmax</U>를 보는 방법 두 경우에 대해 모두 실험하였다.
+
+결과를 보면 hidden layer의 개수에 따라 성능 차이가 거의 없다고 볼 수 없고, FF 알고리즘이 BP 알고리즘에 test error 기준으론 크게 뒤쳐지지는 않지만 <U>training error가 피팅되는 속도</U>가 더 빠른 것을 볼 수 있다.
 
 ...작성중
