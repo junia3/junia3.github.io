@@ -421,6 +421,18 @@ MNIST dataset의 경우 modality 특성상 단순한 형태를 가지다보니 f
 
 같은 학습 구조에 대해 <U>BP와 FF algorithm</U>의 각 objective에 대해 <U>training/test error</U>를 비교하였다. 실험하는 과정이 앞서 설명한 image를 boring video로 간주하는 작업이기 때문에 각 이미지를 $10$ iteration 동안 네트워크에 통과시키며 activity를 연산하고, 이 중에서 goodness 기반 error가 가장 적은 $4 \sim 6$의 <U>energy를 축적</U>하여(summation or mean으로 간주하면 될 듯) 하는 방법을 사용하거나, 단순히 <U>single-pass softmax</U>를 보는 방법 두 경우에 대해 모두 실험하였다.
 
-결과를 보면 hidden layer의 개수에 따라 성능 차이가 거의 없다고 볼 수 없고, FF 알고리즘이 BP 알고리즘에 test error 기준으론 크게 뒤쳐지지는 않지만 <U>training error가 피팅되는 속도</U>가 더 빠른 것을 볼 수 있다.
+결과를 보면 hidden layer의 개수에 따라 성능 차이가 거의 없다고 볼 수 없고, FF 알고리즘이 BP 알고리즘에 test error 기준으론 크게 뒤쳐지지는 않지만 확실히 기존의 BP가 FF에 비해서는 <U>training error가 피팅되는 속도</U>가 더 빠른 것을 볼 수 있다.
+
+---
+
+# Sequence learning with string dataset
+현재 아카이브에 올라온 FF algorithm paper는 <U>수정본</U>이고, 이전에 올라온 <U>draft 버전</U>([참고 링크](https://www.cs.toronto.edu/~hinton/FFA13.pdf))에 수록된 간단한 실험이 있다. 해당 내용에 대해 간단하게 요약하자면, 앞서 실험한 FF로는 연속된 이미지와 같이 video를 생성하기에는 아직 performance가 부족하지만, <U>문장을 완성하는</U> 형태의 <U>discretized sampling</U>은 상대적으로 구현하기 간단한 편에 속한다.
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/221448892-056b30f8-1fcf-4495-a378-6e32e371dfa2.png" width="400">
+</p>
+
+예를 들어 위의 그림에서 보는 것과 같이 공백을 포함한 $10$개의 character를 기준으로 <U>다음 character를 예측</U>하는 task를 생각해보자. 구현하기 가장 간단한 방법으로는 앞선 $10$개의 string character를 토대로 higher-order feature를 생성하는 앞단의 hidden layer와, 이 activity를 사용하여 <U>다음 character를 예측</U>하는 softmax(알파벳, 공백 혹은 마침표 등을 classification)를 고려할 수 있다. 실제 실험에서는 이솝 우화의 fable에서 각각 $100$개의 character로 구성된 $248$개의 string을 사용했으며, 공백이나 콤바, 세미콜론을 포함한 총 $30$개의 <U>정해진 문자 이외에는 모두 제거</U>하였다고 한다. 네트워크는 모든 hidden layer가 $2000$개의 ReLU 노드를 가지는 구조다.
+Positive sample은 기존 string에서의 $10$개의 character를 그대로 가져온 경우가 되고(The wolf r), negative sample은 마지막 character를 이전의 $10$개의 prediction 중 하나의 character로 대체하는 것으로 구성하였다(The wolf h). <U>Sequence to sequence</U> 구조에서 주로 활용하는 <U>teacher forcing</U>이 되는 것이다(ground truth를 학습에 사용하여 수렴 속도를 높이는 방법). 다른 방법으로는 negative data를 아예 predictive model의 output으로만 구성하는 방법이 있는데, 네트워크가 가장 앞단의 $10$개의 character를 '기억한다'는 가정을 하는 것이다.
 
 ...작성중
