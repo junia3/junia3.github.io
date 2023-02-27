@@ -433,6 +433,22 @@ MNIST dataset의 경우 modality 특성상 단순한 형태를 가지다보니 f
 </p>
 
 예를 들어 위의 그림에서 보는 것과 같이 공백을 포함한 $10$개의 character를 기준으로 <U>다음 character를 예측</U>하는 task를 생각해보자. 구현하기 가장 간단한 방법으로는 앞선 $10$개의 string character를 토대로 higher-order feature를 생성하는 앞단의 hidden layer와, 이 activity를 사용하여 <U>다음 character를 예측</U>하는 softmax(알파벳, 공백 혹은 마침표 등을 classification)를 고려할 수 있다. 실제 실험에서는 이솝 우화의 fable에서 각각 $100$개의 character로 구성된 $248$개의 string을 사용했으며, 공백이나 콤바, 세미콜론을 포함한 총 $30$개의 <U>정해진 문자 이외에는 모두 제거</U>하였다고 한다. 네트워크는 모든 hidden layer가 $2000$개의 ReLU 노드를 가지는 구조다.
-Positive sample은 기존 string에서의 $10$개의 character를 그대로 가져온 경우가 되고(The wolf r), negative sample은 마지막 character를 이전의 $10$개의 prediction 중 하나의 character로 대체하는 것으로 구성하였다(The wolf h). <U>Sequence to sequence</U> 구조에서 주로 활용하는 <U>teacher forcing</U>이 되는 것이다(ground truth를 학습에 사용하여 수렴 속도를 높이는 방법). 다른 방법으로는 negative data를 아예 predictive model의 output으로만 구성하는 방법이 있는데, 네트워크가 가장 앞단의 $10$개의 character를 '기억한다'는 가정을 하는 것이다.
+Positive sample은 기존 string에서의 $10$개의 character를 그대로 가져온 경우가 되고(The wolf r), negative sample은 마지막 character를 이전의 $10$개의 prediction 중 하나의 character로 대체하는 것으로 구성하였다(The wolf h). <U>Sequence to sequence</U> 구조에서 주로 활용하는 <U>teacher forcing</U>이 되는 것이다(ground truth를 학습에 사용하여 수렴 속도를 높이는 방법). 다른 방법으로는 negative data를 아예 predictive model의 output으로만 구성하는 방법이 있는데, 네트워크가 가장 앞단의 $10$개의 character를 '기억한다'는 가정을 하는 것이다. 사실 이 부분이 기존 논문에서 가장 이해가 안되는 부분이였는데, 앞서 마지막 character만 바꾸어 teacher forcing을 하는 방식과는 다르게 직접 <U>predictive model의 generation</U>을 데이터로 쓰게 되면, sleep phase에서 <U>offline으로 negative data를 만들어낼 수 있다</U>는 것이다. 이 부분에 대한 내용은 <U>수정본에서 다시 설명</U>되어 있어서 확인해보았다. 나름대로 이해한 사실을 바탕으로 정리하면 다음과 같다.
 
-...작성중
+---
+
+# Sleep phase and Awake phase
+Awake phase는 positive data로 학습되는 과정을 의미하고, Sleep phase는 negative data로 학습되는 과정을 의미한다. Draft 논문에서는 <U>실제 실험을 토대로 아래와 같은 결과</U>를 얻을 수 있었다.
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/221470160-05e65e73-1b99-435a-bc2e-5dc181ad6fe6.png" width="400">
+</p>
+
+파란색은 hidden representation 학습이 실제 estimation에 미치는 영향을 보기 위해 <U>랜덤하게 초기화한 hidden weight</U>를 freeze한 채로 linear classifier를 학습하게 된다. 검은색 선과 붉은색 선이 사실상 가장 중요한 부분인데, synchronous phase(검은색)에서는 실제 data에 해당되는 positive sample 그리고 학습 과정에서 network가 generation하는 sequence를 negative sample로 사용하여 positive gradient와 negative gradient를 함께 학습하는 것이다. 이와는 다르게 seperated phase(붉은색)에서는 처음에는 positive sample만 사용하여 네트워크를 학습시키고, 그 뒤에 학습된 네트워크가 만들어내는 negative sample로 네트워크를 학습하는 것이다. 학습 과정이 분리되었지만 실제 성능 상으로는 synchronize하는 것과 거의 유사하였고 저자는 여기서 <U>하나의 해석을 추가한 것</U>이다.
+
+성능이 크게 악화되지 않다면, 굳이 online(데이터셋을 사용하여 학습하는 과정) 상에서 negative sample을 사용할 필요 없이 offline(데이터셋 없이 네트워크를 통해 만들어낸 임의의 sequence)를 이후에 학습하면 된다. 사람으로 치면 awake(깨어있는) 상태에서 감각과 interaction하는 현실을 경험하고, sleep(자고있는) 상태에서 <U>학습된 경험에 대한 disequillibrium을 조정</U>하는 과정으로 볼 수 있다. 그렇기 때문에 저자가 언급하는 <U>sleep phase</U>란 실제 데이터셋 없이 <U>negative sample에 의한</U> 최적화 과정이고, 반대로 <U>awake phase</U>란 실제 데이터셋으로 <U>positive sample에 의한</U> 최적화를 진행하는 과정이 된다. 좀 재밌었던 파트는 draft에서의 결과 그래프가 어째선지 reproduce가 안되었는데(그래서 수정본에는 결과 그래프가 없다), 프로그램상 버그인 것 같다고 하는 저자의 푸념섞인 글이었다. <U>학습이 안정적이지 못하다는 점</U>이 reproduction에 실패한 이유 같기도 한데, phase를 번갈아가며 학습하는 과정은 learning rate가 아주 작으며 momentum이 극도로 큰 경우에만 수렴이 된다고 한다. 저자는 이런 시행착오를 겪는 과정 자체가 FF 알고리즘이 biological하다는 증거로 간주하고, 실제로 <U>사람이 수면 부족을 겪는 것</U>처럼 positive phase만 학습시키다 보면 <U>성능이 떨어지는 상황</U>이 발생한다고 한다.
+
+---
+
+# 마무리하며
+사실 논문이 여기서 끝나는 것은 아니고 FF 알고리즘의 학습법이나 컨셉에 대해서 조금 더 서술해주는 부분이 실험이나 구현 뒤쪽에 나와있다. Contrastive learning에 대한 내용 그리고 레이어 정규화 작업, 하드웨어와의 연관성 그리고 해당 연구를 기반으로 또다른 학습 가능성에 대해 future work를 제시한다. 이후에 다른 포스트에서 따로 다룰 예정이다.
