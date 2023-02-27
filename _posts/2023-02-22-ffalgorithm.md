@@ -3,7 +3,7 @@ title: 딥러닝의 체계를 바꾼다! The Forward-Forward Algorithm 논문 �
 layout: post
 description: prompt learning
 use_math: true
-post-image: https://user-images.githubusercontent.com/79881119/220503923-6b3857d3-ebc4-46ed-b2fe-270444a158bc.gif
+post-image: https://user-images.githubusercontent.com/79881119/221447149-7ed12c39-a466-4f34-82d8-cecd13e304ef.gif
 category: paper review
 tags:
 - Deep learning
