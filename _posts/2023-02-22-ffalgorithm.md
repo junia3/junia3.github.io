@@ -135,8 +135,15 @@ FF algorithm이 제시하는 방법은 다음과 같다. <U>서로 반대되는 
 이러한 <U>feature collapse</U> 문제를 막기 위해서 FF는 hidden layer output으로 나오는 feature vector의 길이를 다음 layer의 input으로 넣기 전에 normalize하게 된다. 그렇게 되면 길이에 대한 정보를 통해 <U>상대적인 길이만 유지</U>한 채로 input으로 들어가게 된다. 다르게 표현하자면 activity vector는 크기와 방향을 가지는데, <U>크기 정보를 필터링</U>하고 <U>방향에 대한 정보</U>만 다음 layer로 보낸다고 생각하면 된다.
 
 <p align="center">
-    <img src="https://user-images.githubusercontent.com/79881119/220537279-c58edcd9-69ff-4663-802b-41879e23378b.png" width="600">
+    <img src="https://user-images.githubusercontent.com/79881119/222123454-0e336269-f646-450b-8695-c6e9fbc5ab5e.png" width="600">
 </p>
+
+\[
+    \begin{aligned}
+        \hat{a^l} =& \frac{a^l}{\vert \vert a^l \vert \vert_2} \newline
+        a^l =& (a_1^l,~a_2^l,~a_3^l,~a_4^l,~a_5^l)
+    \end{aligned}
+\]
 
 FF algorithm에서의 layer normalization은 activity에 대해 <U>layer mean을 빼주는 과정 없이</U> activity vector의 <U>길이로 나눠주는 작업</U>을 진행했다고 한다.
 

@@ -124,4 +124,89 @@ Free energy를 해석하면 <U>'모든 hidden state'</U>에 대한 unnormalized 
 
 Energy 식은 총 세 부분으로 구성된다. Visible layer의 state vector에 대한 biased term($-b^\top v$) 그리고 hidden layer의 state vector에 대한 biased term($-c^\top h$), 마지막으로 두 state간의 weight 관계($-h^\top Wv$)이다. Bias term인 $b$ 그리고 $c$는 <U>각 layer 전반의 특성을 반영</U>한 값이 되고, weight는 bias term이 보지 못하는 <U>레이어 사이의 관계를 반영</U>한 값이 된다고 생각하면 된다.
 
+---
+
+# Bernoulli RBM
+
+앞서 설명했던 <U>얼굴 생성과 관련된 state</U>는 각각 여러 상태를 가질 수 있지만, Bernoulli RBM의 경우에는 visible/hidden unit 각각 $0$ 혹은 $1$의 상태만 가지는 경우를 다루게 된다. 앞서 살펴본 free energy $F(\cdot)$로 전개된 식을 살펴보면,
+
+\[
+    \begin{aligned}
+        F(v) =& -\log \sum_h \exp (-(-b^\top v - c^\top h - h^\top Wv)) \newline
+        =& -\log \sum_h \exp(b^\top v + c^\top h + h^\top Wv) \newline
+        =& -\log \sum_h \exp(b^\top v) \exp(c^\top h + h^\top Wc) \newline
+        =& -\log \left( \exp(b^\top v) \sum_h \exp(c^\top h + h^\top Wc) \right) \newline
+        =& -b^\top v -\log \sum_h \exp(c^\top h + h^\top Wc)
+    \end{aligned}
+\]
+
+위와 같이 정리할 수 있다. 그리고 $h$가 곧 $0$ 혹은 $1$ 이므로(Bernoulli)
+
+\[
+    \begin{aligned}
+        -b^\top v& - \sum_{i=1}^n \log (\exp (0) + \exp (c_i + W_i v)) \newline
+        =& -b^\top v - \sum_i \log (1 + \exp(c_i + W_i v))
+    \end{aligned}    
+\]
+
+위와 같이 표현할 수 있다. RBM은 input에 대해 의존하는 neural network 구조와는 다르게 visible layer를 이용하여 hidden layer의 state를 생성할 수도 있지만, <U>반대로 hidden layer를 이용하여</U> 다시 <U>visible layer를 생성</U>할 수 있다. Visible layer가 주어졌을 때의 조건부 확률을 energy based로 전개하면 다음과 같다.
+
+\[
+    \begin{aligned}
+        p(h \vert v) =& \frac{p(h,v)}{p(v)} = \frac{\exp (-E(h, v))/Z}{\sum_h p(h, v)} \newline
+        =& \frac{\exp(-E(h, v))/Z}{\sum_h \exp(-E(h, v))/Z} \newline
+        =& \frac{e^{b^\top v} e^{c^\top h + h^\top Wv}}{\sum_h e^{b^\top v} e^{c^\top h + h^\top Wv}} \newline
+        =& \frac{e^{c^\top h + h^\top Wv}}{\sum_h e^{c^\top h + h^\top Wv}}
+    \end{aligned}    
+\]
+
+총 $n$개의 hidden unit이 있을때, 이 중에서 하나의 hidden unit이 $1$인 값을 가질 확률은 sigmoid 함수인 $\sigma(\cdot)$으로 표현할 수 있다.
+
+\[
+    \begin{aligned}
+    p(h_i = 1 \vert v) =& \frac{e^{c_i + W_i v}}{\sum_h e^{c_i h_i + h_i W_i v}} \newline
+    =& \frac{e^{c_i + W_i v}}{e^0 + e^{c_i + W_i v}} \newline
+    =& \frac{e^{c_i + W_i v}}{1 + e^{c_i + W_i v}} = \frac{1}{1 + \frac{1}{e^{c_i + W_i v}}} \newline
+    =& \sigma (c_i + W_i v)
+    \end{aligned}    
+\]
+
+반대 방향에 대해서도 <U>같은 공식을 적용</U>할 수 있고, 이때 바뀌는 것은 bias와 weight에 곱해지는 input이기 때문에
+
+\[
+    p(v_j = 1 \vert h) = \sigma(b_j + W_j^\top h)    
+\]
+
+와 같다. RBM 모델의 수학적 모델링은 위의 공식대로 sigmoid 함수를 따르는 조건부 확률이 되며, RBM이 학습하고자 하는 것은 <U>데이터의 확률 분포</U>이다.
+만약 RBM의 hidden layer가 적절한 property에 대한 distribution $p(h)$를 제대로 학습했다면, sampling을 통해 획득할 수 있는 $p(v \vert h)$가 원래 데이터인 $p(v)$와 같아야 한다. 마치 Variational autoencoder랑 비슷하긴한데 조금 다른 점은 VAE 구조는 encoding이 목적이고 RBM은 <U>확률 밀도 함수 자체를 레이어에 피팅</U>하고자 하는 것이다.
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/222154860-16a4c59c-576d-4477-8e7d-fab9c3700f98.png" width="800">
+</p>
+
+이제 실제로 왜 $p(v)$에 대한 negative log likelihood를 최적화하는 것이 <U>contrasitve learning과 관련될 수 있는지</U> 수식으로 증명할 수 있는 이론적 배경이 완성되었다. FF 설명하고자 여기까지 왔다... 
+
+---
+
+# Parametric learning in RBM
+RBM의 파라미터를 $\theta$라고 해보자. 여기서 parameter란 weight와 bias가 될 수 있다. 앞서 전개했던 식들을 토대로 negative log likelihood를 구하면 다음과 같다.
+
+\[
+    \begin{aligned}
+    -\frac{\partial}{\partial \theta} \log p(v) =& -\frac{\partial}{\partial \theta} \log \left( \frac{\exp (-F(v))}{Z} \right)   \newline
+    =& -\frac{\partial}{\partial \theta} \left( \log \exp(-F(v)) -\log (Z) \right) \newline
+    =& -\frac{\partial}{\partial \theta}(-F(v) - \log (Z)) \newline
+    =& \frac{\partial}{\partial \theta} F(v) + \frac{\partial}{\partial \theta} \log (Z) \newline
+    =& \frac{\partial}{\partial \theta} F(v) + \frac{\partial}{\partial \theta} \log \left( \sum_{\tilde{v}} \exp (-F(\tilde{v})) \right)
+    \end{aligned} 
+\]
+
+$\tilde{v}$는 RBM에 의해 생성되어 visible unit에 정의된 state vector를 의미한다. 즉, <U>은닉층으로부터 생성된 샘플</U>을 의미한다.
+
+\[
+    \begin{aligned}
+        \frac{\partial}{\partial \theta} F(v) + \frac{\sum_v \exp (-F(\tilde{v})) \frac{\partial}{\partial \theta} (-F(\tilde{v}))}{\sum_{\tilde{v}} \exp(-F(\tilde{v}))}
+    \end{aligned}    
+\]
+
 ... 작성중
