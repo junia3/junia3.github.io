@@ -1,7 +1,7 @@
 ---
-title: 딥러닝의 체계를 바꾼다! The Forward-Forward Algorithm 논문 리뷰
+title: 딥러닝의 체계를 바꾼다! The Forward-Forward Algorithm 논문 리뷰 (1)
 layout: post
-description: prompt learning
+description: Forward-forward algorithm
 use_math: true
 post-image: https://user-images.githubusercontent.com/79881119/221447149-7ed12c39-a466-4f34-82d8-cecd13e304ef.gif
 category: paper review
