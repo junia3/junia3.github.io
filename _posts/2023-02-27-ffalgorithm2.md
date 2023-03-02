@@ -257,4 +257,121 @@ $\tilde{v}$는 RBM에 의해 생성되어 visible unit에 정의된 state vector
 
 ---
 
-... 작성중
+# Relationship with contrastive learning
+단순히 RBM에서의 contrastive(KL divergence)를 최적화하는 것이 아니라, [SimCLR](https://arxiv.org/abs/2002.05709)와 같은 <U>self-supervised contrastive learning</U> 방법에서 사용하는 학습법과의 관련성에 대한 부분이다.
+해당 방법들에서 사용하는 방법은 동일한 이미지에서 <U>다른 crop된 image patch</U>에 대한 representation을 구한 뒤, <U>동일한 이미지</U>에서 나온 image patch라면 서로 <U>similarity가 높도록</U>, <U>다른 이미지</U>에서 나온 image patch라면 서로 <U>similarity가 낮도록</U> 하는 objective function을 적용하거나,
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/209150800-c9a469b8-da9a-47c8-9068-1f8fd5657ea4.gif" width="600"/>
+</p>
+동일한 이미지에 <U>서로 다른 augmentation을 적용</U>하여 positive pair를 만들고, 나머지 이미지에 대한 augmentation pair들을 모두 negative로 간주하여 contrastive learning을 진행하는 방법도 있다. 
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/209150790-bc14237d-2686-43e9-8059-8220bb554dd1.gif" width="600"/>
+</p>
+
+자세한 내용은 본인이 작성한 글들 중에서 [여러 딥러닝 학습법](https://junia3.github.io/blog/transfer) 게시글을 참고하면 좋을 것 같다. 아무튼 이렇게 positive/negative pair에 대한 similarity를 구하는 것을 <U>agreement</U>라는 용어로 통칭하도록 하겠다. <U>Image crop</U>에 대한 agreement을 생각했을때, 만약 두 crops가 완전히 일치한다면 agreement를 학습하는 의미가 없게 된다.
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/222297983-d7833018-c2db-4764-877f-404550e840ff.png" width="600"/>
+</p>
+
+그리고 실제 인간의 신경망 구조는 두 개의 <U>서로 다른 representation</U>이 <U>완전히 동일한 neural weight 세팅</U>에서 추출되었다는 보장을 할 수 없다.
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/222299625-745b5469-9fcc-4214-ae32-9e119927f66b.png" width="600"/>
+</p>
+
+위의 그림을 보면 딥러닝에서 사용하는 contrastive learning은 <U>각 배치 단위로 학습</U>이 진행되기 때문에 update 시기와 정확하게 동기화가 가능하지만, 실제 인간이 정보를 처리하는 과정에서는 <U>이러한 형태</U>의 contrastive learning이 <U>불가능하다는 것</U>을 알 수 있다(조금만 weight가 달라져도, 이에 따른 noise와 disagreement를 배제할 수 없어지기 때문).
+
+FF에서는 agreement를 다르게 측정하는 것을 알 수 있고, 이러한 세팅이 실제 신경망에서와 비슷하다고 한다. 만약 <U>source</U>가 <U>neuron을 activate</U>한다면(positive sample) 높은 goodness를 보일 것이고, 아니라면(positive sample) 낮은 activation 값을 가질 것이다. 단순히 각 레이어의 output을 통해 measuring하는 방식은 <U>각 샘플에 대한 동기화 없이</U>도 <U>독립적인 연산이 가능</U>하다는 장점이 있다. SimCLR와 같은 방법의 문제점은 학습 효율 및 성능을 위해 <U>batch size를 키우고</U>, 각각 representation을 구해야하는 등 <U>연산량이 급증</U>한다는 문제가 있다. 그러나 사용되는 <U>objective function</U>은 유사도에 대한 정보를 통해 weight를 업데이트하는 과정이 전부이기 때문에(representation의 일부만 constraints로 학습) <U>학습 효율을 충분히 활용하지 못한다</U>는 분석이 있다.
+
+---
+
+# Problem with stacked contrastive learning
+<U>Supervision이 없는</U> 상황에서 여러 층의 <U>representation layer</U>를 학습하는 방법은 하나의 layer가 특정 data에 대한 representation을 학습하게끔 한 다음, 학습된 <U>hidden layer의 activation</U>을 다시 input으로 하여 다음 레이어를 학습하는 것이다. <U>RBM</U>이나 <U>stacked autoencoder</U>에서 representation을 학습할 때 이러한 방법을 사용한다.
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/222305800-96f8e08c-774b-41e9-b8f5-0545835eae32.png" width="600"/>
+</p>
+
+이러한 학습법은 그러나 큰 문제가 있다. 예를 들어, 임의의 noise images를 임의의 weight matrix로 mapping하는 상황을 생각해보자. 구한 activity는 연산 결과에 <U>input</U>에 대한 <U>weight matrix</U>와의 <U>correlation</U>이 될텐데, 이는 실제 데이터와는 아무런 상관이 없을 것이다. 위의 그림에서 보는 것과 같이 $h \rightarrow h$로의 activity 연산은 <U>external world</U>(visible layer)에는 아무런 영향을 끼치지 못한다는 것을 알 수 있다.
+
+이러한 문제점을 해결하기 위해서 볼츠만 머신의 학습 알고리즘에서 Hinton은 두 개의 서로 다른 external boundary condition을 둔다. 바로 이 방법이 positive와 negative data를 contrasting하는 것이며, 다층 레이어 학습시 생기는 문제점을 <U>해결할 수 있는 방법으로 제시</U>되었다고 한다.
+
+---
+
+# Learning fast and slow
+이 부분이 사실상 굉장히 흥미롭게 다가왔던 파트이다. 바로 각 레이어에서의 goodness에 의한 parameter update는 <U>layer normalized된 output</U>에 아무런 <U>영향을 미치지 않는다는 것</U>이다. 만약 이게 가능하다면 backpropagation처럼 레이어 간 학습 과정에 동기화 필요성이 사라지기 때문에 <U>특정 레이어에서의 activation 연산이 느려지더라도</U> 병렬 처리가 가능하다는 놀라운 발전이 가능하다. <U>End-to-end 학습</U>이지만, 그렇다해서 각 요소가 다른 요소의 학습을 <U>기다릴 필요성은 없어진다</U>는 관점이다.
+
+만약 layer가 fully connected 되어있다고 생각하면, <U>weight update</U>($\Delta w_j$)는 input $x$에 대해 다음과 같은 값을 가지게 된다.
+
+\[
+    \Delta w_j = 2 \epsilon \frac{\partial \log (p)}{\partial \sum_j y_j^2} y_j x   
+\]
+
+$y_j$는 layer normalization 이전의 ReLU 노드의 activation 그 자체를 의미하고, $w_j$는 weight에서 neuron $j$에 대한 벡터만을 의미한다. 따라서 $y_j = \text{ReLU}(\left< w_j,  x\right>)$라고 생각할 수 있다. $\epsilon$은 learning rate라고 생각하면 되고, neuron $j$에 대한 activity는 위의 <U>weight update에 의해</U> $\Delta w_j x$ 만큼 변하게 된다.
+
+그렇다면 결국 output의 변화가 index $j$에 의존하는 것은 곧 $y_j$에 의존하는 것과 같다. 이를 제외하고는 다른 요소들은 index에 의존하지 않기 때문에 weight의 변화는 activity vector의 크기를 변화시킬 수 있어도 <U>방향은 변화시키지 못한다</U>.
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/222310424-a075dc2d-be6e-4f69-a4b4-c165a95833b8.png" width="600"/>
+</p>
+
+즉, 앞서 weight parameter가 update가 되는 상황이 <U>layer normalize 결과</U>를 변화시키지 않기 때문에 한 번에 <U>여러 레이어를 업데이트할 수 있는 장점</U>이 있다. 따라서 input $x$를 기준으로 모든 레이어가 desired goodness를 얻기 위한 weight update가 <U>동시에 발생</U>할 수 있다는 것이다(one step으로 업데이트 가능). 모든 input vector와 layer normalized hidden vector의 길이가 $1$이라고 가정한다면, learning rate는 layer $L$에서의 squared activity 합인 $S_L$, 얻고자 하는 goodness인 $S^\*$에 대해 다음과 같이 설정할 수 있다.
+
+\[
+    \epsilon = \sqrt{\frac{S^\*}{S_L}} -1    
+\]
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/222312743-770466eb-7a88-46da-8d0e-55a36ff0e266.png" width="600"/>
+</p>
+
+하지만 실제 저자는 아직 이론상으로만 밝힌 사실이고, <U>mini-batch 단위</U>로 학습을 진행하는 구조에서는 이를 <U>사용할 수 없다</U>고 한다.
+
+추가적으로 FF의 경우에는 이런 방법도 사용할 수 있다. Backpropagation 알고리즘과는 다르게 FF는 <U>학습 구조 내부</U>에 <U>black box</U>가 있더라도 상관없이 학습이 가능하다는 것을 언급했는데, 여기서의 black box는 한쪽 layer의 output을 stochastic(구조를 모르기 때문)하게 변형시켜 다음 layer의 input으로 넣는 경우를 생각해볼 수 있다. 만약 black box를 몇 개의 hidden layer로 이루어진 neural network로 구성해보는 경우에, 이 black box가 학습하는 속도가 상대적으로 outer loop보다 느려질 경우 <U>black box</U>가 <U>stationary</U>(확률 분포가 <U>시간에 따라 변하지 않고 일정</U>한 process)라 가정할 수 있게 된다. 분포가 일정한 시스템이 중간에 있게 되면 나머지 activity들이 <U>새로운 데이터에 적응할 수 있는 시간</U>을 벌어주게 되고, 이러한 black box의 slow learning을 활용하면 보다 긴 timescale에 대해 <U>시스템을 성장시킬 수 있는 배경</U>이 된다. 에컨데 slow reinfocement learning 과정에서 black box의 input으로 약간의 noise를 더한 perturbed input을 통해 positive phase에서의 cost function 변화를 볼 수 있게 되는데(원래 과정이었다면 <U>학습 속도가 동일하기 때문에</U> noise에 의한 효과를 확인하지 못함), 이로써 black box 내부의 뉴런들의 activity에 의한 cost function의 도함수를 예측할 수 있게 되는 것이다. 이 부분을 보면서 score estimation 중 <U>denoising score matching</U>이 생각났다.
+
+---
+
+# Analog computation
+Activity vector에 weight를 곱하는 연산을 energy efficient한 방법으로 구현하는 것은 activity를 voltage로, weight는 conductance로 보는 것이다. 단위 시간당 곱해진 value는 곧 charge(전류)가 된다. Conductance는 저항의 역수로, 각 유닛에서의 <U>value</U>(voltage)에 대해 다음 레이어로 얼만큼 값을 넘겨줄지 결정하는 요소가 된다.
+
+\[
+    G = 1/R,~I = GV
+\]
+
+이러한 구조가 디지털 환경에서 높은 power로 구동되는 트랜지스터를 사용하여 $O(n^2)$ 만큼의 single bit operation을 진행하는 것(multiplication을 구현하기 위해)보다 훨씬 효율적인 것을 알 수 있다. 하지만 backpropagation 과정을 구현하기엔 아날로그 회로가 부적합하기 때문에 보통은 <U>A-to-D converter</U>를 사용하는 방법을 고안했다.
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/222327263-af864684-e211-4461-8a8c-5b530fad70f9.png" width="600"/>
+</p>
+그런데 만약 forward-forward 알고리즘을 사용한다면, 굳이 <U>backpropagation</U>을 진행할 <U>필요가 없어지게</U> 된다.
+
+---
+
+# Mortal computation
+Mortal computation을 직역하면 말 그대로 <U>'유한한 삶을 사는 연산'</U>을 의미한다. 대부분의 디지털 컴퓨터의 경우 해결해야할 특정 task가 있다면, 이를 해결하기 위해서는 단지 <U>컴퓨터가 할 일</U>을 잘 <U>정리해서 넘겨주는 과정</U>이 필요하다. 결국 실생활의 문제에 generalize하기 위해서는 computation에 활용될 수 있는 instruction을 제대로 짜는 것이 중요하다는 관점이었다. 물론 지금은 상황이 많이 바뀌었기 때문에 <U>더이상 프로그래머들이 고통받으며</U> 알고리즘을 짜지 않고, <U>딥러닝으로 해결하고자 하는 시도가 증가</U>하였다.
+그와 동시에 연구 단체에서는 <U>딥러닝</U>의 구체적 작동방식과 <U>하드웨어의 관계</U>에 대해 제대로 알아보기도 전에, 단순히 여러 hardware에서 돌릴 수 있는 software framework를 만들기 시작했으며, 이러한 방향은 프로그램과 하드웨어가 서로 독립적으로, 즉 하드웨어가 사라지더라도 <U>knowledge는 남는</U>, <U>immortal knowledge</U>를 낳게 되었다.
+
+Software를 hardware와 <U>분리시킨 것</U>은 많은 장점이 있었다. 분리된 소프트웨어는 <U>하드웨어에 대한 제한이 없기 때문에</U> electrical engineering에 대한 고려 없이 연구가 진행될 수 있기 때문이다. 단순히 프로그램을 작성하고, 이를 수많은 컴퓨팅 환경에 복사하기만 하면 된다. 대규모의 데이터셋에 대한 도함수를 계산하고, 최적의 모델을 찾는 과정은 점차 <U>병렬화되기 시작</U>했고 그만큼 <U>가속화</U>되었다.
+
+하지만 만약, 지금 소프트웨어가 가지고 있는 <U>불멸성</U>(immortality)을 희생해서라도 연산에 필요한 에너지를 절약할 수 있다고 생각해보자. 기존의 알고리즘이 허용했던 한정된 activation과 네트워크 구조에서 벗어나 <U>훨씬 다양한 variation</U>이 각 hardward 플랫폼에 적용 가능하게 되고, 동일한 task를 수행하는 과정에도 모두 <U>서로 다른 parameter set</U>이 최적의 결과를 만들 것이다. 이런 parameter는 각 하드웨어에 따라 다르기 때문에 <U>대체 불가능</U>하며, <U>mortal</U>하다는 특징을 가질 것이다.
+
+같은 parameter를 <U>다른 하드웨어에 적용</U>한다는 것이 어쩌면 합리적이지 못하지만(fully-optimized된 결과인지 <U>확신할 수 없기 때문</U>), 하나의 HW에서 다른 HW로 knowledge transfer를 하는 <U>더 biological한 방법이 존재</U>한다. 이를테면 이미지를 보고 <U>물체의 종류를 구분</U>하는 task가 있다고 하면, 실제로 관심이 있는 것은 하드웨어에서 모델링된 function이 pixel value를 각 class label로 매핑하는 것이지, parameter value 자체가 아니다. 그리고 이러한 representation function은 <U>distillation 방법</U>으로 다른 하드웨어로 transfer가 가능하다.
+
+Distillation이란 단순히 학습의 <U>teacher 역할</U>을 하는 네트워크가 내놓는 정답을 맞추는 것이 아니라, 오답에 대한 예측도 동일하게 따라가고자 하는 것이다. 이러한 방법이 <U>generalization 성능을 높이고</U> overfitting을 방지하는 효과가 있다고 알려져있다. Distillation은 teacher network가 modality에 대해 <U>internal representation</U>을 <U>풍부하게 담는 output</U>을 내보내는 경우에 가장 효과적이다. 마치 언어가 가지는 기능과 같은데, 무언가를 묘사하는 문장이 있다고 생각해볼때, 언어가 단지 상징적 의미를 가진 정보 전달의 단위라고 보는 것보다는, 해당 문장을 말해주는 사람이 이해해서 설명해주는 것을 <U>듣는 사람으로 하여금 비슷한 이해력을 가질 수 있게</U> 하는 경우로 생각해볼 수 있다. 말이 좀 어려웠는데 좀 더 쉽게 설명하자면, 어떠한 상황을 설명하는 문장이 단순히 <U>상징적인 상황을 축약하는 것</U>이 아니라 일타 강사가 <U>잘 설명해주는 내용</U>이라고 생각하면 된다.
+
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/79881119/222336865-2ba8da9b-9fa0-4529-ab21-8ed3dbc10dce.png" width="600"/>
+</p>
+
+그림에서 보이는 뇌의 분홍색 부분이 transfer 하고자 하는 representation이고, 잘 전달하기 위한 output(scene을 가장 <U>잘 설명하는</U> description)으로 지식을 넘기는 과정이 된다. 만약 언어가 각 나라의 culture를 잘 대표할 수 있는 형태로 발전이 되었다면, 여러 나라의 culture를 <U>제대로 이해하는 딥러닝 모델</U>은 언어를 기반으로 해야할 것이다.
+
+앞서 distillation에 대해서 언급한 이유는 output에 의한 완전한 knowledge transfer에 <U>한계가 분명히 존재한다는 점</U>이다. 저자가 언급하는 것은 만약 파라미터 수를 늘리면서 energy를 절약하고 싶다면, mortal computation(하드웨어에 따라 파라미터를 설계하는 것)이 유일한 방법이라고 하며, 이러한 연구를 진행할 수 있는 candidate로 <U>forward-forward algorithm</U>을 제안하였다. 그럼에도 불구하고 만약 hardware에서 <U>동일한 소프트웨어를 학습하기 위해서</U>, weight를 공유하는 방식으로써 학습의 bandwidth를 올릴 수 있고, knowledge를 공유하는 것이 distillation보다 나은 방법이라고 제시한다.
+
+---
+
+# 결론
+저자는 몇가지 FF를 통해 해볼 수 있는 연구들을 제시하고 마무리한다. 아무래도 FF라는 알고리즘은 backpropagation이 불가능한 아날로그 컴퓨팅 환경에 시사하는 바가 굉장히 큰 점과, 아직 디지털 환경에서 효과적으로 FF 알고리즘을 통해 대용량의 네트워크를 학습시키는 방법이 발견되지 않았다는 점에서 발전 가능성이 굉장히 큰 연구라고 생각된다.
+딥러닝 연구를 시작했을 당시에는 이미 초창기 논문들을 읽고 이해하는데 시간을 모두 썼었고, 거기에서 insight를 얻어서 새로운 연구를 고안하는 것이 이미 늦은 단계였지만 최근 들어 이렇게 <U>preliminary 연구</U>를 딥러닝 분야에서 본 것이 굉장히 감동적인 일이라고 생각된다.
+
+결국 컨퍼런스는 수치 싸움이고, 기존 SOTA를 이길 수 없다면 새로운 task를 정의하여 성능의 feasibility를 보이는 것이 최선이라고 생각했었는데 이런 새로운 방향성을 제시한 연구를 보니 딥러닝을 공부하던 초창기로 돌아가는 기분이었고, 논문 내용보다 더 배운 것이 많은 시간이었다.
