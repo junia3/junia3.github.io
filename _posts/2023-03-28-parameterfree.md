@@ -15,11 +15,10 @@ tags:
 # 딥러닝 연구의 한계점
 
 **State-of-the-art(SOTA)**인 vision model을 학습하는 것은 연구 목적으로 사용할 때나, 실제 사업에 활용할 때 모두 cost가 많이 드는 작업에 해당된다.
+심지어 <U>최근 연구 경향</U>을 보면 알 수 있듯이 보다 resource를 많이 사용하여(네트워크 크기나 데이터셋의 규모 모두에 해당) 다양한 분야에서 뛰어난 성능을 보여주기 시작했다. 하지만 일반적으로 NVIDIA나 Adobe research, FAIR와 같이 연구에 지원되는 리소스가 풍부하지 않은 보통의 연구 환경에서는 아무리 좋은 학습 결과를 보여주는 연구라 하더라도 reproduction이 불가능할 때가 많고, pre-trained network를 학습에 활용하고 싶다고 하더라도 제한된 리소스에 모두 **수용이 안되는 경우**가 발생한다. 그리고 가장 주요한 한계점은 사전 학습된 네트워크 파라미터가 공개되더라도 <U>학습된 데이터셋</U> 자체는 공개되지 않는 경우이다. 이번 논문도 **domain adaptation**의 특별한 케이스를 다루게 되는데, 만약 domain adaptation 환경에서 지속적으로 domain alignment를 위해 source dataset이 필요하다면 **online**(실제 deployment가 진행되는) 환경에서 사용할 수 없다는  뜻이기 때문이다. DA(Domain adaptation)이라는 task가 제안한 것이 딥러닝 네트워크의 학습된 knowledge를 효과적으로 transfer하여 다양한 실생활 예제에 적용될 수 있게 바꾸는 것인데 실제 학습 방법을 보면 그렇지 않다.
 <p align="center">
     <img src="https://user-images.githubusercontent.com/79881119/228143027-4697e2a1-b9e3-40b0-be70-5773b1bda50b.png" width="600">
 </p>
-
-심지어 <U>최근 연구 경향</U>을 보면 알 수 있듯이 보다 resource를 많이 사용하여(네트워크 크기나 데이터셋의 규모 모두에 해당) 다양한 분야에서 뛰어난 성능을 보여주기 시작했다. 하지만 일반적으로 NVIDIA나 Adobe research, FAIR와 같이 연구에 지원되는 리소스가 풍부하지 않은 보통의 연구 환경에서는 아무리 좋은 학습 결과를 보여주는 연구라 하더라도 reproduction이 불가능할 때가 많고, pre-trained network를 학습에 활용하고 싶다고 하더라도 제한된 리소스에 모두 **수용이 안되는 경우**가 발생한다. 그리고 가장 주요한 한계점은 사전 학습된 네트워크 파라미터가 공개되더라도 <U>학습된 데이터셋</U> 자체는 공개되지 않는 경우이다. 이번 논문도 **domain adaptation**의 특별한 케이스를 다루게 되는데, 만약 domain adaptation 환경에서 지속적으로 domain alignment를 위해 source dataset이 필요하다면 **online**(실제 deployment가 진행되는) 환경에서 사용할 수 없다는  뜻이기 때문이다. DA(Domain adaptation)이라는 task가 제안한 것이 딥러닝 네트워크의 학습된 knowledge를 효과적으로 transfer하여 다양한 실생활 예제에 적용될 수 있게 바꾸는 것인데 실제 학습 방법을 보면 그렇지 않다.
 
 ---
 
