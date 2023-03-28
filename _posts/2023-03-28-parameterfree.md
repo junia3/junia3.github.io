@@ -4,7 +4,7 @@ layout: post
 description: Online adaptation
 use_math: true
 post-image: https://user-images.githubusercontent.com/79881119/228143473-e28161a7-2ec0-4322-bf1b-9f617ab48a6d.gif
-category: deep learning
+category: paper review
 tags:
 - AI
 - Deep learning
