@@ -255,7 +255,13 @@ E_{vex}(\overrightarrow{x}^{(t+1)}) + E_{cave}(\overrightarrow{x}^{(t+1)}) \le E
 \mathcal{L}^\text{LAME} (\tilde{Z}) = \left(\underset{\text{Convex part}}{\sum_i KL(\tilde{z}_i \vert \vert q_i)}\right) + \left(\underset{\text{Concave part}}{- \tilde{Z}^\top (W \otimes I) \tilde{Z}} \right)
 \]
 
-그렇다면 <U>CCCP의 증명</U>에 따라 위의 식은 $n$번째 예측된 $\tilde{Z}$에 대해 upper bound를 다음과 같이 설정할 수 있다. 뒤쪽의 식은 Concave function을 $\tilde{Z}^{(n)}$위치에서 **선형 근사(1차 근사)한 테일러 함수**를 의미하기 때문에 선형성 때문에 <U>concavity를 잃는다</U>. 정확하게 말하자면 이제는 concave 함수이기도 하며 동시에 convex 함수가 된다. 아무튼 현재까지 예측된 $\tilde{Z}$만 알고 있다면, 다음 $\tilde{Z}$는 적어도 이전 함숫값보다는 크지 않은 convex function을 upper bound로 설정할 수 있게 된다는 것이다. 지금까지 한 내용을 간단하게 정리하면 아래와 같다.
+그렇다면 <U>CCCP의 증명</U>에 따라 위의 식은 $n$번째 예측된 $\tilde{Z}$에 대해 upper bound를 다음과 같이 설정할 수 있다.
+
+\[
+\mathcal{L}^\text{LAME} (\tilde{Z}) \overset{C}{\leq} \left(\underset{\text{Convex part}}{\sum_i KL(\tilde{z}_i \vert \vert q_i)}\right) - \left((W \otimes I) \tilde{Z}^{(n)}\right)^\top \tilde{Z}
+\]
+
+뒤쪽의 식은 Concave function을 $\tilde{Z}^{(n)}$위치에서 **선형 근사(1차 근사)한 테일러 함수**를 의미하기 때문에 선형성 때문에 <U>concavity를 잃는다</U>. 정확하게 말하자면 이제는 concave 함수이기도 하며 동시에 convex 함수가 된다. 아무튼 현재까지 예측된 $\tilde{Z}$만 알고 있다면, 다음 $\tilde{Z}$는 적어도 이전 함숫값보다는 크지 않은 convex function을 upper bound로 설정할 수 있게 된다는 것이다. 지금까지 한 내용을 간단하게 정리하면 아래와 같다.
 
 <p align="center">
     <img src="https://user-images.githubusercontent.com/79881119/228143009-8722e2d3-c316-4221-aa21-c4d1f3d2397d.png" width="950">
