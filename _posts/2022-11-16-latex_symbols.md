@@ -65,6 +65,7 @@ ABCDEF
 |```\bullet```|$\bullet$|```\neq```|$\neq$|```\wedge```|$\wedge$|```\vee```|$\vee$|
 |```\leftarrow```|$\leftarrow$|```\rightarrow```|$\rightarrow$|```\leftrightarrow```|$\leftrightarrow$|```\mapsto```|$\mapsto$|
 |```\Leftarrow```|$\Leftarrow$|```\Rightarrow```|$\Rightarrow$|```\Leftrightarrow```|$\Leftrightarrow$|```\leftrightarrows```|$\leftrightarrows$|
+|```\prod```|$\prod$|```\sum```|$\sum$|```\int```|$\int$|```\oint_{C}```|$\oint_{C}$|
 
 ---
 
@@ -150,4 +151,161 @@ ABCDEF
 |LaTex|결과|LaTex|결과|LaTex|결과|LaTex|결과|
 |---:|:---|---:|:---|---:|:---|---:|:---|
 |```()```|$ () $|```\{ \}```|$ \\{ \\} $|```[]```|$ [] $|```\langle \rangle```|$\langle \rangle$|
-|```\| \|```|$\| \|$|||```\bigl\vert \bigr\vert```|$\bigl\vert \bigr\vert$|||
+|```\| \|```|$\| \|$|```\lvert \rvert```|$\lvert \rvert$|```\bigl\vert \bigr\vert```|$\bigl\vert \bigr\vert$|||
+
+---
+
+# 다양한 함수
+
+|LaTex|결과|LaTex|결과|LaTex|결과|LaTex|결과|
+|---:|:---|---:|:---|---:|:---|---:|:---|
+|```\sin```|$\sin$|```\cos```|$\cos$|```\tan```|$\tan$|```\exp```|$\exp$|
+|```\arcsin```|$\arcsin$|```\arccos```|$\arccos$|```\arctan```|$\arctan$|```\log```|$\log$|
+|```\ln```|$\ln$|```\sec```|$\sec$|```\csc```|$\csc$|```\cot```|$\cot$|
+|```\sinh```|$\sinh$|```\cosh```|$\cosh$|```\tanh```|$\tanh$|```\coth```|$\coth$|
+|```\sgn```|$\sgn$|```\min```|$\min$|```\max```|$\max$|```\arg```|$\arg$|
+|```\inf```|$\inf$|```\sup```|$\sup$|```\det```|$\det$|```\lim```|$\lim$|
+|```\deg```|$\deg$|```\sqrt{x}```|$\sqrt{x}$|```\sqrt[3]{x}```|$\sqrt[3]{x}$|```\ker```|$\ker$|
+
+만약 LaTex 문법 상 정의되지 않은 함수라면 다음과 같이 써볼 수 있다.
+
+```latex
+    \operatorname{Sigmoid}\, (x)
+```
+
+\[
+    \operatorname{Sigmoid}\, (x)
+\]
+
+그리고 만약 ```\arg\max```와 같이 특정 인자에 대한 지칭이 필요할 때는 ```underset```을 사용하여 다음과 같이 쓸 수 있다.
+
+```latex
+\hat{z} = \underset{z}{\arg\min}
+```
+
+\[
+    \hat{z} = \underset{z}{\arg\min}    
+\]
+
+```overset```으로는 위에 올릴 수도 있다.
+
+```latex
+f(x) \overset{C}{=} g(x)
+```
+
+\[
+    f(x) \overset{C}{=} g(x)    
+\]
+
+---
+
+# 모자 씌우기
+
+|LaTex|결과|LaTex|결과|LaTex|결과|LaTex|결과|
+|---:|:---|---:|:---|---:|:---|---:|:---|
+|```\dot{x}```|$\dot{x}$|```\ddot{x}```|$\ddot{x}$|```\acute{x}```|$\acute{x}$|```\grave{x}```|$\grave{x}$|
+|```\check{x}```|$\check{x}$|```\breve{x}```|$\breve{x}$|```\tilde{x}```|$\tilde{x}$|```\bar{x}```|$\bar{x}$|
+|```\hat{x}```|$\hat{x}$|```\widehat{x}```|$\widehat{x}$|```\vec{x}```|$\vec{x}$|``` ```|$ $|
+
+---
+
+# 분수, 이항계수, 행렬, 경우 나누기(case), 여러 줄 쓰기
+
+### 분수
+
+```latex
+1 \over x
+\frac{1}{x}
+```
+
+\[ 
+    \frac{1}{x}
+\]
+
+### 이항계수
+
+```latex
+{n \choose k} = _{n}\mathrm{C}_{k}
+```
+
+\[
+    {n \choose k} =~ \_{n}\mathrm{C}_{k}
+\]
+
+### 행렬
+
+```latex
+\begin{matrix}
+    x & y \newline z & v
+\end{matrix}
+
+\begin{vmatrix}
+    x & y \newline z & v
+\end{vmatrix}
+
+\begin{pmatrix}
+    x & y \newline z & v
+\end{pmatrix}
+
+\begin{bmatrix}
+    x & y \newline z & v
+\end{bmatrix}
+
+```
+\[
+    \begin{matrix}
+        x & y \newline z & v
+    \end{matrix} 
+\]
+
+\[
+    \begin{vmatrix}
+        x & y \newline z & v
+    \end{vmatrix}
+\]
+
+\[
+    \begin{pmatrix}
+        x & y \newline z & v
+    \end{pmatrix}    
+\]
+
+\[
+    \begin{bmatrix}
+        x & y \newline z & v
+    \end{bmatrix}    
+\]
+
+### 경우 나누기
+
+```latex
+\begin{cases}
+    x, & x > 0 \newline
+    0, & \text{Otherwise}
+\end{cases}
+```
+
+\[
+    \begin{cases}
+        x, & x > 0 \newline
+        0, & \text{Otherwise}
+    \end{cases}
+\]
+
+### 여러 줄의 방정식 쓰기
+
+여러 줄의 방정식을 쓸 때 정렬을 맞추고 싶은 부분에 ```&```를 각 줄에 넣어준다.
+
+```latex
+\begin{aligned}
+    y =& x^2 + x + 2x + 3 -2 \newline
+    =& x^2 + 3x +1
+\end{aligned}
+```
+
+\[
+    \begin{aligned}
+        y =& x^2 + x + 2x + 3 -2 \newline
+        =& x^2 + 3x +1
+    \end{aligned}    
+\]
