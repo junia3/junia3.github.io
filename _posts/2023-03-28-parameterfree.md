@@ -88,7 +88,7 @@ UDA에는 여러 방법론이 사용되었지만 대표적으로 가장 많이 �
 
 # Task 정의
 
-TTA는 domain adaptation 단계에서 접근이 불가능한 <U>labelled source dataset</U>인 $\mathcal{D}\_s = \{ (x, y) \sim p\_s (x, y) \}$와 해당 데이터셋으로 학습된 <U>pre-trained parametric model</U> $q_\theta (y \vert x)$가 있는 상황을 가정한다. 여기서 $x$는 이미지를 의미하고 $y \in \mathcal{Y}$는 source classes 집합인 $\mathcal{Y}$의 각 원소들이 이미지마다 라벨링이 되어있는 상황이다. 해당 상황에서 unlabeled target dataset이 target distribution으로부터 무작위로 추출되고, 이를 $\mathcal{D}\_t = \{ x \sim p_t (x) \}$로 포현할 수 있다. 일반적인 covariate shift를 가정하면 image $x$를 조건부로 하는 $y$에 대한 확률 분포는 동일한 상황을 생각해볼 수 있다.
+TTA는 domain adaptation 단계에서 접근이 불가능한 <U>labelled source dataset</U>인 $\mathcal{D}\_s = \\{ (x, y) \sim p\_s (x, y) \\}$와 해당 데이터셋으로 학습된 <U>pre-trained parametric model</U> $q_\theta (y \vert x)$가 있는 상황을 가정한다. 여기서 $x$는 이미지를 의미하고 $y \in \mathcal{Y}$는 source classes 집합인 $\mathcal{Y}$의 각 원소들이 이미지마다 라벨링이 되어있는 상황이다. 해당 상황에서 unlabeled target dataset이 target distribution으로부터 무작위로 추출되고, 이를 $\mathcal{D}\_t = \\{ x \sim p_t (x) \\}$로 포현할 수 있다. 일반적인 covariate shift를 가정하면 image $x$를 조건부로 하는 $y$에 대한 확률 분포는 동일한 상황을 생각해볼 수 있다.
 
 \[
     p_s(y \vert x) = p_t (y \vert x),~p_s(x) \neq p_t(x)
@@ -149,7 +149,7 @@ LAME에 대해 수식화하기 전에 간단하게 컨셉만 짚고 넘어가자
 
 ### Maximum likelihood with pre-trained model for source dataset
 
- 만약 target distribution $X \in \mathbb{R}^{N \times d} \sim p_t^N (x)$에서 추출된 batch 단위의 데이터 샘플이 있다고 생각해보자. 여기서 $N$은 sample 갯수를 의미하며 $d$는 feature dimension을 의미한다. 찾고자 하는 것은 latent assignment vector $\tilde{z}\_i = (\tilde{z}\_{ik})_{1 \le k \le K} \in \Delta^{K-1}$ 을 각 data point $x_i$에 대해 정의하여, 실제 distribution $p(z \vert x)$에 근접한 latent assignment를 찾고자 하는 것이다. $K$는 <U>class의 갯수</U>를 의미하고 $\Delta^{K-1} = \{ \tilde{z} \in [0, 1]^K \vert 1^\top \tilde{z} = 1 \}$은 <U>각 class에 대한 예측된 확률</U>을 의미한다. 단순하게 생각한다면 $\tilde{z_i} \in \Delta^{K-1}, \forall i$ 를 만족하면서 **log-likelihood를 최대화**하는 assignment $\tilde{Z} \in [0, 1]^{NK}$ 를 찾는 objective로 바꿔쓸 수 있다. 임의의 constant $C$에 대해 ,
+ 만약 target distribution $X \in \mathbb{R}^{N \times d} \sim p_t^N (x)$에서 추출된 batch 단위의 데이터 샘플이 있다고 생각해보자. 여기서 $N$은 sample 갯수를 의미하며 $d$는 feature dimension을 의미한다. 찾고자 하는 것은 latent assignment vector $\tilde{z}\_i = (\tilde{z}\_{ik})_{1 \le k \le K} \in \Delta^{K-1}$ 을 각 data point $x_i$에 대해 정의하여, 실제 distribution $p(z \vert x)$에 근접한 latent assignment를 찾고자 하는 것이다. $K$는 <U>class의 갯수</U>를 의미하고 $\Delta^{K-1} = \\{ \tilde{z} \in [0, 1]^K \vert 1^\top \tilde{z} = 1 \\}$은 <U>각 class에 대한 예측된 확률</U>을 의미한다. 단순하게 생각한다면 $\tilde{z_i} \in \Delta^{K-1}, \forall i$ 를 만족하면서 **log-likelihood를 최대화**하는 assignment $\tilde{Z} \in [0, 1]^{NK}$ 를 찾는 objective로 바꿔쓸 수 있다. 임의의 constant $C$에 대해 ,
 
 \[
     \mathcal{L}(\tilde{Z}) = \log \left( \prod_{i=1}^N \prod_{k=1}^K p(x_i, k)^{\tilde{z_{ik}}} \right) = \sum_{i=1}^N \tilde{z}_i^\top \log (p_i) + C
@@ -284,7 +284,7 @@ E_{vex}(\overrightarrow{x}^{(t+1)}) + E_{cave}(\overrightarrow{x}^{(t+1)}) \le E
 \[
 \begin{aligned}
 \underset{\tilde{Z}}{\min} \sum\_{i=1}^N KL(\tilde{z}\_i \vert\vert q\_i) - \sum\_{i=1}^N \sum\_{j=1}^N w_{ij}\tilde{z}\_i^\top \tilde{z}\_j^{(n)} \newline
-\text{s.t}~~~\tilde{z}\_i^\top 1\_K = 1,~\forall i \in \{ 1, \cdots, N \}
+\text{s.t}~~~\tilde{z}\_i^\top 1\_K = 1,~\forall i \in \\{ 1, \cdots, N \\}
 \end{aligned}
 \]
 
