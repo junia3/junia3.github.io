@@ -3,7 +3,7 @@ title: CV
 layout: cv
 ---
 
-**Address:** Seoul, Korea(Changcheon-dong, Seodaemun-gu)   
+**Address:** Seoul, Korea   
 **Email:** jun_yonsei@yonsei.ac.kr
    
 ---
@@ -23,25 +23,25 @@ Reseach on generative models, multimodal
    
 |Yonsei University, Seoul/South Korea|08/2020 ~ 12/2020|
 |:---|---:|
-||Teaching Assistant on engineering information processing(2020 Fall)|
+||TA on engineering information processing(2020 Fall)|
 
 |Yonsei University/Digital Signal Processing Lab|05/2021 ~ 08/2021|
 |:---|---:|
-||Internship(Keyword spotting, voice assistant AI)|
+||Internship|
 
 |Yonsei University, Seoul/South Korea|09/2021 ~ 12/2021|
 |:---|---:|
-||Teaching Assistant on engineering information processing(2021 Fall)|
+||TA on engineering information processing(2021 Fall)|
 
 |Yonsei University, Seoul/Digital Image Processing Lab|09/2021 ~ Present|
 |:---|---:|
-||Graduate research(3D object detection)|
-||Internship(Generative adversarial networks)|
+||Graduate research|
+||Internship|
 ||M.S. degree researcher|
 
 |Yonsei artificial intelligence(YAI)|01/2022 ~ Present|
 |:---|---:|
-||Management|
+|||
 
 ---
 
