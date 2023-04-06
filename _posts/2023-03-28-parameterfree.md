@@ -136,8 +136,8 @@ NAM은 직접 parameter를 최적화하기 때문에 보다 target sample의 pre
 
 - A : Independent and identical dataset(i.i.d.)
 - B : Non-independent and identical dataset(non-i.i.d.)
-- C : i.i.d. + prior shift(superclass)
-- D : non i.i.d. + prior shift(superclass)
+- C : i.i.d. + prior shift(Long tail)
+- D : non i.i.d. + prior shift(Long tail)
 
 표에 나와있는 각 상황에 대한 **legend**는 위에 적힌 내용과 같다. $i$번째 row가 의미하는 바는 해당 줄 앞부분에 표시된 distribution에 대해 최적화된 hyper-parameter를 사용하여 다른 distribution(가로축에 표시된 distribution)에 최적화를 진행했을 때의 성능 향상과 하락을 adaptation 방법을 사용하지 않았을 때와 비교하여 측정한 행렬이다. 그래프를 보면 알 수 있듯이 <U>non-i.i.d.인 상황에서 성능 하락</U>이 많게는 $66\%$까지 발생하는 것으로 보이며, 저자들이 제시한 방법(LAME)이 훨씬 안정적인 것을 확인할 수 있다. 그렇다면 대체 저자들이 사용한 **LAME**이라는 방법은 어떤 원리인지 살펴보도록 하자.
 
