@@ -124,7 +124,7 @@ q(x_{t-1} \vert x_t) = \frac{q(x_t \vert x_{t-1})q(x_{t-1})}{q(x_{t})}
 
 본인은 이걸 한동안 이해 못했던거 같은데 쉽게 이해하는 법은 다음과 같음.
 
-$x_{t-1}$에다가 더하는 노이즈를 알고 있기 때문에 $x_t$에 대한 확률 분포는 normal distribution으로 명확하게 알 수가 있음$(p_{x_t \vert x_{t-1}})$ 근데 실제로 각 time step에서 노이즈가 더해진 애들의 분포 자체는 알 수 없으니까 $(q(x_t),~q(x_{t-1}))$ Bayes 식에서 intractable한 term이 두 개나 생겨서 분포에 접근하기가 힘듦.
+$x_{t-1}$에다가 더하는 노이즈를 알고 있기 때문에 $x_t$에 대한 확률 분포는 normal distribution으로 명확하게 알 수가 있음$(p(x_t \vert x_{t-1})$ 근데 실제로 각 time step에서 노이즈가 더해진 애들의 분포 자체는 알 수 없으니까 $(q(x_t),~q(x_{t-1}))$ Bayes 식에서 intractable한 term이 두 개나 생겨서 분포에 접근하기가 힘듦.
 
 그렇기 때문에 위의 식에 모든 term에 대해 $x_0$을 조건부에 추가하면 항상 분포를 알 수 있게 되므로(normal distribution의 누적이니까) tractable하게 바꿀 수 있다.
 
