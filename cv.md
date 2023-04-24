@@ -27,7 +27,7 @@ Reseach on generative models, multimodal
 
 |Yonsei University/Digital Signal Processing Lab|05/2021 ~ 08/2021|
 |:---|---:|
-||Internship|
+|||
 
 |Yonsei University, Seoul/South Korea|09/2021 ~ 12/2021|
 |:---|---:|
@@ -35,9 +35,7 @@ Reseach on generative models, multimodal
 
 |Yonsei University, Seoul/Digital Image Processing Lab|09/2021 ~ Present|
 |:---|---:|
-||Graduate research|
-||Internship|
-||M.S. degree researcher|
+|||
 
 |Yonsei artificial intelligence(YAI)|01/2022 ~ Present|
 |:---|---:|
@@ -68,42 +66,3 @@ Additional: Latex
 
 ## PAPER
 J. Park et al., “Motion blur measurement of face image using cosine similarity and regression network”
-
----
-
-## PROJECTS
-
-|Face transfer application|
-|:---:|
-|Deep learning in metaverse platform|
-|DL framework with android application and Unity|
-
-|Speech transformer|
-|:---:|
-|Attention mechanism on audio sequence|
-|Voice assistant AI|
-
-|Deep hedging|
-|:---:|
-|Modeling Black-scholes in finance engineering|
-|Delta hedging, stock pricing|
-|Awarded as best paper|
-
-|Blur face detection|
-|:---:|
-|Supervised learning with synthesized facial blur images|
-|Industry-Academia cooperation with Alchera|
-
-|Long tail distribution|
-|:---:|
-|Image classification|
-|Facial emotion recognition|
-
-|DL projects|
-|:---:|
-|Image classification|
-|Knowledge distillation|
-|Transfer learning|
-|GAN inversion|
-|Multitask learning|
-|CT image enhancing|
