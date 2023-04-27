@@ -1,5 +1,5 @@
 ---
-title: Consistency models(새로운 생성 모델의 시작) 리뷰
+title: Consistency models 논문 리뷰
 layout: post
 description: Consistency model
 use_math: true
