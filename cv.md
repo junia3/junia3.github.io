@@ -33,7 +33,7 @@ Reseach on generative models, multimodal
 |:---|---:|
 ||TA on engineering information processing(2021 Fall)|
 
-|Yonsei University, Seoul/Digital Image Processing Lab|09/2021 ~ Present|
+|Yonsei University, Seoul/Digital Image Media Lab|09/2021 ~ Present|
 |:---|---:|
 |||
 
