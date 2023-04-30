@@ -3,7 +3,7 @@ title: MixMatch-A holistic approach to semi-supervised learning에 대하여
 layout: post
 description: paper review
 use_math: true
-post-image: https://media3.giphy.com/media/2yrTxb7cNoJW3rcjh7/giphy.gif?cid=790b76115238eb5f5430e3f3b739cbf25e9856c0e642dd97&rid=giphy.gif&ct=g
+post-image: https://user-images.githubusercontent.com/79881119/235352836-99c2a2ef-1197-4bb2-a730-1e48fcf60ded.jpg
 category: paper review
 tags:
 - SSL

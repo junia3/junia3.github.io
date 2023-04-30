@@ -3,7 +3,7 @@ title: Transformer와 Multimodal에 대하여
 layout: post
 description: Attention mechanism
 use_math: true
-post-image: https://media4.giphy.com/media/9AjXOu17dKtiCUvAwg/giphy.gif?cid=ecf05e47kd5zogug0mvc1c0ggtezexjljyqergxk2yzkaou4&rid=giphy.gif&ct=g
+post-image: https://user-images.githubusercontent.com/79881119/235353492-2ca621c9-8091-4c8a-b852-39195e45928b.gif
 category: paper review
 tags:
 - Transformer
@@ -91,7 +91,8 @@ tags:
 <p align="center">
     <img src="https://user-images.githubusercontent.com/79881119/209152419-c632ff15-9079-4f22-9a6d-9c3c2709d73d.gif" width="700"/>
 </p>
-[Transformer](https://arxiv.org/abs/1706.03762)가 바로 이 제목과 함께 <U>거대한 어그로</U>를 끌며 나타났다. 해당 논문의 main idea는, 굳이 RNN과 같은 convolution 구조를 사용해서 global context를 뽑지 않더라도 어차피 attention을 쓰면 즉각적으로 global reasoning이 가능하고, 이러한 attention 연산을 여러번 진행하는 deep neural network 구조가 오히려 기계 번역과 같은 task에 더 적합하지 않겠냐는 것이다. 실제로 기존 RNN에 비해서 연산 속도를 줄이면서도 그 성능을 입증받았고, 이러한 <U>구조적 변화</U>는 NLP 및 여러 연구에 변화를 일으키는 초석이 되었다.
+
+~~뉴진스 최고~~ [Transformer](https://arxiv.org/abs/1706.03762)가 바로 이 제목과 함께 <U>거대한 어그로</U>를 끌며 나타났다. 해당 논문의 main idea는, 굳이 RNN과 같은 convolution 구조를 사용해서 global context를 뽑지 않더라도 어차피 attention을 쓰면 즉각적으로 global reasoning이 가능하고, 이러한 attention 연산을 여러번 진행하는 deep neural network 구조가 오히려 기계 번역과 같은 task에 더 적합하지 않겠냐는 것이다. 실제로 기존 RNN에 비해서 연산 속도를 줄이면서도 그 성능을 입증받았고, 이러한 <U>구조적 변화</U>는 NLP 및 여러 연구에 변화를 일으키는 초석이 되었다.
 <p align="center">
     <img src="https://user-images.githubusercontent.com/79881119/209152421-69e23550-3f6e-4360-93f2-d6153e4c49f8.png" width="500"/>
 </p>

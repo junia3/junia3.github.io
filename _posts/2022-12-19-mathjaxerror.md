@@ -1,7 +1,7 @@
 ---
 title: Mathjax 수식 입력 시 렌더링이 안될 경우
 description: Error, Github blog
-post-image: https://upload.wikimedia.org/wikipedia/en/thumb/5/5f/MathJax.svg/240px-MathJax.svg.png
+post-image: https://user-images.githubusercontent.com/79881119/235353418-c053793a-554e-41b8-a147-7310650173cb.png
 category: github blog
 use_math: true
 tags:

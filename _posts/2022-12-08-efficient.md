@@ -2,7 +2,7 @@
 title: Efficient deep neural networks에 대하여
 layout: post
 description: EfficientNet
-post-image: https://media.tenor.com/o_Q995A1KpIAAAAd/fast-and-efficient-freecodecamp.gif
+post-image: https://user-images.githubusercontent.com/79881119/235352897-15e29b3f-ad6b-4063-898e-0a6bb468347a.png
 category: paper review
 use_math: true
 tags:

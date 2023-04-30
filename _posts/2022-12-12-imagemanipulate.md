@@ -2,7 +2,7 @@
 title: GAN을 활용한 이미지 조작(image to image 그리고 GAN inversion까지)
 layout: post
 description: Image translation/manipulation
-post-image: https://res.cloudinary.com/devpost/image/fetch/s--C6uTFOry--/c_limit,f_auto,fl_lossy,q_auto:eco,w_900/https://github.com/mnicnc404/CartoonGan-tensorflow/raw/master/images/cover.gif
+post-image: https://user-images.githubusercontent.com/79881119/235353241-4dfff373-a961-4d00-966a-46f8356692dc.png
 category: paper review
 use_math: true
 tags:

@@ -2,7 +2,7 @@
 title: 스크롤 내릴 때 컨텐츠 fade out(페이드 아웃) 구현하기
 layout: post
 description: Blog theme, 서버 관리
-post-image: https://media.tenor.com/yP78QaLGMGcAAAAi/cool-animation.gif
+post-image: https://user-images.githubusercontent.com/79881119/235353288-c8a73883-e9c3-48a7-bfe2-c2e265a5b574.gif
 category: github blog
 use_math: true
 tags:

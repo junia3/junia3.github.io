@@ -2,7 +2,7 @@
 title: github.io 댓글 다크모드 적용 방법
 layout: post
 description: Blog theme, 서버 관리
-post-image: https://images-cdn.9gag.com/images/thumbnail-facebook/57712290_1618409212.5205_UVuGeT_n.jpg
+post-image: https://user-images.githubusercontent.com/79881119/235353112-5b9bfd8a-5ce2-4bb8-a287-66698da67dda.png
 category: github blog
 tags:
 - web designer
