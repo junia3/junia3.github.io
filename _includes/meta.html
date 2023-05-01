@@ -10,8 +10,8 @@
 <!-- Open Graph general (Facebook, Pinterest & Google+) -->
 <meta name="og:title" content="{{site.title}}{% if page.title %} | {{page.title}}{% endif %}">
 <meta name="og:description" content="{% unless page.layout == 'post' %}{{site.description}}{% else %}{{page.description}}{% endunless %}">
-<meta name="og:image" content="https://avatars.githubusercontent.com/u/79881119?v=4">
-<meta name="og:image:alt" content="https://avatars.githubusercontent.com/u/79881119?v=4">
+<meta name="og:image" content="{% unless page.layout == 'post' %}{{site.site-image}}{% else %}{{page.post-image}}{% endunless %}">
+<meta name="og:image:alt" content="{{site.title}}{% if page.title %} | {{page.title}}{% endif %}">
 <meta name="og:url" content="{{site.url}}{{site.baseurl}}{{page.url}}">
 <meta name="article:author" content="https://www.facebook.com/{{site.facebook_username}}">
 <meta name="og:site_name" content="{{site.title}}{% if page.title %} | {{page.title}}{% endif %}">
