@@ -436,10 +436,10 @@ Continuous한 임의의 $z_\lambda$에 대해 위와 같이 marginal을 정의�
 q(z_\lambda \vert z_{\lambda^\prime}) = \mathcal{N}((\alpha\_\lambda/\alpha\_{\lambda^\prime})z\_{\lambda^\prime}, \sigma\_{\lambda \vert \lambda^\prime}^2) , \text{ where }\lambda < \lambda^\prime,~\sigma^2\_{\lambda \vert \lambda^\prime} = (1-e^{\lambda-\lambda^\prime})\sigma\_\lambda^2
 \]
 
-$\lambda$를 실제로 계산하게 되면 $\alpha_\lambda$와 $\sigma_\lambda$에 대해 데시벨 단위의 SNR과 같은 맥락으로 표현이 가능하기 때문에, 이전 process의 input을 signal로서 점차 줄여가면서 더해지는 노이즈를 증가시키는 방식을 표현한 것을 알 수 있다. 이를 input $x$에 대해 조건화하여 Bayes’ rule을 사용하여 posterior로 바꾸는 과정과 이를 통해 parameterized reverse process $p_\theta$와의 loss를 구하는 과정은 DDPM과 동일하므로 따로 언급하지는 않겠다. 결국 학습하고자 하는 테으워크는 다음과 같은 목적함수를 가진다.
+$\lambda$를 실제로 계산하게 되면 $\alpha_\lambda$와 $\sigma_\lambda$에 대해 데시벨 단위의 SNR과 같은 맥락으로 표현이 가능하기 때문에, 이전 process의 input을 signal로서 점차 줄여가면서 더해지는 노이즈를 증가시키는 방식을 표현한 것을 알 수 있다. 이를 input $x$에 대해 조건화하여 Bayes’ rule을 사용하여 posterior로 바꾸는 과정과 이를 통해 parameterized reverse process $p_\theta$와의 loss를 구하는 과정은 DDPM과 동일하므로 따로 언급하지는 않겠다. 결국 학습하고자 하는 네트워크는 다음과 같은 목적함수를 가진다.
 
 \[
-\mathbb{E}\_{\epsilon, \lambda}(\parallel \epsilon_\theta(z\_\lambda),~\epsilon \parallel_2^2)
+\mathbb{E}\_{\epsilon, \lambda}(\parallel \epsilon_\theta(z\_\lambda)- \epsilon \parallel_2^2)
 \]
 
 $\epsilon \sim \mathcal{N}(0, I)$이며 $z_\lambda = \alpha_\lambda x + \sigma_\lambda \epsilon$로 추출하게 된다. Continous function에 대한 score mathinc으로 학습이 진행된다고 보면 될 것 같다. $p(\lambda)$가 일정하면 평소에 보는 variational lower bound 식이 되는데 저자들은 classifier guidance 논문에서 밝힌 것처럼 cosine schedule에서 아이디어를 얻어 사용했다고 한다. 해당 내용은 위에서 언급했던 바와 같이 보다 점진적으로 감소하는 noise를 구현하여 네트워크가 모든 노이즈 분포에 대해 골고루 학습될 수 있도록 하는 것이다.
