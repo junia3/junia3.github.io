@@ -303,7 +303,7 @@ p_{\theta,\phi}(x_t \vert x_{t+1} , y) = Zp_\theta (x_t \vert x_{t+1}) p_\phi(y 
 쨌든 샘플링되는 파트는 $\mu$가 메인인데, 어차피 그 부분에서 $p_\theta$에 대비해서 $p_\phi$가 가지는 <U>곡률이 상대적으로 매우 작기 때문에</U> 무시할 수 있다는 개념이다.
 
 \[
-\log p_\phi(y \vert x_t) = \approx \log p_\phi(y \vert x_t) \vert_{x_t = \mu}+(x_t - \mu)\nabla_{x_t} \log p_\phi (y \vert x_t) \vert_{x_t = \mu} = (x_t - \mu)g+C_1
+\log p_\phi(y \vert x_t) \approx \log p_\phi(y \vert x_t) \vert_{x_t = \mu}+(x_t - \mu)\nabla_{x_t} \log p_\phi (y \vert x_t) \vert_{x_t = \mu} = (x_t - \mu)g+C_1
 \]
 
 여기서의 $g$는 $x_t = \mu$에서의 classifier에 의한 log likelihood의 gradient와 같다. 이를 위의 공식에 대입하게 되면,
