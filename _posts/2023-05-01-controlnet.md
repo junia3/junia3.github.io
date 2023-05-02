@@ -1,5 +1,5 @@
 ---
-title: ControlNet 논문 이해하기 + 사용해보기
+title: ControlNet 논문 이해하기 사용해보기
 layout: post
 description: Controllable stable diffusion
 use_math: true
