@@ -6,7 +6,7 @@ lsi: false
 excerpt_separator: "\n\n"
 incremental: false
 # URL of the Site
-url: 
+url: https://junia3.github.io
 # Base URL of the Site (i.e., Name of the Repository in which the Site is hosted)
 baseurl: 
 
@@ -34,11 +34,11 @@ heroimage_dark: https://user-images.githubusercontent.com/79881119/236099641-4a1
 # If you don't want to use any icon, you can leave them blank.
 email: jun_yonsei@yonsei.ac.kr
 facebook_username: jyyonsei
-twitter_username: 
+twitter_username: jun_yonsei
 instagram_username: 6unoyunr
 linkedin_username: 
 github_username:  junia3
-youtube_channel_id: 
+youtube_channel_id: UCuISXjdac3BR5w5ZSGHtDLg
 reddit_username:
 behance_username:
 dribbble_username:
