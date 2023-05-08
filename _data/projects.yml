@@ -14,6 +14,10 @@
   link: https://github.com/junia3/CTLowDoseChallenge
   image: https://www.ccjm.org/content/ccjom/83/6/423/F1.medium.gif
   description: Enhancement of low dose CT images
+- name: Synthetic Voice Detection
+  link: https://github.com/junia3/Synthetic-Speech-Detection
+  image: https://user-images.githubusercontent.com/79881119/236765082-9a073601-d863-4900-b3ad-6c176ee39cc1.gif
+  description: Spoofing voice detection
 - name: Vision projects
   link:
   image: https://cdn.pixabay.com/photo/2016/12/02/02/10/idea-1876659_960_720.jpg
