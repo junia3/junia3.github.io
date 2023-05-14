@@ -53,7 +53,7 @@ x_t = \sqrt{\alpha_t}\sqrt{\alpha_{t-1}}x_{t-2} + \sqrt{\alpha_t}\sqrt{1-\alpha_
 그래서 이게 잘 정리가 된 것이 다음과 같은 식.
 
 \[
-q(x_t \vert x_0) = \mathcal{N}(x_t; \sqrt{\bar{\alpha}_t}x_0, (1-\bar{\alpha}_tI))
+q(x_t \vert x_0) = \mathcal{N}(x_t; \sqrt{\bar{\alpha}_t}x_0, (1-\bar{\alpha}_t)I)
 \]
 
 이걸 또다시 **reparameterization**으로 표현하면 loss에서 써먹을 수 있게된다. 논문 전개과정에 주구장창 나오는 식.
