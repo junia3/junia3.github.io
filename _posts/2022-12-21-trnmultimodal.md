@@ -191,7 +191,9 @@ Decoder에서 input 문장에 대해 번역된 결과를 내보낼 때는 recurr
     <img src="https://user-images.githubusercontent.com/79881119/209152430-6f3ce74c-b547-4c7f-89b8-6fac89547819.png" width="800"/>
 </p>
 이 그림을 보도록 하자. 그림에서의 task는 'I want to buy a car'이라는 문장을 다른 언어로 번역하는 과정을 나타낸 것이다. Decoder에서 가장 먼저 <U>BOS</U>(Begin of Sequence를 의미하는 토큰)와 encoder에서의 output을 기반으로 첫 단어('<U>Ich</U>')를 예측한다. 그 다음 단어는 예측된 '<U>Ich</U>'와 encoder에서의 output을 기반으로 두번째 단어('<U>will</U>')을 예측한다. 그 다음 단어는 예측된 '<U>Ich, will</U>'과 encoder에서의 output을 기반으로 세번째 단어('<U>ein</U>')을 예측한다. 이런 식으로 진행된다.   
-물론 위의 과정에서 현재 예측될 단어가 다음에 예측될 단어를 참고하지 못한다는 사실은 'inference'(테스트)에서는 항상 성립한다. 그러나 학습 시에는 이미 번역된 결과를 모두 알고 있고, 이를 supervision으로 삼아서 네트워크를 학습하기 때문에 <U>학습 과정에서의 decoder는 뒷 단어들을 참고할 수 없게</U> 해야한다.
+논문에 나와있지는 않지만 여기서 중요한 실제 학습될 시에는 모델이 예측한 단어가 아닌 실제 ground truth를 사용한다는 것이고, 이를 자연어 연구에서는 **teacher forcing**이라고 부른다. 예컨데 번역 결과를 이미 알고 있다면 $n$번째 단어를 예측할 때 굳이 $n-1$번째까지 예측한 단어를 쓸 필요가 없고 이미 알고있는 $n-1$개의 GT를 사용할 수 있고, 이러한 방식이 encoder 단에서의 attention 학습을 보다 안정적으로 만들어줄 수 있다. 초반에 모델이 수렴되지 않은 상태에서는 decoder가 생뚱맞은 단어를 내뱉게될 것이고, 이를 그대로 decoder 예측의 attention query로 사용하게 되면 학습이 불안정해지는 문제가 발생하기 때문이다.
+
+물론 현재 예측될 단어가 다음에 예측될 단어를 참고하지 못한다는 사실은 'inference'(테스트)에서는 항상 성립한다. 그러나 학습 시에는 이미 번역된 결과를 모두 알고 있고, 이를 supervision으로 삼아서 네트워크를 학습하기 때문에 <U>학습 과정에서의 decoder는 뒷 단어들을 참고할 수 없게</U> 해야한다.
 
 <p align="center">
     <img src="https://user-images.githubusercontent.com/79881119/209152431-a618a50d-b838-47fb-8e90-8333dd5075df.svg" width="800"/>
