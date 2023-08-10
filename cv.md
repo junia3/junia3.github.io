@@ -37,7 +37,7 @@ Reseach on generative models, multimodal
 |:---|---:|
 |||
 
-|Yonsei artificial intelligence(YAI)|01/2022 ~ Present|
+|Yonsei artificial intelligence(YAI)|01/2022 ~ 08/2023|
 |:---|---:|
 |||
 
