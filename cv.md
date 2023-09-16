@@ -10,7 +10,7 @@ layout: cv
    
 ## OBJECTIVE
 
-Reseach on generative models, multimodal
+Research on Deep learning
    
 ---
    
