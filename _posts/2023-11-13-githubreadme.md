@@ -213,7 +213,7 @@ jobs:
 ```
 
 코드 중간에 잘 보면 <U>"여기다가 github ID 적기 !!!"</U>라고 써있다. 빼먹지 말고 자기 깃허브 아이디 적기..
-그리고 <U>토큰을 적는 곳</U>이 있는데 직접 토큰을 구해서 적어도 되고 ```&#36;&#123;{ secrets.GITHUB_TOKEN }&#125;```를 적으면 된다. 완료되었다면 commit을 한다.
+그리고 <U>토큰을 적는 곳</U>이 있는데 직접 토큰을 구해서 적어도 되고 &#36;&#123;{ secrets.GITHUB_TOKEN }&#125; 를 적으면 된다. 완료되었다면 commit을 한다.
 
 <p align="center">
     <img src="https://github.com/junia3/junia3.github.io/assets/79881119/a21568e7-9e46-4a59-a2b5-6d259d6b67bd" width="1000">
