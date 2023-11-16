@@ -119,7 +119,7 @@ a.navbar-item.is-active {
             font-size: 4vmax;
         }
         .waviy span {
-            font-family: 'Alfa Slab One', cursive;
+            font-family: 'Alfa Slab One', cursive !important;
             position: relative;
             display: inline-block;
             background: linear-gradient(to bottom, lightgray, #242424, black);

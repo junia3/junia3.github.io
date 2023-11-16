@@ -1,0 +1,93 @@
+---
+layout: resume
+title: Resume
+---
+
+<!-- ========== BIO ========== -->
+<div class="docs-section" id="bio">
+    <h4>About</h4>
+    <p>
+      I am currently interested in machine/deep learning algorithms and working on domain adaptation.
+      Currently, I am a master's student at Yonsei University's <a href="https://diml.yonsei.ac.kr/">Digital Image Media Lab</a>, advised by Prof. Kwanghoon Sohn.
+      I also have an interest in various deep learning algorithms, including generative modeling and multimodal learning.
+    </p> 
+  </div>
+  
+  <!-- ========== PUBLICATIONS ========== -->
+  <div class="docs-section" id="publications">
+    <h4>Publications</h4>
+    </p>
+    <div class="tab-content">
+      <div class="tab-pane active" id="papers-all">
+        {% for paper in site.data.publications.papers %}
+        <div class="paper">
+          <div class="row" style="display: flex;align-items: center;">
+            <div class="four columns">
+              <div class="figure">
+                <img src="{{ paper.image }}" width="100%">
+              </div>
+            </div>
+            <div class="eight columns">
+              <p class="title"><b>{{ paper.title }}</b></p>
+              <p><sub>{{ paper.authors }}</sub></p>
+              <p><sub><i>{{ paper.venue }}</sub></i></p>
+              <div class="paper-buttons">
+                {% if paper.project %}
+                  <a class="button" href="{{ paper.project }}" target="_blank">Project</a>
+                {% endif %}
+  
+                {% if paper.paper_pdf %}
+                  <a class="button" href="{{ paper.paper_pdf | prepend: site.baseurl }}" target="_blank">Paper</a>
+                {% endif %}
+  
+                {% if paper.slides %}
+                  <a class="button" href="{{ paper.slides | prepend: site.baseurl }}" target="_blank">Slides</a>
+                {% endif %}
+  
+                {% if paper.poster %}
+                  <a class="button" href="{{ paper.poster | prepend: site.baseurl }}" target="_blank">Poster</a>
+                {% endif %}
+  
+                {% if paper.video %}
+                  <a class="button" href="{{ paper.video }}" target="_blank">Video</a>
+                {% endif %}
+  
+                {% if paper.code %}
+                  <a class="button" href="{{ paper.code }}" target="_blank">Code</a>
+                {% endif %}
+  
+                {% if paper.data %}
+                  <a class="button" href="{{ paper.data }}" target="_blank">Data</a>
+                {% endif %}
+              </div>
+            </div>
+            </div>
+          </div>
+        {% endfor %}
+    </div>
+  </div>
+
+  <!-- ========== RESUME ========== -->
+  <div class="docs-section" id="resume">
+    <h4>Vitae</h4>
+    <ul class="timeline">
+      {% for exp in site.data.experience.experiences %}
+      <li>
+        {% if exp.category == "work" %}
+        <div class="direction-l">
+        {% else %}
+        <div class="direction-r">
+        {% endif %}
+          <div class="flag-wrapper">
+            <span class="flag">{{ exp.place }}</span>
+            <span class="time-wrapper"><span class="time">{{ exp.time }}</span></span>
+          </div>
+          <div class="desc"><b>{{ exp.title }}</b> <br/> {{ exp.subtitle }}</div>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  </div>
+  </div> 
+  

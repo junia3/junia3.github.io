@@ -1,0 +1,12 @@
+experiences:
+- place: "Yonsei University"
+  time: "2016.3 – 2022.8"
+  title: "B.S. Student"
+  subtitle: "Electrical and electronic engineering"
+  category: "school"
+
+- place: "Yonsei University"
+  time: "2022.9 – 2024.8"
+  title: "M.S. Student"
+  subtitle: "Electrical and electronic engineering"
+  category: "school"

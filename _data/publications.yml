@@ -1,0 +1,8 @@
+papers:
+  - title: "Layer-wise Auto-Weighting for Non-Stationary Test-Time Adaptation"
+    authors: "<b>Junyoung Park</b>, Jin Kim, Hyeongjun Kwon, Ilhoon Yoon, Kwanghoon Sohn"
+    paper_pdf: "https://arxiv.org/pdf/2311.05858.pdf"
+    code: "https://github.com/junia3/LayerwiseTTA"
+    venue: "WACV 2024"
+    selected: y
+    image: "https://user-images.githubusercontent.com/79881119/279600183-783a7a75-41ed-414d-b51e-ebccf8e52616.png"
