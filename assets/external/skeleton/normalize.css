@@ -237,7 +237,7 @@ th {
           background: white;
       }
 
-      background: gray;
+      background: white;
       &:after {
           left: 0;
           content: "brightness_7";
@@ -245,7 +245,7 @@ th {
   }
 
   &:checked + .mh_toggle_btn {
-      background: rgb(0, 0, 0);
+      background: #242424;
       &:after {
           left: 50%;
           content: "brightness_4";
