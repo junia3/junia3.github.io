@@ -22,12 +22,12 @@ title: Resume
         {% for paper in site.data.publications.papers %}
         <div class="paper">
           <div class="row" style="display: flex;align-items: center;">
-            <div class="four columns">
+            <div class="four columns" id="paper_fig">
               <div class="figure">
                 <img src="{{ paper.image }}" width="100%">
               </div>
             </div>
-            <div class="eight columns">
+            <div class="eight columns" id="paper_info">
               <p class="title"><b>{{ paper.title }}</b></p>
               <p><sub>{{ paper.authors }}</sub></p>
               <p><sub><i>{{ paper.venue }}</sub></i></p>

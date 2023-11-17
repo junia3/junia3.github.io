@@ -1,6 +1,11 @@
 /* font */
 @import url('https://fonts.googleapis.com/css?family=Nanum+Gothic');
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons+Sharp');
+
+#paper_fig{
+  padding-right: 10px;
+}
+
 html{
   background-color: #242424 !important;
 }
@@ -12,7 +17,7 @@ a:hover{
   color: rgb(252, 183, 175) !important;
 }
 
-h1, h2, h3, h4, p, u, button, i, svg, div, a.button{
+h1, h2, h3, h4, p, u, button, i, svg, div, b, a.button{
   color: lightgray !important;
 }
 
@@ -617,7 +622,7 @@ div.row{
     position: relative;
     margin: 1em 0 0 0;
     padding: 1em;
-    background: rgb(245,245,245);
+    background: #444444 !important;;
     -webkit-box-shadow: 0 0 1px rgba(0,0,0,0.20);
     -moz-box-shadow: 0 0 1px rgba(0,0,0,0.20);
     box-shadow: 0 0 1px rgba(0,0,0,0.20);

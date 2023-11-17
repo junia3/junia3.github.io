@@ -2,6 +2,10 @@
 @import url('https://fonts.googleapis.com/css?family=Nanum+Gothic');
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons+Sharp');
 
+#paper_fig{
+  padding-right: 10px;
+}
+
 .home_btn{
   padding-bottom: 30px;
 }
