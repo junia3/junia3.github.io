@@ -6,6 +6,18 @@ experiences:
   category: "school"
 
 - place: "Yonsei University"
+  time: "2021.6 – 2021.8"
+  title: "Lab Intern"
+  subtitle: "Keyword spotting"
+  category: "work"
+
+- place: "Alchera"
+  time: "2022.7 – 2022.9"
+  title: "Industry-Academia Collaboration"
+  subtitle: "Blur face detection"
+  category: "work"
+
+- place: "Yonsei University"
   time: "2022.9 – 2024.8"
   title: "M.S. Student"
   subtitle: "Electrical and electronic engineering"
