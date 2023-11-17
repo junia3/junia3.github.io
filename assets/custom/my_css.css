@@ -9,6 +9,9 @@
 a{
   color:rgb(5, 77, 149);
 }
+a:hover{
+  color:rgb(108, 173, 238);
+}
 
 a.button{
   color: #222222;

@@ -8,6 +8,9 @@ html{
 a{
   color:rgb(255, 126, 112) !important;
 }
+a:hover{
+  color: rgb(252, 183, 175) !important;
+}
 
 h1, h2, h3, h4, p, u, button, i, svg, div, a.button{
   color: lightgray !important;
