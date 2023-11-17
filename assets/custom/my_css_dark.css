@@ -239,15 +239,15 @@ div.row{
 }
 
 .direction-l .flag {
-  -webkit-box-shadow: -1px 1px 1px rgba(0,0,0,0.15), 0 0 1px rgba(0,0,0,0.15);
-  -moz-box-shadow: -1px 1px 1px rgba(0,0,0,0.15), 0 0 1px rgba(0,0,0,0.15);
-  box-shadow: -1px 1px 1px rgba(0,0,0,0.15), 0 0 1px rgba(0,0,0,0.15);
+  -webkit-box-shadow: -1px 1px 1px rgba(255,255,255,0.3), 0 0 1px rgba(255,255,255,0.3) !important;
+  -moz-box-shadow: -1px 1px 1px rgba(255,255,255,0.3), 0 0 1px rgba(255,255,255,0.3) !important;
+  box-shadow: -1px 1px 1px rgba(255,255,255,0.3), 0 0 1px rgba(255,255,255,0.3) !important;
 }
 
 .direction-r .flag {
-  -webkit-box-shadow: 1px 1px 1px rgba(0,0,0,0.15), 0 0 1px rgba(0,0,0,0.15);
-  -moz-box-shadow: 1px 1px 1px rgba(0,0,0,0.15), 0 0 1px rgba(0,0,0,0.15);
-  box-shadow: 1px 1px 1px rgba(0,0,0,0.15), 0 0 1px rgba(0,0,0,0.15);
+  -webkit-box-shadow: 1px 1px 1px rgba(255,255,255,0.3), 0 0 1px rgba(255,255,255,0.3) !important;
+  -moz-box-shadow: 1px 1px 1px rgba(255,255,255,0.3), 0 0 1px rgba(255,255,255,0.3) !important;
+  box-shadow: 1px 1px 1px rgba(255,255,255,0.3), 0 0 1px rgba(255,255,255,0.3) !important;
 }
 
 .direction-l .flag:before,
