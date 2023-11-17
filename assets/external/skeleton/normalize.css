@@ -209,7 +209,7 @@ th {
   display: none;
   + .mh_toggle_btn {
       margin-top: 0.6em;
-      margin-left: 1em;
+      margin-left: 0.0em;
       margin-bottom: 0.6em;
       box-sizing: border-box;
       outline: 0;

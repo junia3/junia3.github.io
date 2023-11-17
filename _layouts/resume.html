@@ -28,11 +28,15 @@ layout: compress
 
     <link rel="stylesheet" href={{ "/assets/external/skeleton/normalize.css" | prepend: site.baseurl }}>
     <link rel="stylesheet" href={{ "/assets/external/skeleton/skeleton.css" | prepend: site.baseurl }}>
+
+    <link rel="stylesheet" href={{ "/assets/custom/my_css.css" | prepend: site.baseurl }}>
+    {% if site.darkmode_switch == true %}
+        <link rel="stylesheet" href={{ "/assets/custom/my_css_dark.css" | prepend: site.baseurl }}>
+    {% endif %}
     <link rel="stylesheet" href={{ "/assets/custom/my_css.css" | prepend: site.baseurl }}>
     <link rel="stylesheet" href={{ "/assets/external/font-awesome-4.7.0/css/font-awesome.min.css" | prepend: site.baseurl }}>
     <link rel="stylesheet" href={{ "/assets/external/academicons-1.8.6/css/academicons.min.css" | prepend: site.baseurl }}>
     <link rel="stylesheet" href={{ "/assets/external/skeleton_tabs/skeleton-tabs.css" | prepend: site.baseurl }}>
-    <link rel="stylesheet" href={{ "/assets/external/timeline.css" | prepend: site.baseurl }}>
 </head>
 
 <body>
@@ -62,12 +66,13 @@ layout: compress
                 <span onclick="window.open('{{ site.data.main_info.curriculum_vitae }}')" style="cursor: pointer">
                   <i class="ai ai-cv ai-lg" aria-hidden="true"></i>
                 </span>
+                {% include toggle.html %}
               </p>
           </div>
         </div>
       </section>
       {{ content}}
-      <div align="center">
+      <div class="home_btn" align="center">
         <a href="{{site.url}}{{site.baseurl}}/"
           class="button is-rounded is-outlined is-uppercase has-text-weight-normal", id="btn">Home</a>
         </a>
@@ -98,3 +103,27 @@ layout: compress
     <span id="62cd7b7da1aff3196fdc26b60e396df9"></span>
   </body>
 </html>
+
+<script>
+  /* 스타일 파일들 */
+  const defaultTheme = [...document.styleSheets].find(style => /(my_css.css)$/.test(style.href));
+  const darkTheme = [...document.styleSheets].find(style => /(my_css_dark.css)$/.test(style.href));
+
+  /* 스위치, 현재 테마 상태 불러오기 */
+  let mode = document.getElementById("darkmode_switch");
+  const current = localStorage.theme;
+
+  /* 기존 상태에 따라 스위치 체크해주기 */
+  mode.checked = current === 'dark';
+
+  /* 체크된 거에 따라서 스타일 지정해주기 */
+  darkTheme.disabled = mode.checked !== true;
+  defaultTheme.disabled = mode.checked === true;
+
+  mode.addEventListener('click', function(){
+      localStorage.theme = mode.checked ? 'dark' : 'light';
+      darkTheme.disabled = mode.checked !== true;
+      defaultTheme.disabled = mode.checked === true;
+  });
+
+</script>
