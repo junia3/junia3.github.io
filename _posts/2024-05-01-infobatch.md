@@ -65,16 +65,16 @@ tags:
 
 이전 static/dynamic pruning 접근법의 문제점과 InfoBatch 방법을 보다 디테일하게 보면 다음과 같다.
 
-원래의 데이터셋인 $\mathcal{D} = \{z_i = (x_i, y_i)\}_{i=1}^{\vert \mathcal{D} \vert}$와 각 샘플마다 정의되는 score $\mathcal{H}(z)$가 있을때, static pruning은 다음 조건과 같이 특정 score 임계치 $\bar{\mathcal{H}}$보다 작은 모든 샘플을 학습에서 제외시킨다.
+원래의 데이터셋인 $\mathcal{D} = \\{z_i = (x_i, y_i)\\}_{i=1}^{\vert \mathcal{D} \vert}$와 각 샘플마다 정의되는 score $\mathcal{H}(z)$가 있을때, static pruning은 다음 조건과 같이 특정 score 임계치 $\bar{\mathcal{H}}$보다 작은 모든 샘플을 학습에서 제외시킨다.
 
 \[
-\mathcal{S} = \{z \vert \mathcal{H}(z) \ge \bar{\mathcal{H}}\}
+\mathcal{S} = \\{z \vert \mathcal{H}(z) \ge \bar{\mathcal{H}}\\}
 \]
 
 이를 training step 단위로 진행하는 방식이 dynamic pruning이다. Score $\mathcal{H}_t(z)$ 가 시간에 따라 변할 수 있다.
 
 \[
-\mathcal{S}_t = \{z \vert \mathcal{H}_t(z) \ge \bar{\mathcal{H}}_t\}
+\mathcal{S}_t = \\{z \vert \mathcal{H}_t(z) \ge \bar{\mathcal{H}}_t\\}
 \]
 
 두 방식 모두 학습 시 $\mathcal{S}$ 혹은 $\mathcal{S}_t$에 **포함되지 않은 샘플들을 제외시킨다**는 공통점이 있지만, dynamic pruning이 학습 과정에서 전체 데이터셋에 참조가 가능하기 때문에 gradient bias 문제는 상대적으로 적을 수 있다. 하지만 pruning cycle마다 소팅하여 샘플링한다고 하더라도 **low-score sample(학습에서 제외되는 샘플)이 지속적으로 겹칠 수 있기 때문**에 bias되는 문제는 근본적으로 해결할 수 없다.
