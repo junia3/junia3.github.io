@@ -111,7 +111,7 @@ y = \mathcal{F}_\Theta(x)
 위의 그림대로 원래의 output $y$에 conditioning 함수를 거친 output을 더하면 다음과 같다.
 
 \[
-y_c = \mathcal{F}\_\Theta(x) + \mathcal{Z}\_{\Theta_2}(\mathcal{F}\_{\Theta_c}(x + \mathcal{Z}\_{\Theta_2}(c)))
+y_c = \mathcal{F}\_\Theta(x) + \mathcal{Z}\_{\Theta_2}(\mathcal{F}\_{\Theta_c}(x + \mathcal{Z}\_{\Theta_1}(c)))
 \]
 
 여기에서 대체 왜 weight 및 bias가 $0$으로 초기화된 ‘Zero convolution’이 사용되었는지 이유가 등장한다. Zero-convolution은 weight 및 bias가 모두 $0$이므로, input에 상관없이 처음엔 모두 $0$을 output으로 내뱉는다.
@@ -120,7 +120,7 @@ y_c = \mathcal{F}\_\Theta(x) + \mathcal{Z}\_{\Theta_2}(\mathcal{F}\_{\Theta_c}(x
 \begin{cases}
 \mathcal{Z}\_{\Theta_1}(c) = 0 \newline
 \mathcal{F}\_{\Theta_c}(x+\mathcal{Z}\_{\Theta_1}(c)) = \mathcal{F}\_{\Theta_c}(x) = \mathcal{F}\_{\Theta}(x) \newline
-\mathcal{Z}\_{\Theta_2}(\mathcal{F}\_{\Theta_c}(x + \mathcal{Z}\_{\Theta_2}(c))) = \mathcal{Z}\_{\Theta_2}(\mathcal{F}\_{\Theta_c}(x)) = 0
+\mathcal{Z}\_{\Theta_2}(\mathcal{F}\_{\Theta_c}(x + \mathcal{Z}\_{\Theta_1}(c))) = \mathcal{Z}\_{\Theta_2}(\mathcal{F}\_{\Theta_c}(x)) = 0
 \end{cases}
 \]
 
