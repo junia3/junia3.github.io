@@ -1,8 +1,15 @@
 papers:
+  - title: "Enhancing Source-Free Domain Adaptive Object Detection with Low-Confidence Pseudo-Label Distillation"
+    authors: "Ilhoon Yoon, Hyeongjun Kwon, Jin Kim, <b>Junyoung Park</b>, Kwanghoon Sohn"
+    paper_pdf: ""
+    code: ""
+    venue: "ECCV 2024"
+    selected: y
+    image: "https://private-user-images.githubusercontent.com/79881119/346383277-1f217e54-4a3b-4be5-abdb-c924af1026f1.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MjA2NjM5MzMsIm5iZiI6MTcyMDY2MzYzMywicGF0aCI6Ii83OTg4MTExOS8zNDYzODMyNzctMWYyMTdlNTQtNGEzYi00YmU1LWFiZGItYzkyNGFmMTAyNmYxLnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDA3MTElMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQwNzExVDAyMDcxM1omWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWU0NmVjYWNmMzc0NWZiN2U3N2RhM2ZhNjliYTdmNDEzZDlmNzRiZTI5OTRlNTY0MzQ3MjY0Y2NlMjM4NzRlMGUmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.GA2n5yQHxbCkUZIXND5Za7Y65xsblgoyAwRssZNwg-k"
   - title: "Layer-wise Auto-Weighting for Non-Stationary Test-Time Adaptation"
     authors: "<b>Junyoung Park</b>, Jin Kim, Hyeongjun Kwon, Ilhoon Yoon, Kwanghoon Sohn"
     paper_pdf: "https://arxiv.org/pdf/2311.05858.pdf"
     code: "https://github.com/junia3/LayerwiseTTA"
     venue: "WACV 2024 Poster presentation"
     selected: y
-    image: "https://github.com/junia3/junia3.github.io/assets/79881119/26c13b65-0e9f-436e-a90d-0263442b2b99"
+    image: "https://private-user-images.githubusercontent.com/79881119/286446676-9c8d30ed-3e46-47d2-ae90-9720ac97eb3d.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MjA2NjM5NjMsIm5iZiI6MTcyMDY2MzY2MywicGF0aCI6Ii83OTg4MTExOS8yODY0NDY2NzYtOWM4ZDMwZWQtM2U0Ni00N2QyLWFlOTAtOTcyMGFjOTdlYjNkLnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDA3MTElMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQwNzExVDAyMDc0M1omWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWM4MTBhNGZhNDBiZDg3NzcyNDAyNDYzZjJlNjE3NDBhMTJjZmY3NWY1YTg4NTk3OGM3ZWJkZjBmNzFmYjgzODUmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.7yhW1PYxUv_pL_NyJwuWY3BgR49Gddp3cp-yprxq6tY"
