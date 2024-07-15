@@ -5,11 +5,17 @@ experiences:
   subtitle: "Electrical and electronic engineering"
   category: "school"
 
-- place: "Yonsei University"
+- place: "DSP Lab (Yonsei University)"
   time: "2021.6 – 2021.8"
   title: "Lab Intern"
   subtitle: "Keyword spotting"
-  category: "work"
+  category: "school"
+
+- place: "DIML Lab (Yonsei University)"
+  time: "2022.1 – 2022.8"
+  title: "Lab Intern"
+  subtitle: "Generative modeling"
+  category: "school"
 
 - place: "Alchera"
   time: "2022.7 – 2022.9"
