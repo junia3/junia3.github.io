@@ -18,7 +18,15 @@
   link: https://github.com/junia3/Synthetic-Speech-Detection
   image: https://user-images.githubusercontent.com/79881119/236765082-9a073601-d863-4900-b3ad-6c176ee39cc1.gif
   description: Spoofing voice detection
-- name: Vision projects
-  link:
-  image: https://cdn.pixabay.com/photo/2016/12/02/02/10/idea-1876659_960_720.jpg
-  description: To be updated
+- name: Discord Chatbot application with LLaMa2
+  link: https://github.com/junia3/DisCordBot
+  image: https://github.com/junia3/junia3.github.io/assets/79881119/edc8163a-9787-4cbd-b282-14b4c67bef9e
+  description: Chatbot API with LLaMa2
+- name: Layerwise TTA
+  link: https://github.com/junia3/LayerwiseTTA
+  image: https://github.com/junia3/LayerwiseTTA/assets/79881119/9c8d30ed-3e46-47d2-ae90-9720ac97eb3d
+  description: WACV 2024 Accepted Paper
+- name: Low-confidence Pseudo-Label Distillation
+  link: https://github.com/junia3/LPLD
+  image: https://github.com/junia3/LPLD/assets/79881119/1f217e54-4a3b-4be5-abdb-c924af1026f1
+  description: ECCV 2024 Accepted Paper
