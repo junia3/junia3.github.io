@@ -1,7 +1,7 @@
 papers:
-  - title: "Enhancing Source-Free Domain Adaptive Object Detection with Low-Confidence Pseudo-Label Distillation"
+  - title: "Enhancing Source-Free Domain Adaptive Object Detection with Low-confidence Pseudo Label Distillation"
     authors: "Ilhoon Yoon, Hyeongjun Kwon, Jin Kim, <u><b>Junyoung Park</b></u>, Kwanghoon Sohn"
-    paper_pdf: ""
+    paper_pdf: "https://arxiv.org/abs/2407.13524"
     code: "https://github.com/junia3/LPLD"
     venue: "ECCV 2024"
     selected: y
