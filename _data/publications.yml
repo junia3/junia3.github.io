@@ -5,7 +5,7 @@ papers:
     code: "https://github.com/junia3/LPLD"
     venue: "ECCV 2024"
     selected: y
-    image: "https://github.com/user-attachments/assets/2bdba342-f0d3-4de9-aadf-2604a75e95a2"
+    image: "https://github.com/user-attachments/assets/0b18f570-7aed-4a05-a205-722fb052b80a"
   - title: "Layer-wise Auto-Weighting for Non-Stationary Test-Time Adaptation"
     authors: "<u><b>Junyoung Park</b></u>, Jin Kim, Hyeongjun Kwon, Ilhoon Yoon, Kwanghoon Sohn"
     paper_pdf: "https://arxiv.org/pdf/2311.05858.pdf"
