@@ -40,7 +40,7 @@ layout: compress
             {%- assign tags = page.tags -%}
             {%- unless tags.size == 0 -%}
             <p class="subtitle is-uppercase">
-              <i class="fas fa-tags"></i>
+              <i class="fa fa-tags"></i>
               {% assign i = 0 %}
               {% for tags in page.tags %}
               <span class="tag is-link">{{page.tags[i]}}</span>
@@ -50,7 +50,7 @@ layout: compress
             {%- endunless -%}
             {% assign words = content | number_of_words %}
             {%- unless content.size == 0 -%}
-            <p class="subtitle is-uppercase"><i class="fas fa-clock"></i> <b class="has-text-link">
+            <p class="subtitle is-uppercase"><i class="fa fa-clock"></i> <b class="has-text-link">
                 {{ words | divided_by:180 }} min
               </b>READ</p>
             {%- endunless -%}
