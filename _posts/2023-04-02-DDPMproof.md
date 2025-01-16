@@ -148,8 +148,8 @@ D_{KL}(q(x_T \vert x_0) \vert\vert p_\theta(x_T)) -\sum\_{t > 1} D_{KL} (q(x_{t-
 \begin{aligned}
 \mathcal{L} \le& \mathbb{E}\_q\left(-\log (p_\theta(x_T))-\sum_{t=2}^T \log \frac{p_\theta(x_{t-1} \vert x_t)}{q(x_t \vert x_{t-1})} -\log \frac{p_\theta(x_0 \vert x_1)}{q(x_1 \vert x_0)} \right) \newline
 \le& \mathbb{E}\_q\left(-\log (p_\theta(x_T))-\sum_{t=2}^T \log \left( \frac{p_\theta(x_{t-1} \vert x_t)}{q(x_{t-1} \vert x_t, x_0)} \times \frac{q(x_{t-1} \vert x_0)}{q(x_t\vert x_0)}\right) -\log \frac{p_\theta(x_0 \vert x_1)}{q(x_1 \vert x_0)} \right) \newline
-\le& -\sum_{t > 1} D_{KL} (q(x_{t-1} \vert x_t, x_0) \vert\vert p_\theta(x_{t-1} \vert x_t))+\mathbb{E}\_q\left(-\log (p_\theta(x_T))-\log \frac{q(x_1 \vert x_0)}{q(x_T \vert x_0)}-\log \frac{p_\theta(x_0 \vert x_1)}{q(x_1 \vert x_0)} \right) \newline
-\le& D_{KL}(q(x_T \vert x_0) \vert\vert p_\theta(x_T)) -\sum_{t > 1} D_{KL} (q(x_{t-1} \vert x_t, x_0) \vert\vert p_\theta(x_{t-1} \vert x_t)) -\mathbb{E}\_q\left(\log p_{\theta}(x_0 \vert x_1) \right)
+\le& \sum_{t > 1} D_{KL} (q(x_{t-1} \vert x_t, x_0) \vert\vert p_\theta(x_{t-1} \vert x_t))+\mathbb{E}\_q\left(-\log (p_\theta(x_T))-\log \frac{q(x_1 \vert x_0)}{q(x_T \vert x_0)}-\log \frac{p_\theta(x_0 \vert x_1)}{q(x_1 \vert x_0)} \right) \newline
+\le& D_{KL}(q(x_T \vert x_0) \vert\vert p_\theta(x_T)) +\sum_{t > 1} D_{KL} (q(x_{t-1} \vert x_t, x_0) \vert\vert p_\theta(x_{t-1} \vert x_t)) -\mathbb{E}\_q\left(\log p_{\theta}(x_0 \vert x_1) \right)
 \end{aligned}
 \]
 
