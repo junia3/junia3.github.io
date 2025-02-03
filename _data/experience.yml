@@ -4,37 +4,21 @@ experiences:
   title: "B.S. Student"
   subtitle: "Electrical and electronic engineering"
   category: "school"
-
 - place: "DSP Lab (Yonsei University)"
   time: "2021.6 – 2021.8"
   title: "Lab Intern"
   subtitle: "Keyword spotting"
   category: "school"
-
 - place: "DIML Lab (Yonsei University)"
   time: "2022.1 – 2022.8"
   title: "Lab Intern"
   subtitle: "3D Object Detection, Generative Models"
   category: "school"
-
-- place: "Alchera"
-  time: "2022.7 – 2022.9"
-  title: "Industry-Academia Collaboration"
-  subtitle: "Blur face detection"
-  category: "work"
-
 - place: "Yonsei University"
   time: "2022.9 – 2024.8"
   title: "M.S. Student"
   subtitle: "Electrical and electronic engineering"
   category: "school"
-
-- place: "LIG Nex1"
-  time: "2023.4 – 2024.8"
-  title: "Industry-Academia Collaboration"
-  subtitle: "Domain Adaptation for Object Detection"
-  category: "work"
-
 - place: "SBS"
   time: "2024.9 - Present"
   title: "Seoul Broadcasting System"
