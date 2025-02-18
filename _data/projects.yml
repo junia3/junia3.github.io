@@ -6,7 +6,6 @@ projects:
     tasks:
       - "Developing a Deep Learning AI Software as a Service."
       - "Includes multimodal retrieval, V2T generation, thumbnail selection/generation, and NMT with LLMs."
-    image: "https://github.com/user-attachments/assets/91343cd1-7b16-496f-8983-c1d324c236fb"
 
   - title: "Source Free Domain Adaptation"
     place: "LIG Nex1"
@@ -37,4 +36,3 @@ projects:
       - "Solved the data degradation issue in facial recognition framework algorithms."
       - "Optimized modeling for real-time inference and improved on metrics."
     code: "https://github.com/minsu1206/BlurFaceDetection"
-    image: "https://github.com/minsu1206/BlurFaceDetection/raw/main/figures/video_test.png"
