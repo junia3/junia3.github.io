@@ -1,32 +1,40 @@
-- name: Deep hedging
-  image: https://www.fidelity.com/bin-public/060_www_fidelity_com/images/Viewpoints/AT/hedge_stocks_2021_banner.jpg
-  link: https://github.com/junia3/Faster-Deep-Hedging
-  description: Hedging stock with deep learning
-- name: Blur detection
-  link: https://github.com/minsu1206/BlurFaceDetection
-  image: https://raw.githubusercontent.com/WillBrennan/BlurDetection2/master/docs/demo.png
-  description: Detect facial blurry image in real time
-- name: Emotion recognition
-  link: https://github.com/junia3/Long-Tail-Emotion-Recognition
-  image: https://img-cdn.tnwcdn.com/image?fit=1280%2C720&url=https%3A%2F%2Fcdn0.tnwcdn.com%2Fwp-content%2Fblogs.dir%2F1%2Ffiles%2F2021%2F08%2FUntitled-design-12.jpg&signature=317feb1b808e69de1479a697dd56bf18
-  description: Long tailed distribution emotion recognition
-- name: CT dose
-  link: https://github.com/junia3/CTLowDoseChallenge
-  image: https://www.ccjm.org/content/ccjom/83/6/423/F1.medium.gif
-  description: Enhancement of low dose CT images
-- name: Synthetic Voice Detection
-  link: https://github.com/junia3/Synthetic-Speech-Detection
-  image: https://user-images.githubusercontent.com/79881119/236765082-9a073601-d863-4900-b3ad-6c176ee39cc1.gif
-  description: Spoofing voice detection
-- name: Discord Chatbot application with LLaMa2
-  link: https://github.com/junia3/DisCordBot
-  image: https://github.com/junia3/junia3.github.io/assets/79881119/edc8163a-9787-4cbd-b282-14b4c67bef9e
-  description: Chatbot API with LLaMa2
-- name: Layerwise TTA
-  link: https://github.com/junia3/LayerwiseTTA
-  image: https://github.com/junia3/LayerwiseTTA/assets/79881119/9c8d30ed-3e46-47d2-ae90-9720ac97eb3d
-  description: WACV 2024 Accepted Paper
-- name: Low-confidence Pseudo-Label Distillation
-  link: https://github.com/junia3/LPLD
-  image: https://github.com/user-attachments/assets/0b18f570-7aed-4a05-a205-722fb052b80a
-  description: ECCV 2024 Accepted Paper
+projects:
+  - title: "AI Services"
+    place: "SBS"
+    time: "Dec 2024 - Present"
+    tech_stack: ["C++", "Python", "Docker", "SQL", "VectorDB"]
+    tasks:
+      - "Developing a Deep Learning AI Software as a Service."
+      - "Includes multimodal retrieval, V2T generation, thumbnail selection/generation, and NMT with LLMs."
+    image: "https://github.com/user-attachments/assets/91343cd1-7b16-496f-8983-c1d324c236fb"
+
+  - title: "Source Free Domain Adaptation"
+    place: "LIG Nex1"
+    time: "Jan 2022 - Aug 2024"
+    tech_stack: ["Python", "Docker", "PyTorch"]
+    tasks:
+      - "Researched light-weight domain adaptation using source free approaches."
+      - "Submitted a paper on the SFDA algorithm to ECCV 2024."
+    code: "https://github.com/junia3/LPLD"
+    youtube: "https://www.youtube.com/watch?v=Mn1YU1Uji-g"
+
+  - title: "Test Time Adaptation"
+    place: "LIG Nex1"
+    time: "Jan 2022 - Aug 2024"
+    tech_stack: ["Python", "Docker", "PyTorch"]
+    tasks:
+      - "Explored test-time domain adaptation techniques."
+      - "Submitted a paper on the TTA algorithm to WACV 2024."
+    code: "https://github.com/junia3/LayerwiseTTA"
+    youtube: "https://www.youtube.com/watch?v=x3ri6DUKyAY"
+
+  - title: "Blur Face Detection"
+    place: "Alchera"
+    time: "Sep 2022 - Sep 2022"
+    tech_stack: ["Python", "Docker", "Cloud AI Services"]
+    tasks:
+      - "Developed algorithms for detecting blurred facial images."
+      - "Solved the data degradation issue in facial recognition framework algorithms."
+      - "Optimized modeling for real-time inference and improved on metrics."
+    code: "https://github.com/minsu1206/BlurFaceDetection"
+    image: "https://github.com/minsu1206/BlurFaceDetection/raw/main/figures/video_test.png"

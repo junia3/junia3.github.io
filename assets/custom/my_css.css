@@ -74,24 +74,15 @@ div.row{
 .image {
   text-align: center; }
 
-/*  ================ Project styling  ================ */
-.project-container {
-  margin-bottom: 30px;
-}
-.project-image-container {
-  border: 1px solid rgba(0,0,0,0.2);
-  padding: 3px;
-  transition: 0.3s;
-}
-.project-image-container:hover {
-  transition: 0.3s;
-}
-.project-image-container:hover img {
-  opacity: 0.4;
-}
-.project-caption {
-  padding: 3px;
-}
+.project-buttons {
+  margin-top: 5px }
+.project .button {
+  display: inline-block;
+  height: 25px;
+  padding: 0 25px;
+  font-weight: 100;
+  line-height: 25px;
+  text-transform: none; }
 
 /* Larger than phone */
 @media (min-width: 550px) {

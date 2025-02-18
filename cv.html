@@ -7,9 +7,115 @@ title: Resume
 <div class="docs-section" id="bio">
     <h4>About</h4>
     <p>
-      I am currently interested in machine learning and deep learning algorithms, particularly in large foundation models and their applications to various tasks. I am currently working as an AI researcher at SBS.
+      I am currently working as an AI Researcher at SBS, driving innovation and pushing the boundaries of artificial intelligence. Working at a content creation company brings a unique joy, as I get to see firsthand how AI can enhance storytelling and production. My focus lies in advancing AI technologies that leverage video, exploring new ways to analyze, generate, and enhance visual content. Beyond research, I deeply value the opportunity to collaborate with professionals from diverse fields—ranging from engineers and designers to producers and artists—fostering interdisciplinary communication that fuels creative and technical breakthroughs.
     </p> 
   </div>
+
+  <!-- CSS (내부 또는 별도 CSS 파일에 포함) -->
+<style>
+  /* 반응형 미디어 쿼리 */
+  @media (min-width: 768px) {
+    /* 데스크탑: 모바일 전용 요소 숨김 */
+    .mobile-only {
+      display: none;
+    }
+  }
+  @media (max-width: 767px) {
+    /* 모바일: 데스크탑 전용 요소 숨김 */
+    .desktop-only {
+      display: none;
+    }
+    /* 모바일에서는 flex row를 column으로 변경하여 한 줄씩 쌓이도록 함 */
+    .row {
+      flex-direction: column;
+    }
+  }
+  /* 반응형 유튜브 임베드 스타일 */
+  .video-container {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 비율 */
+    height: 0;
+    overflow: hidden;
+  }
+  .video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+  /* 프로젝트 정보 영역에서 제목과 그 다음 줄의 간격을 줄입니다. */
+  #project_info p.title {
+    margin-bottom: 5px; /* 원하는 만큼 값을 조절하세요 */
+  }
+</style>
+
+<!-- ========== PROJECTS ========== -->
+<div class="docs-section" id="projects">
+  <h4>Projects</h4>
+  <div class="tab-content">
+    <div class="tab-pane active" id="projects-all">
+      {% for project in site.data.projects.projects %}
+      <div class="project">
+        <!-- row: 데스크탑에서는 미디어(유튜브/이미지)와 정보 영역을 좌우로 배치 -->
+        <div class="row" style="display: flex; align-items: center;">
+          
+          <!-- 데스크탑 전용: 유튜브 URL이 있을 경우 왼쪽에 임베드 -->
+          {% if project.youtube %}
+          <div class="four columns desktop-only" id="project_video">
+            <div class="video-container">
+              <iframe src="{{ project.youtube | replace: 'watch?v=', 'embed/' }}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+          </div>
+          <!-- 유튜브 URL이 없고 이미지가 있을 경우 -->
+          {% elsif project.image %}
+          <div class="four columns" id="project_fig">
+            <div class="figure">
+              <img src="{{ project.image }}" width="100%" alt="{{ project.title }}">
+            </div>
+          </div>
+          {% endif %}
+          
+          <!-- 프로젝트 정보 영역 (미디어가 있으면 8컬럼, 없으면 12컬럼) -->
+          <div class="{% if project.youtube or project.image %}eight{% else %}twelve{% endif %} columns" id="project_info">
+            <p class="title"><b>{{ project.title }}</b></p>
+            <p>
+              <sub>
+                {{ project.place }} | {{ project.time }} | {{ project.tech_stack | join: ', ' }}
+              </sub>
+            </p>
+            <!-- 작업 내용 리스트 -->
+            <ul>
+              {% for task in project.tasks %}
+              <li>{{ task }}</li>
+              {% endfor %}
+            </ul>
+            
+            <!-- 모바일 전용: 유튜브 임베드를 tasks와 버튼 사이에 한 줄로 표시 -->
+            {% if project.youtube %}
+            <div class="mobile-only">
+              <div class="video-container">
+                <iframe src="{{ project.youtube | replace: 'watch?v=', 'embed/' }}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+              </div>
+            </div>
+            {% endif %}
+            
+            <!-- 버튼 영역 -->
+            <div class="project-buttons">
+              {% if project.code %}
+              <a class="button" href="{{ project.code }}" target="_blank">Code</a>
+              {% endif %}
+              {% if project.youtube %}
+              <a class="button" href="{{ project.youtube }}" target="_blank">Video</a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
   
   <!-- ========== PUBLICATIONS ========== -->
   <div class="docs-section" id="publications">
